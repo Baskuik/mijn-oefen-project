@@ -4,29 +4,30 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+use Filament\Forms\Form; // VERANDERD: In v3 gebruik je Form, niet Schema
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema; 
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 
-// Gebruik deze specifieke imports voor de acties:
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\BulkActionGroup;
-
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+
+    // FIX 1: Verwijder de '?string' type hint of gebruik de brede hint
+    protected static ?string $navigationIcon = 'heroicon-o-users'; 
+    // Als bovenstaande nog steeds een error geeft, gebruik: protected static $navigationIcon = 'heroicon-o-users';
+
     protected static ?string $slug = 'users';
 
-    public static function form(Schema $schema): Schema
+    // FIX 2: De functie moet 'form(Form $form)' zijn, niet 'Schema'
+    public static function form(Form $form): Form
     {
-        return $schema->components([
-            TextInput::make('name')->label('Naam')->required(),
-            TextInput::make('email')->label('E-mail')->email()->required(),
-        ]);
+        return $form
+            ->schema([ // In v3 gebruik je ->schema() in plaats van ->components()
+                TextInput::make('name')->label('Naam')->required(),
+                TextInput::make('email')->label('E-mail')->email()->required(),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -37,12 +38,12 @@ class UserResource extends Resource
                 TextColumn::make('email')->label('E-mail')->sortable()->searchable(),
             ])
             ->actions([
-                // We gebruiken de volledige naamruimte direct in de functie
                 \Filament\Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                // We groeperen ze niet, maar zetten ze er direct in
-                \Filament\Tables\Actions\DeleteBulkAction::make(),
+                \Filament\Tables\Actions\BulkActionGroup::make([
+                    \Filament\Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
