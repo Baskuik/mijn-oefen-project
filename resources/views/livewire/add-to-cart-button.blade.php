@@ -7,7 +7,7 @@
     In winkelwagen
   </button>
 
-  `@if`($showLoginModal)
+  `@if` ($showLoginModal)
     <div class="fixed inset-0 z-50">
       <div class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
       <div class="relative mx-auto mt-24 w-full max-w-md rounded-lg bg-white shadow-xl">
