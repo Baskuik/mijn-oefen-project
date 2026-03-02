@@ -4,14 +4,22 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+
+// Acties (v5)
 use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Section;
+
+// Form componenten blijven in Forms
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+
+// Resource & Schemas (v5)
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;   // <— JUISTE namespace voor Section in v5
 use Filament\Schemas\Schema;
+
+// Tabel onderdelen
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
