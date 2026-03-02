@@ -9,7 +9,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -159,18 +158,16 @@ class UserResource extends Resource
                     ->native(false),
             ])
             ->actions([
-                ActionGroup::make([
-                    ViewAction::make()
-                        ->label('Bekijken'),
-                    EditAction::make()
-                        ->label('Bewerken'),
-                    DeleteAction::make()
-                        ->label('Verwijderen'),
-                    RestoreAction::make()
-                        ->label('Herstellen'),
-                    ForceDeleteAction::make()
-                        ->label('Definitief verwijderen'),
-                ]),
+                ViewAction::make()
+                    ->label('Bekijken'),
+                EditAction::make()
+                    ->label('Bewerken'),
+                DeleteAction::make()
+                    ->label('Verwijderen'),
+                RestoreAction::make()
+                    ->label('Herstellen'),
+                ForceDeleteAction::make()
+                    ->label('Definitief verwijderen'),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
