@@ -1,82 +1,45 @@
 <!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon GO Web Store</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    @livewireStyles
-</head>
-<body class="bg-gray-100 font-sans">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MijnShop</title>
+    `@vite`(['resources/css/app.css', 'resources/js/app.js'])
+    `@livewireStyles`
+  </head>
+  <body class="antialiased bg-white text-slate-800">
+    `@include`('components.site-navbar')
 
-    {{-- Hoofd Navigatiebalk --}}
-    <nav class="bg-blue-600 p-4 text-white shadow-lg">
-        <div class="container mx-auto flex justify-between items-center font-bold text-xl uppercase tracking-widest">
-            <a href="/">Pokémon GO Web Store</a>
-            
-            <div class="text-sm normal-case tracking-normal font-medium flex items-center gap-4">
-                {{-- De Winkelwagen Teller --}}
-                @livewire('cart-counter')
-
-                @auth
-                    <span class="text-blue-100 italic">Hoi, {{ auth()->user()->name }}</span>
-                    <form action="/admin/logout" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="hover:underline opacity-80 font-bold">Uitloggen</button>
-                    </form>
-                @else
-                    <a href="/admin/login" class="hover:underline font-bold">Inloggen</a>
-                @endauth
-            </div>
+    <section class="bg-gradient-to-br from-amber-50 to-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">Welkom bij MijnShop</h1>
+        <p class="mt-3 text-slate-600 max-w-2xl">
+          Log in om te bestellen, of bekijk ons aanbod en voeg producten toe aan je winkelwagen.
+        </p>
+        <div class="mt-6 flex gap-3">
+          <a href="{{ route('login') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800">
+            Inloggen
+          </a>
+          <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">
+            Registreren
+          </a>
         </div>
-    </nav>
+      </div>
+    </section>
 
-    {{-- Admin Quick Access Bar --}}
-    @auth
-        @if(auth()->user()->is_admin)
-            <div class="bg-gray-900 text-white py-2 border-b border-gray-700">
-                <div class="container mx-auto px-4 flex justify-between items-center text-xs font-bold uppercase tracking-wider">
-                    <span class="text-gray-400">Admin Mode</span>
-                    <a href="/admin" class="bg-amber-500 hover:bg-amber-600 px-3 py-1 rounded text-gray-900 transition">
-                        Naar Dashboard
-                    </a>
-                </div>
-            </div>
-        @endif
-    @endauth
-
-    <div class="container mx-auto py-10 px-4">
-        <h1 class="text-3xl font-extrabold text-gray-800 mb-8 text-center">Beschikbare Items</h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            @foreach($products as $product)
-                <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200 hover:shadow-xl transition flex flex-col">
-                    @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" class="w-full h-48 object-contain p-4 bg-gray-50">
-                    @endif
-                    
-                    <div class="p-6 text-center flex-grow">
-                        <h2 class="text-xl font-bold text-gray-900">{{ $product->name }}</h2>
-                        <p class="text-gray-500 text-sm mb-4">{{ $product->category->name ?? 'Geen categorie' }}</p>
-                        
-                        <div class="text-2xl font-black text-blue-600 mb-4">
-                            €{{ number_format($product->price, 2) }}
-                        </div>
-
-                        @if($product->bonus_percentage > 0)
-                            <span class="inline-block bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full mb-4">
-                                +{{ $product->bonus_percentage }}% extra
-                            </span>
-                        @endif
-
-                        {{-- De Livewire Knop --}}
-                        @livewire('add-to-cart', ['productId' => $product->id], key($product->id))
-                    </div>
-                </div>
-            @endforeach
+    {{-- Voorbeeld plek voor producten (plaats je eigen weergave hier) --}}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {{-- `@foreach`($products as $product)
+        <div class="p-4 border rounded-md flex items-center justify-between">
+          <div>
+            <div class="font-semibold">{{ $product->name }}</div>
+            <div class="text-slate-600 text-sm">{{ $product->price }} EUR</div>
+          </div>
+          `@livewire`('add-to-cart-button', ['productId' => $product->id], key('add-'.$product->id))
         </div>
+      `@endforeach` --}}
     </div>
 
-    @livewireScripts
-</body>
+    `@livewireScripts`
+  </body>
 </html>
