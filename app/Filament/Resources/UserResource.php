@@ -9,12 +9,15 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;   
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static $navigationIcon = 'heroicon-o-users';  // ✅ Type removed
 
     protected static ?string $slug = 'users';
 
@@ -46,12 +49,12 @@ class UserResource extends Resource
                     ->searchable(),
             ])
             ->actions([
-                // We dwingen PHP om hier te kijken:
-                \Filament\Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                // We dwingen PHP om hier te kijken:
-                \Filament\Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
