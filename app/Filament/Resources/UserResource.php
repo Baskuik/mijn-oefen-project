@@ -7,8 +7,6 @@ use App\Models\User;
 use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreAction;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -17,10 +15,8 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
 {
@@ -72,14 +68,21 @@ class UserResource extends Resource
                             ->columnSpanFull(),
                     ]),
 
-                Section::make('Machtigingen')
-                    ->description('Bepaal de rol en toegang van deze gebruiker')
+                Section::make('Status en Machtigingen')
+                    ->description('Bepaal de status en rol van deze gebruiker')
                     ->schema([
+                        Toggle::make('user_active')
+                            ->label('Gebruiker Actief')
+                            ->helperText('Inactieve gebruikers kunnen niet meer inloggen')
+                            ->inline(false)
+                            ->default(true),
+
                         Toggle::make('is_admin')
                             ->label('Administrator')
                             ->helperText('Administrators hebben volledige toegang tot het admin panel')
                             ->inline(false),
-                    ]),
+                    ])
+                    ->columns(2),
             ]);
     }
 
@@ -87,6 +90,16 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                IconColumn::make('user_active')
+                    ->label('Status')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger')
+                    ->sortable()
+                    ->tooltip(fn (User $record): string => $record->user_active ? 'Actief' : 'Inactief'),
+
                 TextColumn::make('name')
                     ->label('Naam')
                     ->sortable()
@@ -129,15 +142,16 @@ class UserResource extends Resource
                     ->dateTime('d-m-Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
-
-                TextColumn::make('deleted_at')
-                    ->label('Verwijderd')
-                    ->dateTime('d-m-Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->placeholder('–'),
             ])
             ->filters([
+                SelectFilter::make('user_active')
+                    ->label('Status')
+                    ->options([
+                        '1' => 'Actief',
+                        '0' => 'Inactief',
+                    ])
+                    ->placeholder('Alle statussen'),
+
                 SelectFilter::make('is_admin')
                     ->label('Rol')
                     ->options([
@@ -145,45 +159,50 @@ class UserResource extends Resource
                         '0' => 'Gebruiker',
                     ])
                     ->placeholder('Alle rollen'),
-
-                TrashedFilter::make()
-                    ->label('Verwijderde gebruikers')
-                    ->placeholder('Zonder verwijderde')
-                    ->trueLabel('Alleen verwijderde')
-                    ->falseLabel('Zonder verwijderde')
-                    ->native(false),
             ])
             ->recordActions([
                 EditAction::make()
                     ->label('Bewerken'),
                 DeleteAction::make()
-                    ->label('Verwijderen'),
-                RestoreAction::make()
-                    ->label('Herstellen'),
-                ForceDeleteAction::make()
-                    ->label('Definitief verwijderen'),
+                    ->label('Verwijderen')
+                    ->requiresConfirmation()
+                    ->modalHeading('Gebruiker permanent verwijderen?')
+                    ->modalDescription('Deze actie kan niet ongedaan worden gemaakt.')
+                    ->modalSubmitActionLabel('Ja, verwijderen'),
             ])
             ->groupedBulkActions([
+                BulkAction::make('activate')
+                    ->label('Activeren')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->action(function ($records) {
+                        $records->each(function ($record) {
+                            $record->update(['user_active' => true]);
+                        });
+                    })
+                    ->deselectRecordsAfterCompletion(),
+                    
+                BulkAction::make('deactivate')
+                    ->label('Deactiveren')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->action(function ($records) {
+                        $records->each(function ($record) {
+                            $record->update(['user_active' => false]);
+                        });
+                    })
+                    ->deselectRecordsAfterCompletion(),
+                    
                 BulkAction::make('delete')
-                    ->label('Verwijderen')
+                    ->label('Permanent verwijderen')
                     ->icon('heroicon-o-trash')
-                    ->requiresConfirmation()
-                    ->action(fn ($records) => $records->each->delete())
-                    ->deselectRecordsAfterCompletion(),
-                    
-                BulkAction::make('restore')
-                    ->label('Herstellen')
-                    ->icon('heroicon-o-arrow-path')
-                    ->requiresConfirmation()
-                    ->action(fn ($records) => $records->each->restore())
-                    ->deselectRecordsAfterCompletion(),
-                    
-                BulkAction::make('forceDelete')
-                    ->label('Definitief verwijderen')
-                    ->icon('heroicon-o-x-mark')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(fn ($records) => $records->each->forceDelete())
+                    ->modalHeading('Gebruikers permanent verwijderen?')
+                    ->modalDescription('Deze actie kan niet ongedaan worden gemaakt.')
+                    ->action(fn ($records) => $records->each->delete())
                     ->deselectRecordsAfterCompletion(),
             ])
             ->defaultSort('created_at', 'desc')
@@ -191,14 +210,38 @@ class UserResource extends Resource
             ->poll('30s')
             ->striped()
             ->deferLoading();
+        
+                };
+        
+            public static function table(Table $table): Table
+
+                return $table
+                    ->columns([
+                        // ... je kolommen
+                    ])
+                    ->filters([
+                        // ... je filters
+                    ])
+                    ->recordActions([
+                        // ... je actions
+                    ])
+                    ->groupedBulkActions([
+                        // ... je bulk actions
+                    ])
+                    ->defaultSort('created_at', 'desc')
+                    ->paginated([25, 50, 100, 500])
+                    ->poll('30s')
+                    ->striped()
+                    ->deferLoading()
+                    ->headerActions([  // ✅ Voeg dit toe als het er niet is
+                        \Filament\Actions\CreateAction::make()
+                            ->label('Nieuwe Gebruiker'),
+                    ]);
     }
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+        return parent::getEloquentQuery();
     }
 
     public static function getPages(): array
