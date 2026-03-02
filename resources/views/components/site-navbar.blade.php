@@ -8,7 +8,7 @@
       `@auth`
         <a href="{{ route('dashboard') }}" class="text-slate-700 hover:text-slate-900">Dashboard</a>
 
-        `@if`(auth()->user()->is_admin)
+        `@if` (auth()->user()->is_admin)
           <a href="{{ route('filament.admin.pages.dashboard') }}" class="text-slate-700 hover:text-slate-900">Admin</a>
         `@endif`
 

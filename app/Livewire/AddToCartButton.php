@@ -21,7 +21,6 @@ class AddToCartButton extends Component
             return;
         }
 
-        // Sessie-cart (eenvoudig)
         $cart = session()->get('cart', []);
         $cart[$this->productId] = ($cart[$this->productId] ?? 0) + 1;
         session()->put('cart', $cart);
