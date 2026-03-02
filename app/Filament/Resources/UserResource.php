@@ -17,7 +17,6 @@ use Filament\Tables\Actions\ForceDeleteAction;
 use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -158,8 +157,6 @@ class UserResource extends Resource
                     ->native(false),
             ])
             ->actions([
-                ViewAction::make()
-                    ->label('Bekijken'),
                 EditAction::make()
                     ->label('Bewerken'),
                 DeleteAction::make()
