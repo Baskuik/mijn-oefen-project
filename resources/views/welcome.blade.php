@@ -27,9 +27,10 @@
       </div>
     </section>
 
-    {{-- Voorbeeld plek voor producten (plaats je eigen weergave hier) --}}
+    {{-- Voorbeeld sectie voor producten; vervang dit door je eigen weergave --}}
+    {{-- 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {{-- `@foreach`($products as $product)
+      `@foreach`($products as $product)
         <div class="p-4 border rounded-md flex items-center justify-between">
           <div>
             <div class="font-semibold">{{ $product->name }}</div>
@@ -37,8 +38,9 @@
           </div>
           `@livewire`('add-to-cart-button', ['productId' => $product->id], key('add-'.$product->id))
         </div>
-      `@endforeach` --}}
+      `@endforeach`
     </div>
+    --}}
 
     `@livewireScripts`
   </body>
