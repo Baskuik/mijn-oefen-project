@@ -1,41 +1,56 @@
 <?php
 
-namespace App\Filament\Resources; // Namespace MOET nu dit zijn
+namespace App\Filament\Resources;
 
+use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
+use Filament\Schemas\Schema; 
 use Filament\Tables\Table;
-// We importeren de pagina's uit de submap die is blijven staan
-use App\Filament\Resources\Users\Pages; 
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+
+// Gebruik deze specifieke imports voor de acties:
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-    
-    // We forceren de naam van de route
+    protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $slug = 'users';
-
-    public static function getNavigationIcon(): ?string
-    {
-        return 'heroicon-o-users';
-    }
 
     public static function form(Schema $schema): Schema
     {
-        return \App\Filament\Resources\Users\Schemas\UserForm::configure($schema);
+        return $schema->components([
+            TextInput::make('name')->label('Naam')->required(),
+            TextInput::make('email')->label('E-mail')->email()->required(),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
-        return \App\Filament\Resources\Users\Tables\UsersTable::configure($table);
+        return $table
+            ->columns([
+                TextColumn::make('name')->label('Naam')->sortable()->searchable(),
+                TextColumn::make('email')->label('E-mail')->sortable()->searchable(),
+            ])
+            ->actions([
+                // We gebruiken de volledige naamruimte direct in de functie
+                \Filament\Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                // We groeperen ze niet, maar zetten ze er direct in
+                \Filament\Tables\Actions\DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'), // Als dit CreateUser is, moet het bestand ook zo heten
+            'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }

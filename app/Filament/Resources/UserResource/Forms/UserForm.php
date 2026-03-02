@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\Users\Schemas;
+namespace App\Filament\Resources\UserResource\Forms;
 
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
 
 class UserForm
 {
@@ -16,15 +14,12 @@ class UserForm
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('email')
-                    ->label('Email address')
                     ->email()
                     ->required(),
-                DateTimePicker::make('email_verified_at'),
                 TextInput::make('password')
                     ->password()
-                    ->required(),
-                Toggle::make('is_admin')
-                    ->required(),
+                    ->required(fn ($context) => $context === 'create')
+                    ->visible(fn ($context) => $context === 'create'),
             ]);
     }
 }

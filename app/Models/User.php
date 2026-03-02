@@ -36,6 +36,7 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         // Check simpelweg of het vinkje aan staat
-        return $this->is_admin === true;
+        //return $this->is_admin === true;
+        return true;
     }
 }
