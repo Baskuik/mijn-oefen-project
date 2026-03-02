@@ -210,33 +210,6 @@ class UserResource extends Resource
             ->poll('30s')
             ->striped()
             ->deferLoading();
-        
-                };
-        
-            public static function table(Table $table): Table
-
-                return $table
-                    ->columns([
-                        // ... je kolommen
-                    ])
-                    ->filters([
-                        // ... je filters
-                    ])
-                    ->recordActions([
-                        // ... je actions
-                    ])
-                    ->groupedBulkActions([
-                        // ... je bulk actions
-                    ])
-                    ->defaultSort('created_at', 'desc')
-                    ->paginated([25, 50, 100, 500])
-                    ->poll('30s')
-                    ->striped()
-                    ->deferLoading()
-                    ->headerActions([  // ✅ Voeg dit toe als het er niet is
-                        \Filament\Actions\CreateAction::make()
-                            ->label('Nieuwe Gebruiker'),
-                    ]);
     }
 
     public static function getEloquentQuery(): Builder
