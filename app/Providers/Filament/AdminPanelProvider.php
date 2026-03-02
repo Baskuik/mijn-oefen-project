@@ -2,7 +2,9 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Resources\UserResource; // Aangepast naar de standaard locatie
+use App\Filament\Resources\UserResource;
+use App\Filament\Resources\Products\ProductResource;  // Add this
+use App\Filament\Resources\Categories\CategoryResource;  // Add this
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -27,17 +29,20 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path('filament')  // ✅ Changed from 'admin' to 'filament'
             ->login()
             ->homeUrl('/')
             ->colors([
                 'primary' => Color::Amber,
             ])
-            // Handmatige registratie verwijderd omdat discoverResources dit al doet
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            // ✅ Manual registration of all resources
+            ->resources([
+                UserResource::class,
+                ProductResource::class,
+                CategoryResource::class,
+            ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                // Hier kun je aangepaste pagina's toevoegen die niet automatisch ontdekt worden
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
