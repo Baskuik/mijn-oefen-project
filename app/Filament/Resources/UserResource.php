@@ -17,9 +17,16 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static $navigationIcon = 'heroicon-o-users';  // ✅ Type removed
+    // ❌ REMOVE THIS LINE COMPLETELY:
+    // protected static $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $slug = 'users';
+
+    // ✅ ADD THIS METHOD INSTEAD:
+    public static function getNavigationIcon(): ?string
+    {
+        return 'heroicon-o-users';
+    }
 
     public static function form(Schema $schema): Schema
     {
