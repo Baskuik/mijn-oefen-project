@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+use Filament\Actions\BulkAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
@@ -13,10 +14,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\ForceDeleteBulkAction;
-use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -166,15 +163,28 @@ class UserResource extends Resource
                 ForceDeleteAction::make()
                     ->label('Definitief verwijderen'),
             ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->label('Verwijderen'),
-                    RestoreBulkAction::make()
-                        ->label('Herstellen'),
-                    ForceDeleteBulkAction::make()
-                        ->label('Definitief verwijderen'),
-                ]),
+            ->groupedBulkActions([
+                BulkAction::make('delete')
+                    ->label('Verwijderen')
+                    ->icon('heroicon-o-trash')
+                    ->requiresConfirmation()
+                    ->action(fn ($records) => $records->each->delete())
+                    ->deselectRecordsAfterCompletion(),
+                    
+                BulkAction::make('restore')
+                    ->label('Herstellen')
+                    ->icon('heroicon-o-arrow-path')
+                    ->requiresConfirmation()
+                    ->action(fn ($records) => $records->each->restore())
+                    ->deselectRecordsAfterCompletion(),
+                    
+                BulkAction::make('forceDelete')
+                    ->label('Definitief verwijderen')
+                    ->icon('heroicon-o-x-mark')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(fn ($records) => $records->each->forceDelete())
+                    ->deselectRecordsAfterCompletion(),
             ])
             ->defaultSort('created_at', 'desc')
             ->paginated([25, 50, 100, 500])
