@@ -32,7 +32,6 @@ unset($__params);
 unset($__componentSlots);
 unset($__split);
 ?>
-        <a href="<?php echo e(route('dashboard')); ?>" class="text-slate-700 hover:text-slate-900 font-medium">Dashboard</a>
 
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->is_admin): ?>
           <a href="<?php echo e(route('filament.admin.pages.dashboard')); ?>" class="text-slate-700 hover:text-slate-900 font-medium">Admin</a>
@@ -43,7 +42,7 @@ unset($__split);
           <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-colors">
             Uitloggen
           </button>
-          </form>
+        </form>
       <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
       <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>

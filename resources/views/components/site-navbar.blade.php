@@ -7,7 +7,6 @@
     <div class="flex items-center gap-6">
       @auth
         <livewire:cart-counter />
-        <a href="{{ route('dashboard') }}" class="text-slate-700 hover:text-slate-900 font-medium">Dashboard</a>
 
         @if (auth()->user()->is_admin)
           <a href="{{ route('filament.admin.pages.dashboard') }}" class="text-slate-700 hover:text-slate-900 font-medium">Admin</a>
@@ -18,7 +17,7 @@
           <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-colors">
             Uitloggen
           </button>
-          </form>
+        </form>
       @endauth
 
       @guest
