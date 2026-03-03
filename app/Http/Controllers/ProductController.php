@@ -12,8 +12,9 @@ class ProductController extends Controller
     // Voor de homepage (klanten)
     public function index()
     {
-        $products = Product::all();
-        return view('welcome', compact('products'));
+        $products = Product::with('category')->get();
+        $categories = Category::with('products')->get();
+        return view('welcome', compact('products', 'categories'));
     }
 
     // Voor het admin dashboard (jouw beheerpagina)

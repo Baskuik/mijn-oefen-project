@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class CartController extends Controller
 {
@@ -14,9 +15,39 @@ class CartController extends Controller
         ]);
 
         $qty = $validated['qty'] ?? 1;
+        $productId = $validated['product_id'];
 
         $cart = session()->get('cart', []);
-        $cart[$validated['product_id']] = ($cart[$validated['product_id']] ?? 0) + $qty;
+        
+        // Haal product op
+        $product = Product::find($productId);
+        
+        if ($product) {
+            if (isset($cart[$productId])) {
+                // Check of het nieuwe formaat is (array) of oude formaat (int)
+                if (is_array($cart[$productId])) {
+                    $cart[$productId]['quantity'] += $qty;
+                } else {
+                    // Converteer oude formaat naar nieuwe formaat
+                    $oldQuantity = (int) $cart[$productId];
+                    $cart[$productId] = [
+                        'name' => $product->name,
+                        'quantity' => $oldQuantity + $qty,
+                        'price' => $product->price,
+                        'image' => $product->image,
+                    ];
+                }
+            } else {
+                // Nieuw product - voeg toe in nieuwe formaat
+                $cart[$productId] = [
+                    'name' => $product->name,
+                    'quantity' => $qty,
+                    'price' => $product->price,
+                    'image' => $product->image,
+                ];
+            }
+        }
+        
         session()->put('cart', $cart);
 
         if ($request->wantsJson()) {
