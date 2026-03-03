@@ -23,11 +23,22 @@ class CartController extends Controller
         $product = Product::find($productId);
         
         if ($product) {
-            if (isset($cart[$productId]) && is_array($cart[$productId])) {
-                // Product bestaat al in nieuwe formaat
-                $cart[$productId]['quantity'] += $qty;
+            if (isset($cart[$productId])) {
+                // Check of het nieuwe formaat is (array) of oude formaat (int)
+                if (is_array($cart[$productId])) {
+                    $cart[$productId]['quantity'] += $qty;
+                } else {
+                    // Converteer oude formaat naar nieuwe formaat
+                    $oldQuantity = (int) $cart[$productId];
+                    $cart[$productId] = [
+                        'name' => $product->name,
+                        'quantity' => $oldQuantity + $qty,
+                        'price' => $product->price,
+                        'image' => $product->image,
+                    ];
+                }
             } else {
-                // Nieuw product of conversie van oud formaat
+                // Nieuw product - voeg toe in nieuwe formaat
                 $cart[$productId] = [
                     'name' => $product->name,
                     'quantity' => $qty,

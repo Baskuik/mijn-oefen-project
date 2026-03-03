@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use Livewire\Attributes\On; 
+use Livewire\Attributes\On;
 
 class CartCounter extends Component
 {
@@ -20,7 +20,13 @@ class CartCounter extends Component
         $count = 0;
 
         foreach($cart as $item) {
-            $count += $item['quantity'];
+            // Check of item in nieuwe formaat is (array) of oude formaat (int)
+            if (is_array($item) && isset($item['quantity'])) {
+                $count += $item['quantity'];
+            } elseif (is_numeric($item)) {
+                // Oude formaat - tel het getal op
+                $count += (int) $item;
+            }
         }
 
         return view('livewire.cart-counter', ['count' => $count]);
