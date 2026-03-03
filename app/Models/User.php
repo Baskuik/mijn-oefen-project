@@ -12,31 +12,49 @@ class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * `@var` array<int, string>
+     */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'is_admin', // Voeg deze toe
+        'is_admin',
+        'user_active',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * `@var` array<int, string>
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * `@return` array<string, string>
+     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_admin' => 'boolean', // Zorg dat Laravel dit als true/false ziet
+            'is_admin' => 'boolean',
+            'user_active' => 'boolean',
         ];
     }
 
+    /**
+     * Determine if the user can access the Filament panel.
+     */
     public function canAccessPanel(Panel $panel): bool
     {
-        // Check simpelweg of het vinkje aan staat
-        //return $this->is_admin === true;
-        return true;
+        return $this->is_admin === true && $this->user_active === true;
     }
 }

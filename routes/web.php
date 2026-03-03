@@ -1,10 +1,12 @@
 <?php
 
+
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\CartController;
 
 Route::get('/', [ProductController::class, 'index'])->name('home');
 
@@ -21,8 +23,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
 });
 Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
     Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 });
+
+Route::middleware('auth')->group(function () {
+    Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+});
+
 
 require __DIR__.'/auth.php';

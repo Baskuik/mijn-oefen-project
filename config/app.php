@@ -162,8 +162,5 @@ return [
     App\Providers\AuthServiceProvider::class,
     App\Providers\EventServiceProvider::class,
     App\Providers\RouteServiceProvider::class,
-
-    // Voeg hier jouw Filament provider toe
-    App\Providers\FilamentServiceProvider::class,
 ],
 ];

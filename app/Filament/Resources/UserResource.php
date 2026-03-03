@@ -4,46 +4,225 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema; 
-use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\TextColumn;
 
-// Gebruik deze specifieke imports voor de acties:
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\BulkActionGroup;
+// Acties (v5)
+use Filament\Actions\BulkAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+
+// Form componenten blijven in Forms
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+
+// Resource & Schemas (v5)
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;   // <— JUISTE namespace voor Section in v5
+use Filament\Schemas\Schema;
+
+// Tabel onderdelen
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+
     protected static ?string $slug = 'users';
+
+    protected static ?string $navigationLabel = 'Gebruikers';
+
+    protected static ?string $modelLabel = 'Gebruiker';
+
+    protected static ?string $pluralModelLabel = 'Gebruikers';
+
+    public static function getNavigationIcon(): ?string
+    {
+        return 'heroicon-o-users';
+    }
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->components([
-            TextInput::make('name')->label('Naam')->required(),
-            TextInput::make('email')->label('E-mail')->email()->required(),
-        ]);
+        return $schema
+            ->components([
+                Section::make('Gebruikersinformatie')
+                    ->description('Beheer de basisinformatie van de gebruiker')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Naam')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+
+                        TextInput::make('email')
+                            ->label('E-mailadres')
+                            ->email()
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+
+                        TextInput::make('password')
+                            ->label('Wachtwoord')
+                            ->password()
+                            ->revealable()
+                            ->required(fn (string $context): bool => $context === 'create')
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->minLength(8)
+                            ->maxLength(255)
+                            ->helperText('Minimaal 8 tekens. Laat leeg om ongewijzigd te laten.')
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Status en Machtigingen')
+                    ->description('Bepaal de status en rol van deze gebruiker')
+                    ->schema([
+                        Toggle::make('user_active')
+                            ->label('Gebruiker Actief')
+                            ->helperText('Inactieve gebruikers kunnen niet meer inloggen')
+                            ->inline(false)
+                            ->default(true),
+
+                        Toggle::make('is_admin')
+                            ->label('Administrator')
+                            ->helperText('Administrators hebben volledige toegang tot het admin panel')
+                            ->inline(false),
+                    ])
+                    ->columns(2),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('Naam')->sortable()->searchable(),
-                TextColumn::make('email')->label('E-mail')->sortable()->searchable(),
+                IconColumn::make('user_active')
+                    ->label('Status')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger')
+                    ->sortable()
+                    ->tooltip(fn (User $record): string => $record->user_active ? 'Actief' : 'Inactief'),
+
+                TextColumn::make('name')
+                    ->label('Naam')
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold'),
+
+                TextColumn::make('email')
+                    ->label('E-mailadres')
+                    ->sortable()
+                    ->searchable()
+                    ->copyable()
+                    ->icon('heroicon-m-envelope'),
+
+                IconColumn::make('is_admin')
+                    ->label('Rol')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-shield-check')
+                    ->falseIcon('heroicon-o-user')
+                    ->trueColor('success')
+                    ->falseColor('gray')
+                    ->sortable()
+                    ->tooltip(fn (User $record): string => $record->is_admin ? 'Administrator' : 'Gebruiker'),
+
+                IconColumn::make('email_verified_at')
+                    ->label('E-mail Geverifieerd')
+                    ->boolean()
+                    ->sortable()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger')
+                    ->tooltip(fn (User $record): string => 
+                        $record->email_verified_at 
+                            ? 'Geverifieerd op ' . $record->email_verified_at->format('d-m-Y H:i')
+                            : 'Niet geverifieerd'
+                    ),
+
+                TextColumn::make('created_at')
+                    ->label('Aangemaakt')
+                    ->dateTime('d-m-Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
-            ->actions([
-                // We gebruiken de volledige naamruimte direct in de functie
-                \Filament\Tables\Actions\EditAction::make(),
+            ->filters([
+                SelectFilter::make('user_active')
+                    ->label('Status')
+                    ->options([
+                        '1' => 'Actief',
+                        '0' => 'Inactief',
+                    ])
+                    ->placeholder('Alle statussen'),
+
+                SelectFilter::make('is_admin')
+                    ->label('Rol')
+                    ->options([
+                        '1' => 'Administrator',
+                        '0' => 'Gebruiker',
+                    ])
+                    ->placeholder('Alle rollen'),
             ])
-            ->bulkActions([
-                // We groeperen ze niet, maar zetten ze er direct in
-                \Filament\Tables\Actions\DeleteBulkAction::make(),
-            ]);
+            ->recordActions([
+                EditAction::make()
+                    ->label('Bewerken'),
+                DeleteAction::make()
+                    ->label('Verwijderen')
+                    ->requiresConfirmation()
+                    ->modalHeading('Gebruiker permanent verwijderen?')
+                    ->modalDescription('Deze actie kan niet ongedaan worden gemaakt.')
+                    ->modalSubmitActionLabel('Ja, verwijderen'),
+            ])
+            ->groupedBulkActions([
+                BulkAction::make('activate')
+                    ->label('Activeren')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->action(function ($records) {
+                        $records->each(function ($record) {
+                            $record->update(['user_active' => true]);
+                        });
+                    })
+                    ->deselectRecordsAfterCompletion(),
+                    
+                BulkAction::make('deactivate')
+                    ->label('Deactiveren')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->action(function ($records) {
+                        $records->each(function ($record) {
+                            $record->update(['user_active' => false]);
+                        });
+                    })
+                    ->deselectRecordsAfterCompletion(),
+                    
+                BulkAction::make('delete')
+                    ->label('Permanent verwijderen')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Gebruikers permanent verwijderen?')
+                    ->modalDescription('Deze actie kan niet ongedaan worden gemaakt.')
+                    ->action(fn ($records) => $records->each->delete())
+                    ->deselectRecordsAfterCompletion(),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->paginated([25, 50, 100, 500])
+            ->poll('30s')
+            ->striped()
+            ->deferLoading();
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery();
     }
 
     public static function getPages(): array
@@ -51,6 +230,7 @@ class UserResource extends Resource
         return [
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
+            'view' => Pages\ViewUser::route('/{record}'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
