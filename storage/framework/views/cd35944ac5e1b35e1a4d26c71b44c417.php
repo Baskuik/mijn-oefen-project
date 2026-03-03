@@ -1,17 +1,15 @@
-<div class="inline-block w-full" 
-     x-data="{ justAdded: false }"
-     @reset-button-state.window="setTimeout(() => justAdded = false, 2000)">
+<div>
   <button
     type="button"
     wire:click="addToCart"
     wire:loading.attr="disabled"
-    x-bind:disabled="justAdded"
-    class="group/btn w-full relative inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-base transition-all duration-300 overflow-hidden disabled:cursor-not-allowed"
-    x-bind:class="justAdded ? 
+    wire:target="addToCart"
+    class="group/btn w-full relative inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-base transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-70"
+    :class="$wire.justAdded ? 
       'bg-emerald-600 text-white shadow-lg' : 
       'bg-slate-900 text-white hover:bg-slate-800 shadow-md hover:shadow-lg active:scale-95'"
   >
-    <!-- Loading Spinner (only shows while loading) -->
+    <!-- Loading Spinner -->
     <svg 
       wire:loading 
       wire:target="addToCart"
@@ -24,9 +22,9 @@
       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
     </svg>
 
-    <!-- Success Checkmark (only shows when added) -->
+    <!-- Success Checkmark -->
     <svg 
-      x-show="justAdded"
+      x-show="$wire.justAdded"
       x-transition:enter="transition ease-out duration-300"
       x-transition:enter-start="opacity-0 scale-0"
       x-transition:enter-end="opacity-100 scale-100"
@@ -40,11 +38,11 @@
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
     </svg>
 
-    <!-- Cart Icon (shows by default, hides when loading or success) -->
+    <!-- Cart Icon -->
     <svg 
       wire:loading.remove
       wire:target="addToCart"
-      x-show="!justAdded"
+      x-show="!$wire.justAdded"
       xmlns="http://www.w3.org/2000/svg" 
       class="h-5 w-5 transition-transform group-hover/btn:scale-110" 
       fill="none" 
@@ -55,9 +53,8 @@
     </svg>
     
     <!-- Button Text -->
-    <span wire:loading.remove wire:target="addToCart">
-      <span x-show="!justAdded">Toevoegen aan winkelwagen</span>
-      <span x-show="justAdded" x-cloak style="display: none;">Toegevoegd!</span>
+    <span wire:loading.remove wire:target="addToCart" x-text="$wire.justAdded ? 'Toegevoegd!' : 'Toevoegen aan winkelwagen'">
+      Toevoegen aan winkelwagen
     </span>
     <span wire:loading wire:target="addToCart">Toevoegen...</span>
   </button>
@@ -125,4 +122,4 @@
       </div>
     </div>
   <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-</div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/livewire/add-to-cart-button.blade.php ENDPATH**/ ?>
+</div>  <?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/livewire/add-to-cart-button.blade.php ENDPATH**/ ?>
