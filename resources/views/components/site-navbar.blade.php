@@ -5,27 +5,27 @@
     </a>
 
     <div class="flex items-center gap-4">
-      `@auth`
+      @auth
         <a href="{{ route('dashboard') }}" class="text-slate-700 hover:text-slate-900">Dashboard</a>
 
-        `@if` (auth()->user()->is_admin)
+        @if (auth()->user()->is_admin)
           <a href="{{ route('filament.admin.pages.dashboard') }}" class="text-slate-700 hover:text-slate-900">Admin</a>
-        `@endif`
+        @endif
 
         <form method="POST" action="{{ route('logout') }}">
-          `@csrf`
+          @csrf
           <button type="submit" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-900 text-white hover:bg-slate-800">
             Uitloggen
           </button>
         </form>
-      `@endauth`
+      @endauth
 
-      `@guest`
+      @guest
         <a href="{{ route('login') }}" class="text-slate-700 hover:text-slate-900">Inloggen</a>
         <a href="{{ route('register') }}" class="inline-flex items-center px-3 py-1.5 rounded-md bg-slate-900 text-white hover:bg-slate-800">
           Registreren
         </a>
-      `@endguest`
+      @endguest
     </div>
   </div>
 </nav>

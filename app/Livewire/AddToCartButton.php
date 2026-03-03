@@ -6,15 +6,15 @@ use Livewire\Component;
 
 class AddToCartButton extends Component
 {
-    public int|string $productId;
+    public $productId;
     public bool $showLoginModal = false;
 
-    public function mount(int|string $productId): void
+    public function mount($productId)
     {
-        $this->productId = $productId;
+        $this->productId = (int) $productId;
     }
 
-    public function addToCart(): void
+    public function addToCart()
     {
         if (! auth()->check()) {
             $this->showLoginModal = true;
