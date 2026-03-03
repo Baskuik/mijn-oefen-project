@@ -21,7 +21,12 @@ use App\Livewire\Cart;
 Route::get('/', [ProductController::class, 'index'])->name('home');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $orders = auth()->user()->orders()
+        ->with(['items.product'])
+        ->orderBy('created_at', 'desc')
+        ->get();
+    
+    return view('dashboard', compact('orders'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'admin'])->group(function () {
