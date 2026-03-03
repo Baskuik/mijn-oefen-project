@@ -29,16 +29,24 @@ foreach ($attributes->all() as $__key => $__value) {
 unset($__defined_vars, $__key, $__value); ?>
 
 <?php
-$alignmentClasses = match ($align) {
-    'left' => 'ltr:origin-top-left rtl:origin-top-right start-0',
-    'top' => 'origin-top',
-    default => 'ltr:origin-top-right rtl:origin-top-left end-0',
-};
+switch ($align) {
+    case 'left':
+        $alignmentClasses = 'ltr:origin-top-left rtl:origin-top-right start-0';
+        break;
+    case 'top':
+        $alignmentClasses = 'origin-top';
+        break;
+    case 'right':
+    default:
+        $alignmentClasses = 'ltr:origin-top-right rtl:origin-top-left end-0';
+        break;
+}
 
-$width = match ($width) {
-    '48' => 'w-48',
-    default => $width,
-};
+switch ($width) {
+    case '48':
+        $width = 'w-48';
+        break;
+}
 ?>
 
 <div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
@@ -62,5 +70,4 @@ $width = match ($width) {
 
         </div>
     </div>
-</div>
-<?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/dropdown.blade.php ENDPATH**/ ?>
+</div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/dropdown.blade.php ENDPATH**/ ?>

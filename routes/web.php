@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminUserController;
@@ -101,4 +102,9 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Account information routes
+    Route::get('account', [AccountController::class, 'index'])->name('account.index');
+    Route::patch('account/email', [AccountController::class, 'updateEmail'])->name('account.email.update');
+    Route::post('account/password-reset-email', [AccountController::class, 'sendPasswordResetEmail'])->name('account.password.email');
 });
