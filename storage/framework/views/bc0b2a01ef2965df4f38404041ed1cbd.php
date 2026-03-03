@@ -1,57 +1,32 @@
-<nav class="bg-white/80 backdrop-blur border-b border-slate-200 sticky top-0 z-40">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-    <a href="<?php echo e(route('home')); ?>" class="text-slate-800 font-semibold text-lg hover:text-slate-900">
-      🛍️ MijnShop
-    </a>
+<div class="bg-white shadow-sm border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo -->
+            <div class="flex-shrink-0">
+                <a href="<?php echo e(route('home')); ?>" class="text-2xl font-bold text-slate-900">
+                    MyShop
+                </a>
+            </div>
 
-    <div class="flex items-center gap-6">
-      <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
-        <?php
-$__split = function ($name, $params = []) {
-    return [$name, $params];
-};
-[$__name, $__params] = $__split('cart-counter', []);
+        <!-- Navigation Links -->
+        <nav class="flex space-x-8">
+            <a href="<?php echo e(route('home')); ?>" class="text-slate-700 hover:text-slate-900 font-medium">Products</a>
+        </nav>
 
-$__keyOuter = $__key ?? null;
+            <!-- Cart -->
+            <div class="flex items-center">
+                <a href="<?php echo e(route('cart')); ?>" class="relative text-slate-700 hover:text-slate-900">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('cart_count', 0) > 0): ?>
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            <?php echo e(session('cart_count', 0)); ?>
 
-$__key = null;
-$__componentSlots = [];
-
-$__key ??= \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::generateKey('lw-1230859747-0', $__key);
-
-$__html = app('livewire')->mount($__name, $__params, $__key, $__componentSlots);
-
-echo $__html;
-
-unset($__html);
-unset($__key);
-$__key = $__keyOuter;
-unset($__keyOuter);
-unset($__name);
-unset($__params);
-unset($__componentSlots);
-unset($__split);
-?>
-        <a href="<?php echo e(route('dashboard')); ?>" class="text-slate-700 hover:text-slate-900 font-medium">Dashboard</a>
-
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->is_admin): ?>
-          <a href="<?php echo e(route('filament.admin.pages.dashboard')); ?>" class="text-slate-700 hover:text-slate-900 font-medium">Admin</a>
-        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-
-        <form method="POST" action="<?php echo e(route('logout')); ?>">
-          <?php echo csrf_field(); ?>
-          <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-colors">
-            Uitloggen
-          </button>
-          </form>
-      <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-
-      <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>
-        <a href="<?php echo e(route('login')); ?>" class="text-slate-700 hover:text-slate-900 font-medium">Inloggen</a>
-        <a href="<?php echo e(route('register')); ?>" class="inline-flex items-center px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-colors">
-          Registreren
-        </a>
-      <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        </span>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </a>
+            </div>
+        </div>
     </div>
-  </div>
-</nav><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/site-navbar.blade.php ENDPATH**/ ?>
+</div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/site-navbar.blade.php ENDPATH**/ ?>
