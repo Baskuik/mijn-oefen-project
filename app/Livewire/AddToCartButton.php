@@ -9,6 +9,8 @@ class AddToCartButton extends Component
 {
     public $productId;
     public bool $showLoginModal = false;
+    public bool $isAdding = false;
+    public bool $justAdded = false;
 
     public function mount($productId)
     {
@@ -17,10 +19,14 @@ class AddToCartButton extends Component
 
     public function addToCart()
     {
+        // Start loading state
+        $this->isAdding = true;
+        
         // Debug logging
         logger()->info('AddToCart clicked!', ['product_id' => $this->productId, 'auth' => auth()->check()]);
         
         if (! auth()->check()) {
+            $this->isAdding = false;
             $this->showLoginModal = true;
             return;
         }
@@ -33,6 +39,7 @@ class AddToCartButton extends Component
         if (!$product) {
             logger()->error('Product not found', ['product_id' => $this->productId]);
             session()->flash('error', 'Product niet gevonden!');
+            $this->isAdding = false;
             return;
         }
         
@@ -62,10 +69,24 @@ class AddToCartButton extends Component
         session()->put('cart', $cart);
         logger()->info('Cart updated', ['cart' => $cart]);
         
+        // Simulate slight delay for better UX (optional, remove if you want instant feedback)
+        usleep(300000); // 0.3 second delay
+        
+        $this->isAdding = false;
+        $this->justAdded = true;
+        
         $this->dispatch('cart-updated');
         $this->dispatch('product-added-to-cart', name: $product->name);
         
         session()->flash('success', 'Product toegevoegd aan winkelwagen!');
+        
+        // Reset the success state after 2 seconds
+        $this->dispatch('reset-button-state')->self();
+    }
+    
+    public function resetButtonState()
+    {
+        $this->justAdded = false;
     }
 
     public function render()
