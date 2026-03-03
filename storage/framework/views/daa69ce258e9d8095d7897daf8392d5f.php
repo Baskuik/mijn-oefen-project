@@ -1,21 +1,22 @@
-<!doctype html>
-<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MijnShop - Premium Online Winkel</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MijnShop - Welkom</title>
   <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
   <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
 
 </head>
 
-<body class="antialiased bg-slate-50 text-slate-900">
+<body class="bg-slate-50">
   <?php echo $__env->make('components.site-navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
   
-  <section class="relative bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 overflow-hidden">
+  <section class="relative bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 overflow-hidden">
     <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii4xIi8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-indigo-600/20 to-purple-600/20"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
       <div class="text-center">
         <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
@@ -25,64 +26,59 @@
           Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="#producten" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-orange-600 font-bold text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 hover:scale-105 transition-all duration-300">
+          <a href="#producten" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-800 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
             Shop Nu
           </a>
-          <a href="#aanbiedingen" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/20 backdrop-blur-sm text-white font-bold text-lg rounded-full border-2 border-white/50 hover:bg-white/30 hover:scale-105 transition-all duration-300">
+          <a href="#aanbiedingen" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300">
             🔥 Bekijk Deals
           </a>
         </div>
       </div>
     </div>
-    <div class="absolute bottom-0 left-0 right-0">
-      <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f8fafc"/>
-      </svg>
-    </div>
   </section>
 
   
-  <section id="producten" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($categories && $categories->count() > 0): ?>
+  <section id="producten" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($categories->count() > 0): ?>
       <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($category->products->count() > 0): ?>
           <div class="mb-20">
             <div class="flex items-center mb-10">
-              <div class="flex-grow h-1 bg-gradient-to-r from-transparent via-orange-300 to-transparent"></div>
+              <div class="flex-grow h-0.5 bg-gradient-to-r from-transparent via-slate-300 to-transparent"></div>
               <h2 class="text-4xl font-bold text-slate-900 mx-8 relative">
                 <?php echo e($category->name); ?>
 
-                <span class="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"></span>
+                <span class="absolute -bottom-2 left-0 right-0 h-1 bg-slate-800 rounded-full"></span>
               </h2>
-              <div class="flex-grow h-1 bg-gradient-to-r from-transparent via-orange-300 to-transparent"></div>
+              <div class="flex-grow h-0.5 bg-gradient-to-r from-transparent via-slate-300 to-transparent"></div>
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $category->products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
-                <div class="group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border-2 border-transparent hover:border-orange-200 transform hover:-translate-y-3">
+                <div class="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 transform hover:-translate-y-2">
                   
                   <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->bonus_percentage): ?>
                     <div class="absolute top-4 right-4 z-10">
-                      <div class="bg-gradient-to-br from-red-500 to-pink-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-xl transform rotate-12 animate-pulse">
+                      <div class="bg-rose-600 text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg">
                         -<?php echo e($product->bonus_percentage); ?>% SALE
                       </div>
                     </div>
-                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                  <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                   
                   <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->image): ?>
-                    <div class="relative aspect-square bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
+                    <div class="relative aspect-square bg-slate-50 overflow-hidden">
                       <img src="<?php echo e(asset('storage/' . $product->image)); ?>" 
                            alt="<?php echo e($product->name); ?>"
-                           class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                      <div class="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                   <?php else: ?>
-                    <div class="aspect-square bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="aspect-square bg-slate-50 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
@@ -90,7 +86,7 @@
                   
                   <div class="p-6">
                     
-                    <h3 class="font-bold text-slate-900 text-xl mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-orange-600 transition-colors">
+                    <h3 class="font-semibold text-slate-900 text-lg mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-slate-700 transition-colors">
                       <?php echo e($product->name); ?>
 
                     </h3>
@@ -106,7 +102,7 @@
                     
                     <div class="mb-5">
                       <div class="flex items-baseline gap-2">
-                        <span class="text-4xl font-extrabold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+                        <span class="text-3xl font-bold text-slate-900">
                           €<?php echo e(number_format($product->price, 2, ',', '.')); ?>
 
                         </span>
@@ -142,9 +138,6 @@ unset($__componentSlots);
 unset($__split);
 ?>
                   </div>
-
-                  
-                  <div class="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-400/0 via-orange-400/0 to-red-400/0 group-hover:from-amber-400/10 group-hover:via-orange-400/10 group-hover:to-red-400/10 transition-all duration-500 pointer-events-none"></div>
                 </div>
               <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </div>
@@ -152,14 +145,14 @@ unset($__split);
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
       <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
     <?php else: ?>
-      <div class="text-center py-32 bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl shadow-inner border-2 border-dashed border-slate-300">
-        <div class="flex items-center justify-center w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 shadow-lg">
+      <div class="text-center py-32 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+        <div class="flex items-center justify-center w-24 h-24 mx-auto mb-8 rounded-full bg-slate-200">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
           </svg>
         </div>
-        <h3 class="text-3xl font-bold text-slate-900 mb-3">Geen producten beschikbaar</h3>
-        <p class="text-lg text-slate-600">Kom binnenkort terug voor geweldige nieuwe producten!</p>
+        <h3 class="text-2xl font-semibold text-slate-900 mb-3">Geen producten beschikbaar</h3>
+        <p class="text-slate-600">Kom binnenkort terug voor geweldige nieuwe producten!</p>
       </div>
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
   </section>
@@ -169,30 +162,30 @@ unset($__split);
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="text-center p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
-          <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-white mb-2">Gratis Verzending</h3>
+          <h3 class="text-lg font-semibold text-white mb-2">Gratis Verzending</h3>
           <p class="text-slate-300">Vanaf €50 bezorgen we gratis bij je thuis</p>
         </div>
         <div class="text-center p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
-          <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-white mb-2">Veilig Betalen</h3>
+          <h3 class="text-lg font-semibold text-white mb-2">Veilig Betalen</h3>
           <p class="text-slate-300">Beveiligd met Stripe & SSL encryptie</p>
         </div>
         <div class="text-center p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
-          <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div class="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-white mb-2">24/7 Support</h3>
+          <h3 class="text-lg font-semibold text-white mb-2">24/7 Support</h3>
           <p class="text-slate-300">Wij staan altijd voor je klaar</p>
         </div>
       </div>
@@ -209,17 +202,17 @@ unset($__split);
     x-transition:leave="transition ease-in duration-200"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
-    class="fixed bottom-8 right-8 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-5 rounded-2xl shadow-2xl z-50 max-w-md"
+    class="fixed bottom-8 right-8 bg-emerald-600 text-white px-6 py-4 rounded-xl shadow-xl z-50 max-w-md"
     style="display: none;">
-    <div class="flex items-center gap-4">
-      <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
         </svg>
       </div>
       <div>
-        <p class="font-bold text-lg" x-text="message"></p>
-        <p class="text-white/90 text-sm">Bekijk je <a href="<?php echo e(route('cart')); ?>" class="underline font-semibold">winkelwagen</a></p>
+        <p class="font-semibold" x-text="message"></p>
+        <p class="text-white/90 text-sm">Bekijk je <a href="<?php echo e(route('cart')); ?>" class="underline">winkelwagen</a></p>
       </div>
     </div>
   </div>
