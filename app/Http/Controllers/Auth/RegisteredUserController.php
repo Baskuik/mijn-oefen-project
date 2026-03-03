@@ -28,15 +28,17 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name'        => $validated['name'],
             'email'       => $validated['email'],
-            // In User model staat 'password' => 'hashed' cast, dus plain wordt veilig gehashed
             'password'    => $validated['password'],
             'is_admin'    => false,
             'user_active' => true,
         ]);
 
         event(new Registered($user));
-        Auth::login($user);
-
-        return redirect()->intended(route('dashboard'));
+        
+        // Don't log the user in - they must verify email first
+        // Auth::login($user); <- REMOVED
+        
+        // Redirect to email verification notice page
+        return redirect()->route('verification.notice');
     }
 }
