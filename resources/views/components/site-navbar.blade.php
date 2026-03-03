@@ -15,7 +15,7 @@
 
             <!-- Right Side: Conditional Display Based on Auth Status -->
             <div class="flex items-center space-x-4">
-                @guest
+              @guest
                     <!-- Register & Login Buttons (when logged out) -->
                     <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-md transition">
                         Register
@@ -59,13 +59,13 @@
                              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50"
                              style="display: none;">
                             
-                            <!-- Account Link (placeholder) -->
-                            <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                            <!-- Account Link -->
+                            <a href="{{ route('account.index') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
                                 Account
                             </a>
 
-                            <!-- Mijn bestellingen Link (placeholder) -->
-                            <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                            <!-- Mijn bestellingen Link -->
+                            <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
                                 Mijn bestellingen
                             </a>
 
