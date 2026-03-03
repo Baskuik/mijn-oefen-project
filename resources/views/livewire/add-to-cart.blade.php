@@ -1,7 +1,7 @@
 <div>
     {{-- Succes melding boven de knop --}}
     @if (session()->has('success'))
-        <div class="text-green-600 text-xs font-bold mb-2 animate-pulse">
+        <div class="text-green-600 dark:text-green-400 text-xs font-bold mb-2 animate-pulse">
             {{ session('success') }}!
         </div>
     @endif
@@ -9,11 +9,11 @@
     <button 
         wire:click="addToCart" 
         wire:loading.attr="disabled"
-        class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 rounded-xl transition flex justify-center items-center"
+        class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 disabled:bg-gray-400 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
     >
         {{-- Normale tekst zichtbaar als we NIET aan het laden zijn --}}
         <span wire:loading.remove wire:target="addToCart">
-            Buy Now
+            Toevoegen aan winkelwagen
         </span>
 
         {{-- Tekst en icoontje zichtbaar als we WEL aan het laden zijn --}}
