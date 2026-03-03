@@ -7,11 +7,11 @@ use Livewire\Attributes\On;
 
 class CartCounter extends Component
 {
-    // Deze functie luistert naar het 'cartUpdated' seintje van de knop
-    #[On('cartUpdated')] 
+    // Luister naar 'cart-updated' event (kebab-case)
+    #[On('cart-updated')] 
     public function updateCount()
     {
-        // Refresh de component
+        // Refresh de component automatisch
     }
 
     public function render()

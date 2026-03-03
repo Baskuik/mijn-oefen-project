@@ -29,8 +29,22 @@ class AddToCartButton extends Component
         
         if ($product) {
             if (isset($cart[$this->productId])) {
-                $cart[$this->productId]['quantity']++;
+                // Check of het oude formaat is (scalar/nummer) of nieuwe formaat (array)
+                if (is_array($cart[$this->productId])) {
+                    // Nieuwe formaat - gewoon quantity verhogen
+                    $cart[$this->productId]['quantity']++;
+                } else {
+                    // Oude formaat (scalar) - converteer naar nieuwe formaat
+                    $oldQuantity = (int) $cart[$this->productId];
+                    $cart[$this->productId] = [
+                        'name' => $product->name,
+                        'quantity' => $oldQuantity + 1,
+                        'price' => $product->price,
+                        'image' => $product->image,
+                    ];
+                }
             } else {
+                // Nieuw product - voeg toe in nieuwe formaat
                 $cart[$this->productId] = [
                     'name' => $product->name,
                     'quantity' => 1,
@@ -41,8 +55,6 @@ class AddToCartButton extends Component
             
             session()->put('cart', $cart);
             $this->dispatch('cart-updated');
-            
-            // Toast notificatie
             $this->dispatch('product-added-to-cart', name: $product->name);
         }
     }
