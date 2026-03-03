@@ -172,7 +172,7 @@
                     </div>
                     
                     {{-- Add to Cart Button --}}
-                    <livewire:add-to-cart-button :product-id="$product->id" :key="'cart-' . $product->id" />
+                    <livewire:add-to-cart :product-id="$product->id" :key="'cart-' . $product->id" />
                   </div>
                 </div>
               @endforeach

@@ -181,7 +181,7 @@
 $__split = function ($name, $params = []) {
     return [$name, $params];
 };
-[$__name, $__params] = $__split('add-to-cart-button', ['product-id' => $product->id]);
+[$__name, $__params] = $__split('add-to-cart', ['product-id' => $product->id]);
 
 $__keyOuter = $__key ?? null;
 
