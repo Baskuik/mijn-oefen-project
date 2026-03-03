@@ -40,6 +40,10 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        <x-dropdown-link :href="route('account.index')">
+                            {{ __('Account') }}
+                        </x-dropdown-link>
+
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
@@ -79,7 +83,7 @@
                 {{ __('Products') }}
             </x-responsive-nav-link>
 
-            @if(Auth::user()->is_admin)
+                @if(Auth::user()->is_admin)
                 <x-responsive-nav-link :href="url('/admin')" :active="request()->is('admin*')">
                     {{ __('Admin Dashboard') }}
                 </x-responsive-nav-link>
@@ -94,6 +98,10 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                <x-responsive-nav-link :href="route('account.index')">
+                    {{ __('Account') }}
+                </x-responsive-nav-link>
+
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
