@@ -4,7 +4,9 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Product;
+use Livewire\Attributes\Layout;
 
+#[Layout('layouts.shop')]
 class Cart extends Component
 {
     public function increaseQuantity($productId)
