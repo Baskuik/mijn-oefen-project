@@ -10,7 +10,7 @@
     In winkelwagen
   </button>
 
-  @if ($showLoginModal)
+  <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($showLoginModal): ?>
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" wire:click="$set('showLoginModal', false)"></div>
       <div class="relative mx-auto w-full max-w-md rounded-2xl bg-white shadow-2xl transform transition-all">
@@ -27,11 +27,11 @@
           </p>
           
           <div class="flex flex-col gap-3">
-            <a href="{{ route('login') }}"
+            <a href="<?php echo e(route('login')); ?>"
                class="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-gradient-to-r from-slate-900 to-slate-800 text-white font-semibold hover:from-slate-800 hover:to-slate-700 transition-all shadow-md hover:shadow-lg">
               Inloggen
             </a>
-            <a href="{{ route('register') }}"
+            <a href="<?php echo e(route('register')); ?>"
                class="inline-flex items-center justify-center px-5 py-3 rounded-lg border-2 border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-all">
               Registreren
             </a>
@@ -46,5 +46,5 @@
         </div>
       </div>
     </div>
-  @endif
-</div>
+  <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+</div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/livewire/add-to-cart-button.blade.php ENDPATH**/ ?>

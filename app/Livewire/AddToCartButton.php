@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use App\Models\Product;
 
 class AddToCartButton extends Component
 {
@@ -22,11 +23,28 @@ class AddToCartButton extends Component
         }
 
         $cart = session()->get('cart', []);
-        $cart[$this->productId] = ($cart[$this->productId] ?? 0) + 1;
-        session()->put('cart', $cart);
-
-        $this->dispatch('cart-updated');
-        session()->flash('status', 'Product toegevoegd aan je winkelwagen!');
+        
+        // Haal product op uit database
+        $product = Product::find($this->productId);
+        
+        if ($product) {
+            if (isset($cart[$this->productId])) {
+                $cart[$this->productId]['quantity']++;
+            } else {
+                $cart[$this->productId] = [
+                    'name' => $product->name,
+                    'quantity' => 1,
+                    'price' => $product->price,
+                    'image' => $product->image,
+                ];
+            }
+            
+            session()->put('cart', $cart);
+            $this->dispatch('cart-updated');
+            
+            // Toast notificatie
+            $this->dispatch('product-added-to-cart', name: $product->name);
+        }
     }
 
     public function render()
