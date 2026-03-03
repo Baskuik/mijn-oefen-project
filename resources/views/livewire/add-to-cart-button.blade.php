@@ -4,10 +4,8 @@
     wire:click="addToCart"
     wire:loading.attr="disabled"
     wire:target="addToCart"
-    class="group/btn w-full relative inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-base transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-70"
-    :class="$wire.justAdded ? 
-      'bg-emerald-600 text-white shadow-lg' : 
-      'bg-slate-900 text-white hover:bg-slate-800 shadow-md hover:shadow-lg active:scale-95'"
+    class="group/btn w-full relative inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg font-semibold text-base transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-70 bg-slate-900 text-white hover:bg-slate-800 shadow-md hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+    :class="{ '!bg-emerald-600 !shadow-lg': $wire.justAdded }"
   >
     <!-- Loading Spinner -->
     <svg 
@@ -122,4 +120,4 @@
       </div>
     </div>
   @endif
-</div>  
+</div>
