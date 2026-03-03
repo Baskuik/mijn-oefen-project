@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MijnShop - Welkom</title>
+  <title>Pokemon go webstore - Welkom</title>
   <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
   <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
 
@@ -14,39 +14,42 @@
   <?php echo $__env->make('components.site-navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
   
-  <section class="relative bg-slate-900 dark:bg-slate-950 overflow-hidden">
-    
-    <div class="absolute inset-0 w-full h-full overflow-hidden">
-      <video autoplay muted loop playsinline class="w-full h-full object-cover opacity-30 dark:opacity-20">
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-        <!-- Vervang bovenstaande URL met jouw Pokémon Go gameplay video -->
-      </video>
-      <div class="absolute inset-0 bg-gradient-to-br from-blue-600/40 via-indigo-600/40 to-purple-600/40"></div>
-      <div class="absolute inset-0 bg-slate-900/50 dark:bg-slate-950/70"></div>
-    </div>
-    
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
-      <div class="text-center">
-        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
-          Welkom bij <span class="inline-block transform hover:scale-105 transition-transform">MijnShop</span>
-        </h1>
-        <p class="text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-10 drop-shadow-lg">
-          Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="#producten" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-800 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            Shop Nu
-          </a>
-          <a href="#aanbiedingen" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300">
-            🔥 Bekijk Deals
-          </a>
-        </div>
+<section class="relative bg-slate-900 dark:bg-slate-950 overflow-hidden">
+  
+  <div class="absolute inset-0 w-full h-full overflow-hidden">
+    <iframe 
+      class="absolute top-1/2 left-1/2 w-[300%] h-[300%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-30 dark:opacity-20"
+      src="https://www.youtube.com/embed/gsuG1HiS-gA?autoplay=1&mute=1&loop=1&playlist=gsuG1HiS-gA&controls=0&showinfo=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-600/40 via-indigo-600/40 to-purple-600/40"></div>
+    <div class="absolute inset-0 bg-slate-900/50 dark:bg-slate-950/70"></div>
+  </div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+    <div class="text-center">
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
+        <span class="inline-block transform hover:scale-105 transition-transform">Pokemon go webshop</span>
+      </h1>
+      <p class="text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-10 drop-shadow-lg">
+        The best place to buy Pokécoins and in-game items with a bonus!
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#producten" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-800 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          Shop Nu
+        </a>
+        <a href="#aanbiedingen" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-lg border border-white/30 hover:bg-white/20 transition-all duration-300">
+          🔥 Bekijk Deals
+        </a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
   
   <section id="producten" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16" 
