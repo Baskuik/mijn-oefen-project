@@ -34,7 +34,6 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      /* Keep 16:9 and always fill the container */
       width: 177.78vh;
       height: 56.25vw;
       min-width: 100%;
@@ -94,6 +93,18 @@
       opacity: 1;
       transform: translateY(0);
       pointer-events: auto;
+    }
+
+    /* ── Category filter pills ── */
+    .filter-pill {
+      transition: background-color 0.2s ease, color 0.2s ease,
+                  border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .filter-pill.active {
+      background-color: #1e293b;
+      color: #ffffff;
+      border-color: #1e293b;
+      box-shadow: 0 4px 14px -4px rgba(0,0,0,0.4);
     }
   </style>
 </head>
@@ -156,10 +167,75 @@
 
   {{-- ── Products Section ── --}}
   <section id="producten" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
     @if($categories->count() > 0)
+
+      {{-- ── Search + Category Filter Bar ── --}}
+      <div class="mb-12 reveal">
+
+        {{-- Search input --}}
+        <div class="relative max-w-xl mx-auto mb-6">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            id="product-search"
+            type="text"
+            placeholder="Zoek producten..."
+            autocomplete="off"
+            class="w-full pl-12 pr-12 py-3.5 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent text-slate-800 placeholder-slate-400 transition-all duration-200"
+          >
+          <button
+            id="search-clear"
+            class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 transition-colors hidden"
+            aria-label="Zoekopdracht wissen"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {{-- Category filter pills --}}
+        <div class="flex flex-wrap justify-center gap-2">
+          <button
+            class="filter-pill active px-5 py-2 rounded-full text-sm font-medium border bg-slate-800 text-white border-slate-800"
+            data-filter="all"
+            onclick="filterByCategory(this, 'all')"
+          >
+            Alle categorieën
+          </button>
+          @foreach($categories as $cat)
+            @if($cat->products->count() > 0)
+              <button
+                class="filter-pill px-5 py-2 rounded-full text-sm font-medium border bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:bg-slate-50"
+                data-filter="{{ $cat->slug }}"
+                onclick="filterByCategory(this, '{{ $cat->slug }}')"
+              >
+                {{ $cat->name }}
+              </button>
+            @endif
+          @endforeach
+        </div>
+      </div>
+
+      {{-- No results message --}}
+      <div id="no-results" class="hidden text-center py-24">
+        <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-slate-700 mb-2">Geen producten gevonden</h3>
+        <p class="text-slate-500">Probeer een andere zoekterm of categorie.</p>
+      </div>
+
+      {{-- Category sections --}}
       @foreach($categories as $category)
         @if($category->products->count() > 0)
-          <div class="mb-20">
+          <div class="category-section mb-20" data-category="{{ $category->slug }}">
 
             {{-- Category header --}}
             <div class="flex items-center mb-10 reveal">
@@ -174,7 +250,12 @@
             {{-- Product grid --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               @foreach($category->products as $product)
-                <div class="reveal reveal-delay-{{ ($loop->index % 4) + 1 }} group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 transform hover:-translate-y-2">
+                <div
+                  class="product-card reveal reveal-delay-{{ ($loop->index % 4) + 1 }} group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 transform hover:-translate-y-2"
+                  data-product-name="{{ strtolower($product->name) }}"
+                  data-product-description="{{ strtolower($product->description ?? '') }}"
+                  data-product-category="{{ $category->slug }}"
+                >
 
                   {{-- Sale Badge --}}
                   @if($product->bonus_percentage)
@@ -202,6 +283,7 @@
                   @endif
 
                   <div class="p-6">
+
                     {{-- Product Title --}}
                     <h3 class="font-semibold text-slate-900 text-lg mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-slate-700 transition-colors">
                       {{ $product->name }}
@@ -233,6 +315,7 @@
           </div>
         @endif
       @endforeach
+
     @else
       <div class="text-center py-32 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
         <div class="flex items-center justify-center w-24 h-24 mx-auto mb-8 rounded-full bg-slate-200">
@@ -320,9 +403,9 @@
     </svg>
   </button>
 
-  {{-- ── Scroll reveal + scroll-to-top JS ── --}}
+  {{-- ── JS: Scroll reveal + Scroll-to-top + Search/Filter ── --}}
   <script>
-    // Scroll reveal
+    // ── Scroll reveal ──
     (function () {
       var els = document.querySelectorAll('.reveal');
       var observer = new IntersectionObserver(function (entries) {
@@ -333,17 +416,83 @@
           }
         });
       }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-
       els.forEach(function (el) { observer.observe(el); });
     })();
 
-    // Scroll-to-top button visibility
+    // ── Scroll-to-top button visibility ──
     (function () {
       var btn = document.getElementById('scroll-top-btn');
       window.addEventListener('scroll', function () {
         btn.classList.toggle('visible', window.scrollY > 350);
       }, { passive: true });
     })();
+
+    // ── Search + Category filter ──
+    var activeCategory = 'all';
+
+    function runFilter() {
+      var query   = document.getElementById('product-search').value.toLowerCase().trim();
+      var cards   = document.querySelectorAll('.product-card');
+      var sections = document.querySelectorAll('.category-section');
+      var totalVisible = 0;
+
+      // Show / hide individual product cards
+      cards.forEach(function (card) {
+        var name  = card.dataset.productName        || '';
+        var desc  = card.dataset.productDescription || '';
+        var cat   = card.dataset.productCategory    || '';
+
+        var matchSearch   = !query || name.includes(query) || desc.includes(query);
+        var matchCategory = activeCategory === 'all' || cat === activeCategory;
+
+        if (matchSearch && matchCategory) {
+          card.style.display = '';
+          totalVisible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Hide entire category section when all its cards are hidden
+      sections.forEach(function (section) {
+        var anyVisible = Array.from(section.querySelectorAll('.product-card'))
+          .some(function (c) { return c.style.display !== 'none'; });
+        section.style.display = anyVisible ? '' : 'none';
+      });
+
+      // Show / hide "no results" message
+      document.getElementById('no-results').classList.toggle('hidden', totalVisible > 0);
+
+      // Show / hide the clear (✕) button
+      document.getElementById('search-clear').classList.toggle('hidden', !query);
+    }
+
+    function filterByCategory(btn, slug) {
+      activeCategory = slug;
+
+      // Update pill styles
+      document.querySelectorAll('.filter-pill').forEach(function (b) {
+        b.classList.remove('active', 'bg-slate-800', 'text-white', 'border-slate-800');
+        b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+      });
+      btn.classList.add('active', 'bg-slate-800', 'text-white', 'border-slate-800');
+      btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+
+      runFilter();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var searchInput = document.getElementById('product-search');
+      var clearBtn    = document.getElementById('search-clear');
+
+      searchInput.addEventListener('input', runFilter);
+
+      clearBtn.addEventListener('click', function () {
+        searchInput.value = '';
+        runFilter();
+        searchInput.focus();
+      });
+    });
   </script>
 
   @livewireScripts
