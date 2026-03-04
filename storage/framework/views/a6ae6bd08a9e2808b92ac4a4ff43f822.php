@@ -17,17 +17,7 @@
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
             <?php echo $__env->make('components.site-navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-
-            <!-- Page Heading -->
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($header)): ?>
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        <?php echo e($header); ?>
-
-                    </div>
-                </header>
-            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-
+            
             <!-- Page Content -->
             <main>
                 <?php echo e($slot); ?>
@@ -35,4 +25,4 @@
             </main>
         </div>
     </body>
-</html><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/layouts/app.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/layouts/shop.blade.php ENDPATH**/ ?>

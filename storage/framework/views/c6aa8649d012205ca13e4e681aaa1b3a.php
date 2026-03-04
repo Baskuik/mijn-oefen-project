@@ -1,9 +1,9 @@
 <div>
-    @if (session()->has('success'))
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session()->has('success')): ?>
         <div class="text-green-600 dark:text-green-400 text-xs font-bold mb-2 animate-pulse">
-            {{ session('success') }}!
+            <?php echo e(session('success')); ?>!
         </div>
-    @endif
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <button
         type="button"
@@ -23,4 +23,4 @@
             Bezig...
         </span>
     </button>
-</div>
+</div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/livewire/add-to-cart.blade.php ENDPATH**/ ?>
