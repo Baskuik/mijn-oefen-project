@@ -17,6 +17,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserOrderController;
+use App\Http\Controllers\AccountController;
 use App\Livewire\Cart;
 
 Route::get('/', [ProductController::class, 'index'])->name('home');
@@ -100,8 +101,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Orders overview
-Route::get('orders', [UserOrderController::class, 'index'])->name('orders.index');
-// Custom account page
-Route::get('account', [App\Http\Controllers\AccountController::class, 'show'])->name('account.index');
-Route::patch('account/email', [App\Http\Controllers\AccountController::class, 'updateEmail'])->name('account.email.update');
+    Route::get('account', [AccountController::class, 'show'])->name('account.index');
+    Route::patch('account/email', [AccountController::class, 'updateEmail'])->name('account.email.update');
+
+    // Orders overview
+    Route::get('orders', [UserOrderController::class, 'index'])->name('orders.index');
 });

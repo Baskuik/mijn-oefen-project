@@ -3,26 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Redirect;
 
 class AccountController extends Controller
 {
     public function show(Request $request)
     {
-        return view('account.index', [
-            'user' => $request->user(),
-        ]);
+        return view('account.index', ['user' => $request->user()]);
     }
 
     public function updateEmail(Request $request)
     {
         $request->validate([
             'email' => [
-                'required',
-                'string',
-                'email',
-                'max:255',
+                'required','string','email','max:255',
                 Rule::unique('users')->ignore($request->user()->id),
             ],
         ]);
