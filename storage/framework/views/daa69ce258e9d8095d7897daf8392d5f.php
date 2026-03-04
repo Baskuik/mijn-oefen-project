@@ -24,6 +24,9 @@
     .reveal-delay-3 { transition-delay: 0.25s; }
     .reveal-delay-4 { transition-delay: 0.35s; }
 
+    /* Reset stagger delay on exit so cards hide instantly without lag */ /* ← ADDED */
+    .reveal:not(.visible) { transition-delay: 0s !important; }           /* ← ADDED */
+
     /* ── YouTube video hero ── */
     .hero-video-wrapper {
       position: absolute;
@@ -436,14 +439,16 @@ unset($__split);
 
   
   <script>
-    // ── Scroll reveal ──
+    // ── Scroll reveal (repeats every time you scroll in/out) ──  // ← CHANGED
     (function () {
       var els = document.querySelectorAll('.reveal');
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
+            // observer.unobserve() intentionally removed so animation replays  // ← CHANGED
+          } else {
+            entry.target.classList.remove('visible');  // ← CHANGED
           }
         });
       }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
@@ -462,12 +467,11 @@ unset($__split);
     var activeCategory = 'all';
 
     function runFilter() {
-      var query   = document.getElementById('product-search').value.toLowerCase().trim();
-      var cards   = document.querySelectorAll('.product-card');
+      var query    = document.getElementById('product-search').value.toLowerCase().trim();
+      var cards    = document.querySelectorAll('.product-card');
       var sections = document.querySelectorAll('.category-section');
       var totalVisible = 0;
 
-      // Show / hide individual product cards
       cards.forEach(function (card) {
         var name  = card.dataset.productName        || '';
         var desc  = card.dataset.productDescription || '';
@@ -484,24 +488,19 @@ unset($__split);
         }
       });
 
-      // Hide entire category section when all its cards are hidden
       sections.forEach(function (section) {
         var anyVisible = Array.from(section.querySelectorAll('.product-card'))
           .some(function (c) { return c.style.display !== 'none'; });
         section.style.display = anyVisible ? '' : 'none';
       });
 
-      // Show / hide "no results" message
       document.getElementById('no-results').classList.toggle('hidden', totalVisible > 0);
-
-      // Show / hide the clear (✕) button
       document.getElementById('search-clear').classList.toggle('hidden', !query);
     }
 
     function filterByCategory(btn, slug) {
       activeCategory = slug;
 
-      // Update pill styles
       document.querySelectorAll('.filter-pill').forEach(function (b) {
         b.classList.remove('active', 'bg-slate-800', 'text-white', 'border-slate-800');
         b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
