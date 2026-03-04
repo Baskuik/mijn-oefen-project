@@ -6,17 +6,16 @@
         </div>
     @endif
 
-    <button 
-        wire:click="addToCart" 
+    <button
+        type="button"
+        wire:click="addToCart"
         wire:loading.attr="disabled"
         class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 disabled:bg-gray-400 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
     >
-        {{-- Normale tekst zichtbaar als we NIET aan het laden zijn --}}
         <span wire:loading.remove wire:target="addToCart">
             Toevoegen aan winkelwagen
         </span>
 
-        {{-- Tekst en icoontje zichtbaar als we WEL aan het laden zijn --}}
         <span wire:loading wire:target="addToCart" class="flex items-center">
             <svg class="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

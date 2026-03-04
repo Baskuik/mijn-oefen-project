@@ -7,47 +7,60 @@ use App\Models\Product;
 
 class AddToCart extends Component
 {
-    public $productId;
+    public int $productId;
 
-    public function addToCart()
+    public function mount(int $productId): void
+    {
+        // Ensure the ID is available before any action
+        $this->productId = $productId;
+    }
+
+    public function addToCart(): void
     {
         $cart = session()->get('cart', []);
 
-        // ✅ FIX: Haal het product ALTIJD op, vóór de if/else check
+        // Always fetch the product first
         $product = Product::find($this->productId);
-
-        if (!$product) {
-            return; // Product bestaat niet, stop hier
+        if (! $product) {
+            // No product found; bail early
+            return;
         }
 
-        // Als het product al in het mandje zit, doe er +1 bij
+        // Normalize and increment quantity
         if (isset($cart[$this->productId])) {
-            $cart[$this->productId]['quantity']++;
+            if (is_array($cart[$this->productId])) {
+                $cart[$this->productId]['quantity'] = ($cart[$this->productId]['quantity'] ?? 0) + 1;
+            } else {
+                // Legacy integer format -> convert to array
+                $oldQty = (int) $cart[$this->productId];
+                $cart[$this->productId] = [
+                    'name'     => $product->name,
+                    'quantity' => $oldQty + 1,
+                    'price'    => $product->price,
+                    'image'    => $product->image,
+                ];
+            }
         } else {
-            // Voeg nieuw product toe aan het mandje
             $cart[$this->productId] = [
-                "name"     => $product->name,
-                "quantity" => 1,
-                "price"    => $product->price,
-                "image"    => $product->image,
+                'name'     => $product->name,
+                'quantity' => 1,
+                'price'    => $product->price,
+                'image'    => $product->image,
             ];
         }
 
-        // Sla het nieuwe mandje op in de sessie
         session()->put('cart', $cart);
 
-        // Update cart count voor de navbar badge
+        // Recompute cart_count for convenience (also used server-side in some places)
         $totalItems = 0;
         foreach ($cart as $item) {
-            $totalItems += $item['quantity'];
+            $totalItems += is_array($item) ? (int) ($item['quantity'] ?? 0) : (int) $item;
         }
         session()->put('cart_count', $totalItems);
 
-        // Stuur events voor toast notificatie en cart teller
+        // Notify listeners/UI
         $this->dispatch('cart-updated');
         $this->dispatch('product-added-to-cart', name: $product->name);
-
-        // Toon een tijdelijke succesmelding
         session()->flash('success', 'Toegevoegd!');
     }
 
