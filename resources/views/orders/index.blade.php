@@ -30,7 +30,6 @@
                     <h1 class="text-3xl font-extrabold text-white mb-1">Mijn Bestellingen</h1>
                     <p class="text-slate-400 text-sm">Een overzicht van al je eerdere aankopen.</p>
                 </div>
-                {{-- Stats chip --}}
                 <div class="flex items-center gap-3">
                     <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl px-5 py-4 text-center">
                         <p class="text-3xl font-extrabold text-white">{{ $orders->count() }}</p>
@@ -51,7 +50,6 @@
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 pb-16">
 
         @if($orders->isEmpty())
-            {{-- Empty state --}}
             <div class="bg-white rounded-2xl shadow-md border border-slate-200 text-center py-20 px-6">
                 <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +91,6 @@
                         };
                     @endphp
 
-                    {{-- Collapsible order card --}}
                     <div x-data="{ open: {{ $loop->first ? 'true' : 'false' }} }"
                          class="order-card bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden"
                          style="animation-delay: {{ $loop->index * 0.07 }}s;">
@@ -102,7 +99,6 @@
                         <button @click="open = !open"
                                 class="w-full text-left flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-5 hover:bg-slate-50 transition-colors duration-150 focus:outline-none">
                             <div class="flex items-center gap-5">
-                                {{-- Order number icon --}}
                                 <div class="w-11 h-11 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -125,21 +121,16 @@
                             </div>
 
                             <div class="flex items-center gap-4">
-                                {{-- Status badge --}}
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full border {{ $statusColor }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="{{ $statusIcon }}" />
                                     </svg>
                                     {{ $statusLabel }}
                                 </span>
-
-                                {{-- Total --}}
                                 <div class="text-right">
                                     <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Totaal</p>
                                     <p class="font-extrabold text-slate-900 text-lg">€{{ number_format($order->total_price, 2, ',', '.') }}</p>
                                 </div>
-
-                                {{-- Chevron --}}
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                      class="h-5 w-5 text-slate-400 transition-transform duration-300 flex-shrink-0"
                                      :class="open ? 'rotate-180' : ''"
@@ -163,12 +154,16 @@
                                 @foreach($order->items as $item)
                                     <div class="flex items-center justify-between px-6 py-4 gap-4 hover:bg-slate-50/60 transition-colors">
                                         <div class="flex items-center gap-4 min-w-0">
-                                            {{-- Product colour swatch placeholder --}}
-                                            <div class="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center flex-shrink-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                                </svg>
-                                            </div>
+
+                                            {{-- Product thumbnail: echte foto of leeg --}}
+                                            @if($item->product?->image)
+                                                <img src="{{ asset('storage/' . $item->product->image) }}"
+                                                     alt="{{ $item->product->name }}"
+                                                     class="w-14 h-14 rounded-xl object-cover flex-shrink-0 border border-slate-100 shadow-sm">
+                                            @else
+                                                <div class="w-14 h-14 flex-shrink-0"></div>
+                                            @endif
+
                                             <div class="min-w-0">
                                                 <p class="text-sm font-semibold text-slate-800 truncate">
                                                     {{ $item->product?->name ?? 'Product #' . $item->product_id }}
@@ -189,7 +184,6 @@
                                 @endforeach
                             </div>
 
-                            {{-- Order footer --}}
                             <div class="flex items-center justify-between px-6 py-4 bg-slate-50 border-t border-slate-100">
                                 <p class="text-xs text-slate-400">Besteld op {{ $order->created_at->format('d F Y \o\m H:i') }}</p>
                                 <div class="flex items-center gap-2">
@@ -203,7 +197,6 @@
                 @endforeach
             </div>
 
-            {{-- Back link --}}
             <div class="mt-8 text-center">
                 <a href="{{ route('home') }}" class="text-sm text-slate-400 hover:text-slate-700 transition-colors">
                     ← Terug naar de shop
