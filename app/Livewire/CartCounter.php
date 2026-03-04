@@ -7,11 +7,10 @@ use Livewire\Attributes\On;
 
 class CartCounter extends Component
 {
-    // Listen to the event from AddToCart
     #[On('cart-updated')]
     public function updateCount()
     {
-        // No state needed; Livewire re-renders after handling an action
+        // Re-render to update count
     }
 
     public function render()

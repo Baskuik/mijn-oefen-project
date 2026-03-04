@@ -11,7 +11,6 @@ class AddToCart extends Component
 
     public function mount(int $productId): void
     {
-        // Ensure the ID is available before any action
         $this->productId = $productId;
     }
 
@@ -19,19 +18,15 @@ class AddToCart extends Component
     {
         $cart = session()->get('cart', []);
 
-        // Always fetch the product first
         $product = Product::find($this->productId);
         if (! $product) {
-            // No product found; bail early
             return;
         }
 
-        // Normalize and increment quantity
         if (isset($cart[$this->productId])) {
             if (is_array($cart[$this->productId])) {
                 $cart[$this->productId]['quantity'] = ($cart[$this->productId]['quantity'] ?? 0) + 1;
             } else {
-                // Legacy integer format -> convert to array
                 $oldQty = (int) $cart[$this->productId];
                 $cart[$this->productId] = [
                     'name'     => $product->name,
@@ -51,14 +46,12 @@ class AddToCart extends Component
 
         session()->put('cart', $cart);
 
-        // Recompute cart_count for convenience (also used server-side in some places)
         $totalItems = 0;
         foreach ($cart as $item) {
             $totalItems += is_array($item) ? (int) ($item['quantity'] ?? 0) : (int) $item;
         }
         session()->put('cart_count', $totalItems);
 
-        // Notify listeners/UI
         $this->dispatch('cart-updated');
         $this->dispatch('product-added-to-cart', name: $product->name);
         session()->flash('success', 'Toegevoegd!');
