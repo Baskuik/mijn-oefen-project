@@ -8,28 +8,67 @@
     <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
 
     <style>
-        .password-blur {
-            filter: blur(4px);
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .card-animate {
+            opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        .card-animate:nth-child(1) { animation-delay: 0.05s; }
+        .card-animate:nth-child(2) { animation-delay: 0.15s; }
+        .card-animate:nth-child(3) { animation-delay: 0.25s; }
+
+        .password-dots {
+            letter-spacing: 0.2em;
+            font-size: 1.4rem;
+            color: #94a3b8;
+            line-height: 1;
             user-select: none;
-            pointer-events: none;
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-100 min-h-screen">
 
     <?php echo $__env->make('components.site-navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 pt-12 pb-24">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 border-2 border-white/20 text-white text-3xl font-bold mb-4 shadow-xl backdrop-blur-sm select-none">
+                <?php echo e(strtoupper(substr(Auth::user()->name, 0, 1))); ?>
 
-        
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-slate-900">Mijn Account</h1>
-            <p class="text-slate-500 mt-1">Beheer je e-mailadres en wachtwoord.</p>
+            </div>
+            <h1 class="text-3xl font-extrabold text-white mb-1"><?php echo e(Auth::user()->name); ?></h1>
+            <p class="text-slate-300 text-sm"><?php echo e($user->email); ?></p>
+            <div class="mt-4 flex items-center justify-center gap-4 text-sm">
+                <a href="<?php echo e(route('orders.index')); ?>"
+                   class="inline-flex items-center gap-1.5 text-indigo-300 hover:text-white transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Mijn Bestellingen
+                </a>
+                <span class="text-white/20">|</span>
+                <a href="<?php echo e(route('home')); ?>"
+                   class="inline-flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Terug naar shop
+                </a>
+            </div>
         </div>
+    </div>
+
+    
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 pb-16">
 
         
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('status') === 'email-updated'): ?>
-            <div class="mb-6 flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-4 rounded-xl">
+            <div class="mb-4 flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-4 rounded-xl shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
@@ -38,7 +77,7 @@
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('status') === 'password-updated'): ?>
-            <div class="mb-6 flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-4 rounded-xl">
+            <div class="mb-4 flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-4 rounded-xl shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
@@ -47,65 +86,65 @@
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         
-        <div x-data="{
-                showConfirm: false,
-                showEmailForm: false,
-                newEmail: ''
-             }"
-             class="bg-white rounded-2xl border border-slate-200 shadow-sm mb-6 overflow-hidden">
+        <div x-data="{ showConfirm: false, showEmailForm: false, newEmail: '' }"
+             class="card-animate bg-white rounded-2xl shadow-md border border-slate-200 mb-5 overflow-hidden">
 
-            <div class="px-6 py-5 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-9 h-9 bg-indigo-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            
+            <div class="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-indigo-50 to-slate-50 border-b border-slate-100">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                 </div>
-                <h2 class="text-lg font-semibold text-slate-900">E-mailadres</h2>
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">E-mailadres</h2>
+                    <p class="text-xs text-slate-400">Beheer je inlogadres</p>
+                </div>
             </div>
 
-            <div class="px-6 py-5">
-                
-                <div class="mb-4">
-                    <p class="text-xs text-slate-400 uppercase tracking-wide font-medium mb-1">Huidig e-mailadres</p>
-                    <p class="text-slate-800 font-medium text-base"><?php echo e($user->email); ?></p>
-                </div>
+            <div class="px-6 py-6">
 
                 
-                <div class="mb-5">
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->email_verified_at): ?>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            E-mail geverifieerd
-                        </span>
-                    <?php else: ?>
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-medium rounded-full">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-0.5">Huidig e-mailadres</p>
+                        <p class="text-slate-800 font-semibold"><?php echo e($user->email); ?></p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->email_verified_at): ?>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 border border-emerald-200 text-emerald-700 text-xs font-bold rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                                 </svg>
-                                E-mail niet geverifieerd
+                                Geverifieerd
                             </span>
-                            
-                            <form method="POST" action="<?php echo e(route('verification.send')); ?>">
-                                <?php echo csrf_field(); ?>
-                                <button type="submit" class="text-sm text-indigo-600 hover:text-indigo-800 underline underline-offset-2 transition-colors">
-                                    Stuur verificatie e-mail opnieuw
-                                </button>
-                            </form>
-                        </div>
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('status') === 'verification-link-sent'): ?>
-                            <p class="mt-2 text-sm text-emerald-600 font-medium">Verificatie e-mail verstuurd!</p>
+                        <?php else: ?>
+                            <div class="flex flex-col gap-2 items-start sm:items-end">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 border border-amber-200 text-amber-700 text-xs font-bold rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    Niet geverifieerd
+                                </span>
+                                <form method="POST" action="<?php echo e(route('verification.send')); ?>">
+                                    <?php echo csrf_field(); ?>
+                                    <button type="submit" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline underline-offset-2 transition-colors">
+                                        Verificatie opnieuw sturen →
+                                    </button>
+                                </form>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('status') === 'verification-link-sent'): ?>
+                                    <p class="text-xs text-emerald-600 font-medium">Verstuurd!</p>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            </div>
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
                 </div>
 
                 
                 <button
                     @click="showConfirm = true"
                     x-show="!showEmailForm"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-800 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition-colors duration-200"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 active:scale-95 transition-all duration-200 shadow-sm"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -114,53 +153,40 @@
                 </button>
 
                 
-                <div x-show="showEmailForm" x-transition>
-                    <form method="POST" action="<?php echo e(route('account.email.update')); ?>" class="mt-2 space-y-4">
+                <div x-show="showEmailForm"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0">
+                    <form method="POST" action="<?php echo e(route('account.email.update')); ?>" class="mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100 space-y-4">
                         <?php echo csrf_field(); ?>
                         <?php echo method_field('PATCH'); ?>
-
                         <div>
-                            <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">
-                                Nieuw e-mailadres
-                            </label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                required
-                                autofocus
-                                autocomplete="email"
-                                x-model="newEmail"
-                                placeholder="<?php echo e($user->email); ?>"
-                                class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent transition-all duration-200 text-sm"
-                            >
+                            <label for="email" class="block text-sm font-semibold text-slate-700 mb-1.5">Nieuw e-mailadres</label>
+                            <input id="email" name="email" type="email" required autofocus autocomplete="email"
+                                   x-model="newEmail"
+                                   placeholder="<?php echo e($user->email); ?>"
+                                   class="w-full px-4 py-2.5 bg-white border border-indigo-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm shadow-sm transition-all duration-200">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                <p class="mt-1.5 text-sm text-red-600"><?php echo e($message); ?></p>
+                                <p class="mt-1.5 text-xs text-red-600 font-medium"><?php echo e($message); ?></p>
                             <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
-
                         <div class="flex items-center gap-3">
-                            <button
-                                type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-800 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition-colors duration-200"
-                            >
+                            <button type="submit"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 active:scale-95 transition-all duration-200 shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                                 Opslaan
                             </button>
-                            <button
-                                type="button"
-                                @click="showEmailForm = false; newEmail = ''"
-                                class="px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-                            >
+                            <button type="button" @click="showEmailForm = false; newEmail = ''"
+                                    class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
                                 Annuleren
                             </button>
                         </div>
@@ -169,94 +195,85 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             </div>
 
             
-            <div
-                x-show="showConfirm"
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100"
-                x-transition:leave="transition ease-in duration-150"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
-                style="display: none;"
-            >
-                <div
-                    x-show="showConfirm"
-                    x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0 scale-95"
-                    x-transition:enter-end="opacity-100 scale-100"
-                    x-transition:leave="transition ease-in duration-150"
-                    x-transition:leave-start="opacity-100 scale-100"
-                    x-transition:leave-end="opacity-0 scale-95"
-                    @click.outside="showConfirm = false"
-                    class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8"
-                >
-                    <div class="flex items-center justify-center w-14 h-14 bg-amber-50 rounded-full mx-auto mb-5">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div x-show="showConfirm"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+                 style="display: none;">
+                <div x-show="showConfirm"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     @click.outside="showConfirm = false"
+                     class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8 text-center">
+                    <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-900 text-center mb-3">E-mailadres wijzigen?</h3>
-                    <p class="text-slate-500 text-center text-sm leading-relaxed mb-8">
-                        Weet je zeker dat je je e-mailadres wilt wijzigen?<br>
-                        Je moet je nieuwe e-mailadres opnieuw verifiëren.
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">E-mailadres wijzigen?</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-7">
+                        Weet je het zeker? Je nieuwe e-mailadres moet opnieuw worden geverifieerd.
                     </p>
                     <div class="flex gap-3">
-                        <button
-                            @click="showConfirm = false"
-                            class="flex-1 px-4 py-2.5 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors duration-200"
-                        >
+                        <button @click="showConfirm = false"
+                                class="flex-1 px-4 py-2.5 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors duration-200">
                             Annuleren
                         </button>
-                        <button
-                            @click="showConfirm = false; showEmailForm = true"
-                            class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors duration-200"
-                        >
+                        <button @click="showConfirm = false; showEmailForm = true"
+                                class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors duration-200">
                             Ja, wijzigen
                         </button>
                     </div>
                 </div>
             </div>
-
         </div>
 
         
-        <div x-data="{ showPasswordForm: false }"
-             class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div x-data="{ showPasswordForm: false, showCurrent: false, showNew: false, showConfirmPw: false }"
+             class="card-animate bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
 
-            <div class="px-6 py-5 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-slate-100 to-slate-50 border-b border-slate-100">
+                <div class="w-10 h-10 bg-slate-700 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                 </div>
-                <h2 class="text-lg font-semibold text-slate-900">Wachtwoord</h2>
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">Wachtwoord</h2>
+                    <p class="text-xs text-slate-400">Bescherm je account</p>
+                </div>
             </div>
 
-            <div class="px-6 py-5">
+            <div class="px-6 py-6">
 
                 
-                <div class="mb-5" x-show="!showPasswordForm">
-                    <p class="text-xs text-slate-400 uppercase tracking-wide font-medium mb-2">Huidig wachtwoord</p>
-                    <div class="flex items-center gap-3">
-                        <input
-                            type="text"
-                            value="••••••••••••"
-                            readonly
-                            class="password-blur px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-sm w-48 select-none"
-                            tabindex="-1"
-                            aria-hidden="true"
-                        >
-                        <span class="text-xs text-slate-400 italic">Verborgen om veiligheidsredenen</span>
+                <div class="mb-6" x-show="!showPasswordForm">
+                    <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="w-10 h-10 bg-slate-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Wachtwoord</p>
+                            <span class="password-dots">● ● ● ● ● ● ● ●</span>
+                        </div>
+                        <span class="ml-auto text-xs text-slate-400 bg-slate-200 px-2 py-1 rounded-md font-medium">Verborgen</span>
                     </div>
                 </div>
 
                 
-                <button
-                    x-show="!showPasswordForm"
-                    @click="showPasswordForm = true"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-800 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition-colors duration-200"
-                >
+                <button x-show="!showPasswordForm"
+                        @click="showPasswordForm = true"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-800 text-white text-sm font-semibold rounded-xl hover:bg-slate-700 active:scale-95 transition-all duration-200 shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
@@ -264,101 +281,110 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 </button>
 
                 
-                <div x-show="showPasswordForm" x-transition>
-                    <form method="POST" action="<?php echo e(route('password.update')); ?>" class="space-y-4">
+                <div x-show="showPasswordForm"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0">
+                    <form method="POST" action="<?php echo e(route('password.update')); ?>" class="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                         <?php echo csrf_field(); ?>
                         <?php echo method_field('PUT'); ?>
 
+                        
                         <div>
-                            <label for="current_password" class="block text-sm font-medium text-slate-700 mb-1.5">
-                                Huidig wachtwoord
-                            </label>
-                            <input
-                                id="current_password"
-                                name="current_password"
-                                type="password"
-                                required
-                                autocomplete="current-password"
-                                class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent transition-all duration-200 text-sm"
-                            >
+                            <label for="current_password" class="block text-sm font-semibold text-slate-700 mb-1.5">Huidig wachtwoord</label>
+                            <div class="relative">
+                                <input id="current_password" name="current_password"
+                                       :type="showCurrent ? 'text' : 'password'"
+                                       required autocomplete="current-password"
+                                       class="w-full px-4 py-2.5 pr-11 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent text-sm shadow-sm transition-all duration-200">
+                                <button type="button" @click="showCurrent = !showCurrent"
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                                    <svg x-show="!showCurrent" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    <svg x-show="showCurrent" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                    </svg>
+                                </button>
+                            </div>
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['current_password', 'updatePassword'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                <p class="mt-1.5 text-sm text-red-600"><?php echo e($message); ?></p>
+                                <p class="mt-1.5 text-xs text-red-600 font-medium"><?php echo e($message); ?></p>
                             <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
+                        
                         <div>
-                            <label for="password" class="block text-sm font-medium text-slate-700 mb-1.5">
-                                Nieuw wachtwoord
-                            </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                                autocomplete="new-password"
-                                class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent transition-all duration-200 text-sm"
-                            >
+                            <label for="password" class="block text-sm font-semibold text-slate-700 mb-1.5">Nieuw wachtwoord</label>
+                            <div class="relative">
+                                <input id="password" name="password"
+                                       :type="showNew ? 'text' : 'password'"
+                                       required autocomplete="new-password"
+                                       class="w-full px-4 py-2.5 pr-11 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent text-sm shadow-sm transition-all duration-200">
+                                <button type="button" @click="showNew = !showNew"
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                                    <svg x-show="!showNew" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    <svg x-show="showNew" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                    </svg>
+                                </button>
+                            </div>
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['password', 'updatePassword'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                <p class="mt-1.5 text-sm text-red-600"><?php echo e($message); ?></p>
+                                <p class="mt-1.5 text-xs text-red-600 font-medium"><?php echo e($message); ?></p>
                             <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
+                        
                         <div>
-                            <label for="password_confirmation" class="block text-sm font-medium text-slate-700 mb-1.5">
-                                Bevestig nieuw wachtwoord
-                            </label>
-                            <input
-                                id="password_confirmation"
-                                name="password_confirmation"
-                                type="password"
-                                required
-                                autocomplete="new-password"
-                                class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent transition-all duration-200 text-sm"
-                            >
+                            <label for="password_confirmation" class="block text-sm font-semibold text-slate-700 mb-1.5">Bevestig nieuw wachtwoord</label>
+                            <div class="relative">
+                                <input id="password_confirmation" name="password_confirmation"
+                                       :type="showConfirmPw ? 'text' : 'password'"
+                                       required autocomplete="new-password"
+                                       class="w-full px-4 py-2.5 pr-11 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent text-sm shadow-sm transition-all duration-200">
+                                <button type="button" @click="showConfirmPw = !showConfirmPw"
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                                    <svg x-show="!showConfirmPw" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    <svg x-show="showConfirmPw" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="flex items-center gap-3 pt-1">
-                            <button
-                                type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-800 text-white text-sm font-semibold rounded-lg hover:bg-slate-700 transition-colors duration-200"
-                            >
+                            <button type="submit"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-800 text-white text-sm font-semibold rounded-xl hover:bg-slate-700 active:scale-95 transition-all duration-200 shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                                 Opslaan
                             </button>
-                            <button
-                                type="button"
-                                @click="showPasswordForm = false"
-                                class="px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-                            >
+                            <button type="button" @click="showPasswordForm = false"
+                                    class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
                                 Annuleren
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
-
-        
-        <div class="mt-8 text-center">
-            <a href="<?php echo e(route('home')); ?>" class="text-sm text-slate-500 hover:text-slate-700 transition-colors">
-                ← Terug naar de shop
-            </a>
         </div>
 
     </div>
