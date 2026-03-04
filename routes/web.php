@@ -16,6 +16,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\UserOrderController;
 use App\Livewire\Cart;
 
 Route::get('/', [ProductController::class, 'index'])->name('home');
@@ -42,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/cart', Cart::class)->name('cart');
     Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('checkout');
     Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+    
 });
 
 require __DIR__.'/auth.php';
@@ -96,4 +98,7 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Orders overview
+Route::get('orders', [UserOrderController::class, 'index'])->name('orders.index');
 });

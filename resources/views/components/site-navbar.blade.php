@@ -5,13 +5,13 @@
             <!-- Logo -->
             <div class="flex-shrink-0">
                 <a href="{{ route('home') }}" class="text-2xl font-bold text-slate-900">
-                    MyShop
+                    MijnShop
                 </a>
             </div>
 
             <!-- Navigation Links -->
             <nav class="flex space-x-8">
-                <a href="{{ route('home') }}" class="text-slate-700 hover:text-slate-900 font-medium">Products</a>
+                <a href="{{ route('home') }}" class="text-slate-700 hover:text-slate-900 font-medium">Producten</a>
             </nav>
 
             <!-- Right side: Cart + User -->
@@ -50,26 +50,46 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            {{-- Logged-in name --}}
+                            {{-- Logged-in user name --}}
                             <div class="px-4 py-2 text-xs text-gray-400 border-b border-gray-100 truncate">
                                 {{ Auth::user()->name }}
                             </div>
 
+                            {{-- Account (profile: email, email verification, password) --}}
                             <x-dropdown-link :href="route('profile.edit')">
-                                Account
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Account
+                                </div>
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('dashboard')">
-                                Bestellingen inzien
+                            {{-- Bestellingen inzien --}}
+                            <x-dropdown-link :href="route('orders.index')">
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                    Bestellingen inzien
+                                </div>
                             </x-dropdown-link>
 
-                            {{-- Logout (POST) --}}
+                            {{-- Divider --}}
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            {{-- Logout button --}}
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault(); this.closest('form').submit();">
-                                    Logout
-                                </x-dropdown-link>
+                                <button
+                                    type="submit"
+                                    class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-150"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Uitloggen
+                                </button>
                             </form>
                         </x-slot>
                     </x-dropdown>
