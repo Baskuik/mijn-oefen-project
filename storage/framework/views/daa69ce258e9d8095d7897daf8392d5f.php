@@ -365,4 +365,4 @@ unset($__split);
   <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
 
 </body>
-</html><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/welcome.blade.php ENDPATH**/ ?>
+</html> <?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/welcome.blade.php ENDPATH**/ ?>
