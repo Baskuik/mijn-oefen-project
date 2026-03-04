@@ -101,4 +101,7 @@ Route::middleware('auth')->group(function () {
 
     // Orders overview
 Route::get('orders', [UserOrderController::class, 'index'])->name('orders.index');
+// Custom account page
+Route::get('account', [App\Http\Controllers\AccountController::class, 'show'])->name('account.index');
+Route::patch('account/email', [App\Http\Controllers\AccountController::class, 'updateEmail'])->name('account.email.update');
 });
