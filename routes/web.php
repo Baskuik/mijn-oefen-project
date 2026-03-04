@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminUserController;
@@ -22,7 +23,12 @@ use App\Livewire\Cart;
 Route::get('/', [ProductController::class, 'index'])->name('home');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $orders = auth()->user()->orders()
+        ->with(['items.product'])
+        ->orderBy('created_at', 'desc')
+        ->get();
+    
+    return view('dashboard', compact('orders'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -99,9 +105,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Orders overview
-Route::get('orders', [UserOrderController::class, 'index'])->name('orders.index');
-// Custom account page
-Route::get('account', [App\Http\Controllers\AccountController::class, 'show'])->name('account.index');
-Route::patch('account/email', [App\Http\Controllers\AccountController::class, 'updateEmail'])->name('account.email.update');
+    // Account information routes
+    Route::get('account', [AccountController::class, 'index'])->name('account.index');
+    Route::patch('account/email', [AccountController::class, 'updateEmail'])->name('account.email.update');
+    Route::post('account/password-reset-email', [AccountController::class, 'sendPasswordResetEmail'])->name('account.password.email');
 });

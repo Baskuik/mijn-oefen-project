@@ -7,11 +7,10 @@ use Livewire\Attributes\On;
 
 class CartCounter extends Component
 {
-    // Luister naar 'cart-updated' event (kebab-case)
-    #[On('cart-updated')] 
+    #[On('cart-updated')]
     public function updateCount()
     {
-        // Refresh de component automatisch
+        // Re-render to update count
     }
 
     public function render()
@@ -19,12 +18,10 @@ class CartCounter extends Component
         $cart = session()->get('cart', []);
         $count = 0;
 
-        foreach($cart as $item) {
-            // Check of item in nieuwe formaat is (array) of oude formaat (int)
+        foreach ($cart as $item) {
             if (is_array($item) && isset($item['quantity'])) {
-                $count += $item['quantity'];
+                $count += (int) $item['quantity'];
             } elseif (is_numeric($item)) {
-                // Oude formaat - tel het getal op
                 $count += (int) $item;
             }
         }

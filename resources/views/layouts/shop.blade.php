@@ -16,6 +16,8 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
+            @include('components.site-navbar')
+            
             <!-- Page Content -->
             <main>
                 {{ $slot }}

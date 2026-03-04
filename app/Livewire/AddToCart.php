@@ -7,37 +7,53 @@ use App\Models\Product;
 
 class AddToCart extends Component
 {
-    public $productId;
+    public int $productId;
 
-    public function addToCart()
+    public function mount(int $productId): void
     {
-        // Haal het huidige mandje op uit de sessie, of begin met een lege lijst
+        $this->productId = $productId;
+    }
+
+    public function addToCart(): void
+    {
         $cart = session()->get('cart', []);
 
-        // Als het product al in het mandje zit, doe er +1 bij
-        if(isset($cart[$this->productId])) {
-            $cart[$this->productId]['quantity']++;
-        } else {
-            // Zoek het product op in de database
-            $product = Product::find($this->productId);
-            
-            if ($product) {
-                $cart[$this->productId] = [
-                    "name" => $product->name,
-                    "quantity" => 1,
-                    "price" => $product->price,
-                    "image" => $product->image
-                ];
-            }
+        $product = Product::find($this->productId);
+        if (! $product) {
+            return;
         }
 
-        // Sla het nieuwe mandje weer op in de sessie
+        if (isset($cart[$this->productId])) {
+            if (is_array($cart[$this->productId])) {
+                $cart[$this->productId]['quantity'] = ($cart[$this->productId]['quantity'] ?? 0) + 1;
+            } else {
+                $oldQty = (int) $cart[$this->productId];
+                $cart[$this->productId] = [
+                    'name'     => $product->name,
+                    'quantity' => $oldQty + 1,
+                    'price'    => $product->price,
+                    'image'    => $product->image,
+                ];
+            }
+        } else {
+            $cart[$this->productId] = [
+                'name'     => $product->name,
+                'quantity' => 1,
+                'price'    => $product->price,
+                'image'    => $product->image,
+            ];
+        }
+
         session()->put('cart', $cart);
 
-        // Stuur een seintje dat de winkelwagen is bijgewerkt (voor de teller later)
-        $this->dispatch('cartUpdated');
-        
-        // Toon een tijdelijke succesmelding
+        $totalItems = 0;
+        foreach ($cart as $item) {
+            $totalItems += is_array($item) ? (int) ($item['quantity'] ?? 0) : (int) $item;
+        }
+        session()->put('cart_count', $totalItems);
+
+        $this->dispatch('cart-updated');
+        $this->dispatch('product-added-to-cart', name: $product->name);
         session()->flash('success', 'Toegevoegd!');
     }
 
