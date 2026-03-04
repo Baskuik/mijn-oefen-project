@@ -13,13 +13,14 @@
                 <a href="{{ route('home') }}" class="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition-colors">Products</a>
             </nav>
 
-            <!-- Dark Mode Toggle -->
+            <!-- Right Side: Dark mode + Cart + Auth -->
             <div x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }"
                  x-init="$watch('darkMode', val => {
                      localStorage.setItem('darkMode', val);
                      document.documentElement.classList.toggle('dark', !!val);
                  }); if(darkMode){ document.documentElement.classList.add('dark') }"
                  class="flex items-center gap-4">
+                <!-- Dark Mode Toggle -->
                 <button @click="darkMode = !darkMode"
                         class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                     <svg x-show="!darkMode" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,7 +31,10 @@
                     </svg>
                 </button>
 
-                <!-- Right Side: Auth / Cart / User -->
+                <!-- Cart counter is always visible (also for guests) -->
+                <livewire:cart-counter :key="'nav-cart-counter'" />
+
+                <!-- Auth controls -->
                 <div class="flex items-center space-x-4">
                     @guest
                         <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md transition">Register</a>
@@ -38,9 +42,6 @@
                     @endguest
 
                     @auth
-                        <!-- Live, auto-updating cart counter -->
-                        <livewire:cart-counter :key="'nav-cart-counter'" />
-
                         <!-- User Icon with Dropdown -->
                         <div x-data="{ open: false }" class="relative">
                             <button @click="open = !open" class="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none transition-colors">
@@ -68,7 +69,7 @@
                                 </form>
                             </div>
                         </div>
-                   @endauth
+                    @endauth
                 </div>
             </div>
         </div>
