@@ -447,7 +447,7 @@
       });
     });
   </script>
- 
+
   @livewireScripts
 </body>
 </html>

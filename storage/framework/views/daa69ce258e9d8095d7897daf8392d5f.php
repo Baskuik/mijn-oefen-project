@@ -477,7 +477,7 @@ unset($__split);
       });
     });
   </script>
- 
+
   <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
 
 </body>
