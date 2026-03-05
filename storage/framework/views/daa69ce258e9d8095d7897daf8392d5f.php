@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MijnShop - Welkom</title>
 
+  <!-- DNS prefetch for external resources -->
+  <link rel="dns-prefetch" href="https://fonts.bunny.net">
+  <link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
+  <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
+
   <!-- Dark mode: apply before CSS renders to prevent flash -->
   <script>
     (function () {
@@ -65,13 +70,11 @@
 <body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
   <?php echo $__env->make('components.site-navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-  <!-- Hero with YouTube video -->
+  <!-- Hero with YouTube video (loaded after page is ready) -->
   <section class="relative overflow-hidden flex items-center" style="min-height:85vh;">
-    <div class="hero-video-wrapper">
-      <iframe
-        src="https://www.youtube-nocookie.com/embed/gsuG1HiS-gA?autoplay=1&mute=1&loop=1&playlist=gsuG1HiS-gA&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
-        title="Hero background video" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
+    <!-- Placeholder shown while YouTube loads -->
+    <div id="hero-video-wrapper" class="hero-video-wrapper bg-slate-900"></div>
+
     <div class="absolute inset-0 bg-black/55 z-10"></div>
     <div class="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-indigo-900/20 to-purple-900/30 z-10"></div>
 
@@ -205,7 +208,12 @@
 
                   <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->image): ?>
                     <div class="relative aspect-square bg-slate-50 dark:bg-slate-700 overflow-hidden">
-                      <img src="<?php echo e(asset('storage/' . $product->image)); ?>" alt="<?php echo e($product->name); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                      
+                      <img src="<?php echo e(asset('storage/' . $product->image)); ?>"
+                           alt="<?php echo e($product->name); ?>"
+                           loading="lazy"
+                           width="400" height="400"
+                           class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                       <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                   <?php else: ?>
@@ -234,32 +242,68 @@
                       </div>
                     </div>
 
-                    <?php
-$__split = function ($name, $params = []) {
-    return [$name, $params];
-};
-[$__name, $__params] = $__split('add-to-cart', ['product-id' => $product->id]);
+                    
+                    <div x-data="{ busy: false, done: false }">
+                      <button
+                        type="button"
+                        @click.prevent="
+                          if (busy) return;
+                          busy = true;
+                          fetch('<?php echo e(route('cart.store')); ?>', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Accept': 'application/json',
+                              'X-CSRF-TOKEN': document.head.querySelector('meta[name=csrf-token]').content,
+                              'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({ product_id: <?php echo e($product->id); ?> })
+                          })
+                          .then(function(r) {
+                            if (r.status === 401) { window.location.href = '<?php echo e(route('login')); ?>'; return null; }
+                            return r.json();
+                          })
+                          .then(function(d) {
+                            if (!d) return;
+                            busy = false;
+                            if (d.needs_verification) {
+                              $dispatch('show-verify-modal');
+                              return;
+                            }
+                            if (d.ok) {
+                              done = true;
+                              setTimeout(function() { done = false; }, 2500);
+                              window.dispatchEvent(new CustomEvent('product-added-to-cart', { detail: { name: d.product_name } }));
+                              if (typeof Livewire !== 'undefined') Livewire.dispatch('cart-updated');
+                            }
+                          })
+                          .catch(function() { busy = false; })
+                        "
+                        :disabled="busy"
+                        class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 disabled:bg-gray-400 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
+                      >
+                        <template x-if="!busy && !done">
+                          <span>Toevoegen aan winkelwagen</span>
+                        </template>
+                        <template x-if="busy">
+                          <span class="flex items-center">
+                            <svg class="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Bezig...
+                          </span>
+                        </template>
+                        <template x-if="done">
+                          <span class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Toegevoegd!
+                          </span>
+                        </template>
+                      </button>
+                    </div>
+                    
 
-$__keyOuter = $__key ?? null;
-
-$__key = 'cart-' . $product->id;
-$__componentSlots = [];
-
-$__key ??= \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::generateKey('lw-3090484971-0', $__key);
-
-$__html = app('livewire')->mount($__name, $__params, $__key, $__componentSlots);
-
-echo $__html;
-
-unset($__html);
-unset($__key);
-$__key = $__keyOuter;
-unset($__keyOuter);
-unset($__name);
-unset($__params);
-unset($__componentSlots);
-unset($__split);
-?>
                   </div>
                 </div>
               <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
@@ -308,7 +352,7 @@ unset($__split);
     </div>
   </section>
 
-  <!-- Toast (Alpine) -->
+  <!-- Toast notification (Alpine) -->
   <div x-data="{ show: false, message: '' }"
        @product-added-to-cart.window="show = true; message = $event.detail.name + ' toegevoegd!'; setTimeout(() => show = false, 3000)"
        x-show="show"
@@ -331,6 +375,81 @@ unset($__split);
     </div>
   </div>
 
+  <!-- Global email verification modal (one instance for the whole page) -->
+  <div x-data="{ open: false }"
+       <?php echo $__env->yieldSection(); ?>-verify-modal.window="open = true"
+       x-init="$watch('open', v => document.body.classList.toggle('overflow-hidden', v))"
+       x-show="open"
+       x-on:keydown.escape.window="open = false"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"
+       class="fixed inset-0 z-[9999] flex items-center justify-center px-4 sm:px-6"
+       style="display:none;">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-lg" @click="open = false"></div>
+    <div x-show="open"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+         x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+         class="relative z-[10000] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+         role="dialog" aria-modal="true">
+      <div class="h-1.5 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500"></div>
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100 dark:border-slate-700">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">E-mailadres niet geverifieerd</h3>
+        </div>
+        <button type="button" @click="open = false"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          Je e‑mailadres is nog niet geverifieerd. Verifieer je adres om artikelen toe te voegen aan je winkelwagen.
+        </p>
+        <ul class="space-y-2">
+          <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/></svg>
+            Controleer je inbox voor de verificatie-e‑mail.
+          </li>
+          <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/></svg>
+            Stuur de e‑mail opnieuw als je hem niet hebt ontvangen.
+          </li>
+          <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/></svg>
+            Na verificatie kun je direct artikelen toevoegen.
+          </li>
+        </ul>
+      </div>
+      <div class="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-700">
+        <button type="button" @click="open = false"
+                class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl transition-colors shadow-sm">
+          Sluiten
+        </button>
+        <form method="POST" action="<?php echo e(route('verification.send')); ?>">
+          <?php echo csrf_field(); ?>
+          <button type="submit"
+                  class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl transition-all shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Verificatie-e-mail versturen
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Scroll-to-top -->
   <button id="scroll-top-btn" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
           class="w-12 h-12 bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors duration-200"
@@ -340,6 +459,19 @@ unset($__split);
 
   <!-- JS -->
   <script>
+    // Inject YouTube hero video AFTER page has loaded (keeps initial render fast)
+    window.addEventListener('load', function () {
+      var wrapper = document.getElementById('hero-video-wrapper');
+      if (wrapper) {
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube-nocookie.com/embed/gsuG1HiS-gA?autoplay=1&mute=1&loop=1&playlist=gsuG1HiS-gA&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1';
+        iframe.title = 'Hero background video';
+        iframe.allow = 'autoplay; encrypted-media';
+        iframe.allowFullscreen = true;
+        wrapper.appendChild(iframe);
+      }
+    });
+
     // Reveal that replays on re-enter
     (function () {
       var els = document.querySelectorAll('.reveal');
@@ -362,8 +494,8 @@ unset($__split);
 
     // ── Filter state ──────────────────────────────────────────────
     var activeCategory = 'all';
-    var activeSpecials = new Set(); // 'sale' | 'featured'
-    var activeSort     = '';        // 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc'
+    var activeSpecials = new Set();
+    var activeSort     = '';
 
     // ── Main filter + sort runner ─────────────────────────────────
     function runFilter() {
@@ -372,7 +504,6 @@ unset($__split);
       var sections = document.querySelectorAll('.category-section');
       var totalVisible = 0;
 
-      // 1. Determine visibility of each card
       cards.forEach(function (card) {
         var name     = card.dataset.productName        || '';
         var desc     = card.dataset.productDescription || '';
@@ -393,7 +524,6 @@ unset($__split);
         }
       });
 
-      // 2. Sort visible cards within each category section
       sections.forEach(function (section) {
         var grid = section.querySelector('.grid');
         if (!grid || !activeSort) return;
@@ -410,7 +540,6 @@ unset($__split);
         visibleCards.forEach(function (card) { grid.appendChild(card); });
       });
 
-      // 3. Hide empty sections
       sections.forEach(function (section) {
         var anyVisible = Array.from(section.querySelectorAll('.product-card'))
           .some(function (c) { return c.style.display !== 'none'; });
@@ -421,7 +550,6 @@ unset($__split);
       document.getElementById('search-clear').classList.toggle('hidden', !query);
     }
 
-    // ── Category filter ───────────────────────────────────────────
     function filterByCategory(btn, slug) {
       activeCategory = slug;
       document.querySelectorAll('.category-pill').forEach(function (b) {
@@ -433,7 +561,6 @@ unset($__split);
       runFilter();
     }
 
-    // ── Special toggle filter (sale / featured) ───────────────────
     function toggleSpecialFilter(btn, tag) {
       if (activeSpecials.has(tag)) {
         activeSpecials.delete(tag);
@@ -459,7 +586,6 @@ unset($__split);
       runFilter();
     }
 
-    // ── DOMContentLoaded wires ────────────────────────────────────
     document.addEventListener('DOMContentLoaded', function () {
       var searchInput = document.getElementById('product-search');
       var clearBtn    = document.getElementById('search-clear');

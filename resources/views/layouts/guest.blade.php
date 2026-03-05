@@ -23,13 +23,14 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
     </head>
     <body class="font-sans antialiased bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
 
         <!-- Minimal top bar -->
         <div class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                <a href="{{ route('home') }}" class="text-2xl font-bold text-slate-900 dark:text-white hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+                <a href="{{ route('home') }}" wire:navigate class="text-2xl font-bold text-slate-900 dark:text-white hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
                     MijnShop
                 </a>
                 <button onclick="toggleTheme()"
@@ -70,5 +71,6 @@
                 }
             }
         </script>
+        @livewireScripts
     </body>
 </html>
