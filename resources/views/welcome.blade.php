@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MijnShop - Welkom</title>
+
+  <!-- Dark mode: apply before CSS renders to prevent flash -->
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @livewireStyles
   <style>
@@ -50,7 +61,7 @@
     .filter-pill { transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s; }
   </style>
 </head>
-<body class="bg-slate-50">
+<body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
   @include('components.site-navbar')
 
   <!-- Hero with YouTube video -->
@@ -96,11 +107,11 @@
       <div class="mb-12 reveal">
         <div class="relative max-w-xl mx-auto mb-6">
           <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           </div>
           <input id="product-search" type="text" placeholder="Zoek producten..." autocomplete="off"
-                 class="w-full pl-12 pr-12 py-3.5 bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent text-slate-800 placeholder-slate-400 transition-all duration-200">
-          <button id="search-clear" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 transition-colors hidden" aria-label="Zoekopdracht wissen">
+                 class="w-full pl-12 pr-12 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition-all duration-200">
+          <button id="search-clear" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors hidden" aria-label="Zoekopdracht wissen">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
@@ -111,7 +122,7 @@
           </button>
           @foreach($categories as $cat)
             @if($cat->products->count() > 0)
-              <button class="filter-pill px-5 py-2 rounded-full text-sm font-medium border bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:bg-slate-50"
+              <button class="filter-pill px-5 py-2 rounded-full text-sm font-medium border bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700"
                       data-filter="{{ $cat->slug }}" onclick="filterByCategory(this, '{{ $cat->slug }}')">
                 {{ $cat->name }}
               </button>
@@ -121,28 +132,28 @@
       </div>
 
       <div id="no-results" class="hidden text-center py-24">
-        <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <div class="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </div>
-        <h3 class="text-xl font-semibold text-slate-700 mb-2">Geen producten gevonden</h3>
-        <p class="text-slate-500">Probeer een andere zoekterm of categorie.</p>
+        <h3 class="text-xl font-semibold text-slate-700 dark:text-slate-200 mb-2">Geen producten gevonden</h3>
+        <p class="text-slate-500 dark:text-slate-400">Probeer een andere zoekterm of categorie.</p>
       </div>
 
       @foreach($categories as $category)
         @if($category->products->count() > 0)
           <div class="category-section mb-20" data-category="{{ $category->slug }}">
             <div class="flex items-center mb-10 reveal">
-              <div class="flex-grow h-0.5 bg-gradient-to-r from-transparent via-slate-300 to-transparent"></div>
-              <h2 class="text-4xl font-bold text-slate-900 mx-8 relative">
+              <div class="flex-grow h-0.5 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent"></div>
+              <h2 class="text-4xl font-bold text-slate-900 dark:text-white mx-8 relative">
                 {{ $category->name }}
-                <span class="absolute -bottom-2 left-0 right-0 h-1 bg-slate-800 rounded-full"></span>
+                <span class="absolute -bottom-2 left-0 right-0 h-1 bg-slate-800 dark:bg-slate-400 rounded-full"></span>
               </h2>
-              <div class="flex-grow h-0.5 bg-gradient-to-r from-transparent via-slate-300 to-transparent"></div>
+              <div class="flex-grow h-0.5 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent"></div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               @foreach($category->products as $product)
-                <div class="product-card reveal reveal-delay-{{ ($loop->index % 4) + 1 }} group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-slate-300 transform hover:-translate-y-2"
+                <div class="product-card reveal reveal-delay-{{ ($loop->index % 4) + 1 }} group relative bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transform hover:-translate-y-2"
                      data-product-name="{{ strtolower($product->name) }}"
                      data-product-description="{{ strtolower($product->description ?? '') }}"
                      data-product-category="{{ $category->slug }}">
@@ -156,35 +167,34 @@
                   @endif
 
                   @if($product->image)
-                    <div class="relative aspect-square bg-slate-50 overflow-hidden">
+                    <div class="relative aspect-square bg-slate-50 dark:bg-slate-700 overflow-hidden">
                       <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                       <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                   @else
-                    <div class="aspect-square bg-slate-50 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <div class="aspect-square bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </div>
                   @endif
 
                   <div class="p-6">
-                    <h3 class="font-semibold text-slate-900 text-lg mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-slate-700 transition-colors">
+                    <h3 class="font-semibold text-slate-900 dark:text-white text-lg mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
                       {{ $product->name }}
                     </h3>
 
                     @if($product->description)
-                      <p class="text-slate-600 text-sm mb-4 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                      <p class="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 leading-relaxed min-h-[2.5rem]">
                         {{ $product->description }}
                       </p>
                     @endif
 
                     <div class="mb-5">
                       <div class="flex items-baseline gap-2">
-                        <span class="text-3xl font-bold text-slate-900">€{{ number_format($product->price, 2, ',', '.') }}</span>
-                        <span class="text-slate-500 text-sm">incl. BTW</span>
+                        <span class="text-3xl font-bold text-slate-900 dark:text-white">€{{ number_format($product->price, 2, ',', '.') }}</span>
+                        <span class="text-slate-500 dark:text-slate-400 text-sm">incl. BTW</span>
                       </div>
                     </div>
 
-                    {{-- ✅ FIXED: was add-to-cart-button, now add-to-cart --}}
                     <livewire:add-to-cart :product-id="$product->id" :key="'cart-' . $product->id" />
                   </div>
                 </div>
@@ -195,18 +205,18 @@
       @endforeach
 
     @else
-      <div class="text-center py-32 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-        <div class="flex items-center justify-center w-24 h-24 mx-auto mb-8 rounded-full bg-slate-200">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+      <div class="text-center py-32 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+        <div class="flex items-center justify-center w-24 h-24 mx-auto mb-8 rounded-full bg-slate-200 dark:bg-slate-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
         </div>
-        <h3 class="text-2xl font-semibold text-slate-900 mb-3">Geen producten beschikbaar</h3>
-        <p class="text-slate-600">Kom binnenkort terug voor geweldige nieuwe producten!</p>
+        <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-3">Geen producten beschikbaar</h3>
+        <p class="text-slate-600 dark:text-slate-400">Kom binnenkort terug voor geweldige nieuwe producten!</p>
       </div>
     @endif
   </section>
 
   <!-- Features -->
-  <section class="bg-gradient-to-br from-slate-900 to-slate-800 py-20">
+  <section class="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-950 dark:to-slate-900 py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="feature-card reveal text-center p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
         <div class="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -259,7 +269,7 @@
 
   <!-- Scroll-to-top -->
   <button id="scroll-top-btn" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
-          class="w-12 h-12 bg-slate-800 hover:bg-slate-700 text-white rounded-full shadow-lg flex items-center justify-center transition-colors duration-200"
+          class="w-12 h-12 bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors duration-200"
           aria-label="Scroll naar boven">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
   </button>
@@ -316,11 +326,11 @@
     function filterByCategory(btn, slug) {
       activeCategory = slug;
       document.querySelectorAll('.filter-pill').forEach(function (b) {
-        b.classList.remove('bg-slate-800','text-white','border-slate-800','active');
-        b.classList.add('bg-white','text-slate-700','border-slate-200');
+        b.classList.remove('bg-slate-800', 'text-white', 'border-slate-800', 'active');
+        b.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300', 'border-slate-200', 'dark:border-slate-700');
       });
-      btn.classList.add('bg-slate-800','text-white','border-slate-800','active');
-      btn.classList.remove('bg-white','text-slate-700','border-slate-200');
+      btn.classList.add('bg-slate-800', 'text-white', 'border-slate-800', 'active');
+      btn.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300', 'border-slate-200', 'dark:border-slate-700');
       runFilter();
     }
     document.addEventListener('DOMContentLoaded', function () {
