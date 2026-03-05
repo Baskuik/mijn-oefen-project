@@ -29,9 +29,8 @@ foreach ($attributes->all() as $__key => $__value) {
 unset($__defined_vars, $__key, $__value); ?>
 
 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($status): ?>
-    <div <?php echo e($attributes->merge(['class' => 'font-medium text-sm text-green-600'])); ?>>
+    <div <?php echo e($attributes->merge(['class' => 'font-medium text-sm text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-3 rounded-xl border border-emerald-200 dark:border-emerald-800'])); ?>>
         <?php echo e($status); ?>
 
     </div>
-<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-<?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/auth-session-status.blade.php ENDPATH**/ ?>
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/auth-session-status.blade.php ENDPATH**/ ?>
