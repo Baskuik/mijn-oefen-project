@@ -18,7 +18,7 @@
 
     <form method="POST" action="<?php echo e(route('register')); ?>" class="space-y-5" id="register-form">
         <?php echo csrf_field(); ?>
-
+ 
         <!-- Name -->
         <div>
             <?php if (isset($component)) { $__componentOriginale3da9d84bb64e4bc2eeebaafabfb2581 = $component; } ?>
