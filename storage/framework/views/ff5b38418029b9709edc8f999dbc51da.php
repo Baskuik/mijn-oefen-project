@@ -42,7 +42,7 @@
           <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($orders->count() > 0): ?>
             <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl px-5 py-4 text-center">
               <p class="text-3xl font-extrabold text-white">€<?php echo e(number_format($orders->sum('total_price'), 0, ',', '.')); ?></p>
-              <p class="text-xs text-slate-300 font-medium mt-0.5">Totaal besteed</p>
+              <p class="text-xs text-slate-300 font-medium mt-0.5">Totaal besteed</p> 
             </div>
           <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
