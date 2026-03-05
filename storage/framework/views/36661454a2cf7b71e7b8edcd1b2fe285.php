@@ -1,4 +1,22 @@
 <div>
+  
+  <style>
+    @keyframes qty-bump {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.45); }
+      65%  { transform: scale(0.88); }
+      100% { transform: scale(1); }
+    }
+    .qty-bump { animation: qty-bump 0.32s cubic-bezier(.36,.07,.19,.97); }
+
+    @keyframes btn-press {
+      0%   { transform: scale(1); }
+      45%  { transform: scale(0.78); }
+      100% { transform: scale(1); }
+    }
+    .btn-press { animation: btn-press 0.18s ease; }
+  </style>
+
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="mb-8">
       <a href="<?php echo e(route('home')); ?>" class="inline-flex items-center text-slate-600 hover:text-slate-900 transition-colors">
@@ -16,7 +34,16 @@
         
         <div class="lg:col-span-2 space-y-4">
           <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
+            
+            <div
+              x-data="{ removing: false }"
+              x-show="!removing"
+              x-transition:leave="transition ease-in duration-300"
+              x-transition:leave-start="opacity-100 translate-x-0"
+              x-transition:leave-end="opacity-0 -translate-x-12"
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
+              style="transform-origin: left center;">
+
               <div class="flex gap-6">
                 
                 <div class="flex-shrink-0">
@@ -37,19 +64,43 @@
                   <p class="text-xl font-bold text-slate-900 mb-4">€<?php echo e(number_format($item['price'], 2, ',', '.')); ?></p>
 
                   
-                  <div class="flex items-center gap-3">
+                  <div
+                    x-data="{ bumping: false }"
+                    class="flex items-center gap-3">
+
                     <button
                       wire:click="decreaseQuantity(<?php echo e($id); ?>)"
+                      @click="bumping = false;
+                              void $el.classList.remove('btn-press');
+                              void $el.offsetWidth;
+                              $el.classList.add('btn-press');
+                              $nextTick(() => {
+                                bumping = true;
+                                setTimeout(() => bumping = false, 350);
+                              })"
                       class="w-10 h-10 rounded-lg border-2 border-slate-300 flex items-center justify-center hover:bg-slate-100 hover:border-slate-400 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                       </svg>
                     </button>
 
-                    <span class="text-lg font-semibold text-slate-900 min-w-[3rem] text-center"><?php echo e($item['quantity']); ?></span>
+                    <span
+                      :class="{ 'qty-bump': bumping }"
+                      class="text-lg font-semibold text-slate-900 min-w-[3rem] text-center select-none">
+                      <?php echo e($item['quantity']); ?>
+
+                    </span>
 
                     <button
                       wire:click="increaseQuantity(<?php echo e($id); ?>)"
+                      @click="bumping = false;
+                              void $el.classList.remove('btn-press');
+                              void $el.offsetWidth;
+                              $el.classList.add('btn-press');
+                              $nextTick(() => {
+                                bumping = true;
+                                setTimeout(() => bumping = false, 350);
+                              })"
                       class="w-10 h-10 rounded-lg border-2 border-slate-300 flex items-center justify-center hover:bg-slate-100 hover:border-slate-400 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -68,9 +119,11 @@
                     </p>
                   </div>
 
+                  
                   <button
-                    wire:click="removeItem(<?php echo e($id); ?>)"
-                    wire:confirm="Weet je zeker dat je dit product wilt verwijderen?"
+                    @click="if (!confirm('Weet je zeker dat je dit product wilt verwijderen?')) return;
+                            removing = true;
+                            setTimeout(() => $wire.removeItem(<?php echo e($id); ?>), 320)"
                     class="inline-flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
