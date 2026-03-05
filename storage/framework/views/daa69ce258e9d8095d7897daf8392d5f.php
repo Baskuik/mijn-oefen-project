@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MijnShop - Welkom</title>
+  <title>Pokémon go Webstore - Welkom</title>
 
   <!-- Dark mode: apply before CSS renders to prevent flash -->
   <script>
@@ -77,7 +77,7 @@
 
     <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 w-full text-center">
       <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
-        Welkom bij <span class="text-indigo-300">MijnShop</span>
+        Welkom bij de <span class="text-indigo-300">Pokémon go Webstore</span>
       </h1>
       <p class="hero-subtitle text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-10 drop-shadow-lg">
         Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!
