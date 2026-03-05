@@ -103,4 +103,4 @@
     </div>
     
     </template>
-</div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/livewire/add-to-cart.blade.php ENDPATH**/ ?>
+</div> <?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/livewire/add-to-cart.blade.php ENDPATH**/ ?>
