@@ -9,6 +9,8 @@ class AddToCart extends Component
 {
     public int $productId;
 
+    public bool $showVerificationModal = false;
+
     public function mount(int $productId): void
     {
         $this->productId = $productId;
@@ -16,6 +18,12 @@ class AddToCart extends Component
 
     public function addToCart(): void
     {
+        // Block unverified users
+        if (auth()->check() && ! auth()->user()->hasVerifiedEmail()) {
+            $this->showVerificationModal = true;
+            return;
+        }
+
         $cart = session()->get('cart', []);
 
         $product = Product::find($this->productId);
@@ -55,6 +63,11 @@ class AddToCart extends Component
         $this->dispatch('cart-updated');
         $this->dispatch('product-added-to-cart', name: $product->name);
         session()->flash('success', 'Toegevoegd!');
+    }
+
+    public function closeModal(): void
+    {
+        $this->showVerificationModal = false;
     }
 
     public function render()

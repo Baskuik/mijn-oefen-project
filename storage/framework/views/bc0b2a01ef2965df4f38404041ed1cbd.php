@@ -4,7 +4,7 @@
 
       <!-- Logo -->
       <div class="flex-shrink-0">
-        <a href="<?php echo e(route('home')); ?>" class="text-2xl font-bold text-slate-900 dark:text-white">MijnShop</a>
+        <a href="<?php echo e(route('home')); ?>" class="text-2xl font-bold text-slate-900 dark:text-white">Pokémon go Webstore</a>
       </div>
 
       <!-- Nav -->
