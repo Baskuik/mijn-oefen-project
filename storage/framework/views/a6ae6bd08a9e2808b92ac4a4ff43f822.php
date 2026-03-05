@@ -13,16 +13,20 @@
 
         <!-- Scripts -->
         <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+        <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
+
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
             <?php echo $__env->make('components.site-navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-            
+
             <!-- Page Content -->
             <main>
                 <?php echo e($slot); ?>
 
             </main>
         </div>
+        <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
+
     </body>
 </html><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/layouts/shop.blade.php ENDPATH**/ ?>
