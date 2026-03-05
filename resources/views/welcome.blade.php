@@ -122,7 +122,7 @@
 
       <div id="no-results" class="hidden text-center py-24">
         <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </div>
         <h3 class="text-xl font-semibold text-slate-700 mb-2">Geen producten gevonden</h3>
         <p class="text-slate-500">Probeer een andere zoekterm of categorie.</p>
@@ -184,7 +184,8 @@
                       </div>
                     </div>
 
-                    <livewire:add-to-cart-button :product-id="$product->id" :key="'cart-' . $product->id" />
+                    {{-- ✅ FIXED: was add-to-cart-button, now add-to-cart --}}
+                    <livewire:add-to-cart :product-id="$product->id" :key="'cart-' . $product->id" />
                   </div>
                 </div>
               @endforeach
