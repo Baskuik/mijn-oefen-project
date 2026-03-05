@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MijnShop - Welkom</title>
+  <title>Pokémon go Webstore - Welkom</title>
 
   <!-- Dark mode: apply before CSS renders to prevent flash -->
   <script>
@@ -76,7 +76,7 @@
 
     <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 w-full text-center">
       <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
-        Welkom bij <span class="text-indigo-300">MijnShop</span>
+        Welkom bij de <span class="text-indigo-300">Pokémon go Webstore</span>
       </h1>
       <p class="hero-subtitle text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-10 drop-shadow-lg">
         Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!
@@ -103,32 +103,63 @@
   <section id="producten" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     @if($categories->count() > 0)
 
-      <!-- Search + Category filter -->
+      <!-- Search + Sort + Filters -->
       <div class="mb-12 reveal">
-        <div class="relative max-w-xl mx-auto mb-6">
-          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+
+        {{-- Search bar + sort dropdown --}}
+        <div class="flex flex-col sm:flex-row gap-3 max-w-3xl mx-auto mb-6">
+          <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+            <input id="product-search" type="text" placeholder="Zoek producten..." autocomplete="off"
+                   class="w-full pl-12 pr-12 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition-all duration-200">
+            <button id="search-clear" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors hidden" aria-label="Zoekopdracht wissen">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
           </div>
-          <input id="product-search" type="text" placeholder="Zoek producten..." autocomplete="off"
-                 class="w-full pl-12 pr-12 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition-all duration-200">
-          <button id="search-clear" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors hidden" aria-label="Zoekopdracht wissen">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
+          <div class="relative">
+            <select id="product-sort"
+                    class="appearance-none w-full sm:w-52 pl-4 pr-10 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent text-slate-700 dark:text-slate-300 transition-all duration-200 cursor-pointer">
+              <option value="">Sorteren op...</option>
+              <option value="price-asc">Prijs: laag → hoog</option>
+              <option value="price-desc">Prijs: hoog → laag</option>
+              <option value="name-asc">Naam: A → Z</option>
+              <option value="name-desc">Naam: Z → A</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </div>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-2">
-          <button class="filter-pill active px-5 py-2 rounded-full text-sm font-medium border bg-slate-800 text-white border-slate-800" data-filter="all" onclick="filterByCategory(this, 'all')">
+        {{-- Category pills --}}
+        <div class="flex flex-wrap justify-center gap-2 mb-3">
+          <button class="filter-pill category-pill active px-5 py-2 rounded-full text-sm font-medium border bg-slate-800 text-white border-slate-800" data-filter="all" onclick="filterByCategory(this, 'all')">
             Alle categorieën
           </button>
           @foreach($categories as $cat)
             @if($cat->products->count() > 0)
-              <button class="filter-pill px-5 py-2 rounded-full text-sm font-medium border bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700"
+              <button class="filter-pill category-pill px-5 py-2 rounded-full text-sm font-medium border bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700"
                       data-filter="{{ $cat->slug }}" onclick="filterByCategory(this, '{{ $cat->slug }}')">
                 {{ $cat->name }}
               </button>
             @endif
           @endforeach
         </div>
+
+        {{-- Special filter toggle pills --}}
+        <div class="flex flex-wrap justify-center gap-2">
+          <button class="filter-pill special-pill px-5 py-2 rounded-full text-sm font-medium border bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-rose-400 hover:text-rose-600 dark:hover:border-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-slate-700 transition-all"
+                  data-special="sale" onclick="toggleSpecialFilter(this, 'sale')">
+            🔥 Sale
+          </button>
+          <button class="filter-pill special-pill px-5 py-2 rounded-full text-sm font-medium border bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-amber-400 hover:text-amber-600 dark:hover:border-amber-500 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-slate-700 transition-all"
+                  data-special="featured" onclick="toggleSpecialFilter(this, 'featured')">
+            ⭐ Uitgelicht
+          </button>
+        </div>
+
       </div>
 
       <div id="no-results" class="hidden text-center py-24">
@@ -156,7 +187,10 @@
                 <div class="product-card reveal reveal-delay-{{ ($loop->index % 4) + 1 }} group relative bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transform hover:-translate-y-2"
                      data-product-name="{{ strtolower($product->name) }}"
                      data-product-description="{{ strtolower($product->description ?? '') }}"
-                     data-product-category="{{ $category->slug }}">
+                     data-product-category="{{ $category->slug }}"
+                     data-on-sale="{{ $product->bonus_percentage ? 'true' : 'false' }}"
+                     data-is-featured="{{ $product->is_featured ? 'true' : 'false' }}"
+                     data-price="{{ $product->price }}">
 
                   @if($product->bonus_percentage)
                     <div class="absolute top-4 right-4 z-10">
@@ -296,24 +330,57 @@
       }, { passive: true });
     })();
 
-    // Search + Category filter
+    // ── Filter state ──────────────────────────────────────────────
     var activeCategory = 'all';
+    var activeSpecials = new Set(); // 'sale' | 'featured'
+    var activeSort     = '';        // 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc'
+
+    // ── Main filter + sort runner ─────────────────────────────────
     function runFilter() {
-      var query = document.getElementById('product-search').value.toLowerCase().trim();
-      var cards = document.querySelectorAll('.product-card');
+      var query    = document.getElementById('product-search').value.toLowerCase().trim();
+      var cards    = Array.from(document.querySelectorAll('.product-card'));
       var sections = document.querySelectorAll('.category-section');
       var totalVisible = 0;
 
+      // 1. Determine visibility of each card
       cards.forEach(function (card) {
-        var name = card.dataset.productName || '';
-        var desc = card.dataset.productDescription || '';
-        var cat  = card.dataset.productCategory || '';
-        var matchSearch = !query || name.includes(query) || desc.includes(query);
+        var name     = card.dataset.productName        || '';
+        var desc     = card.dataset.productDescription || '';
+        var cat      = card.dataset.productCategory    || '';
+        var onSale   = card.dataset.onSale             === 'true';
+        var featured = card.dataset.isFeatured         === 'true';
+
+        var matchSearch   = !query || name.includes(query) || desc.includes(query);
         var matchCategory = activeCategory === 'all' || cat === activeCategory;
-        if (matchSearch && matchCategory) { card.style.display = ''; totalVisible++; }
-        else { card.style.display = 'none'; }
+        var matchSale     = !activeSpecials.has('sale')     || onSale;
+        var matchFeatured = !activeSpecials.has('featured') || featured;
+
+        if (matchSearch && matchCategory && matchSale && matchFeatured) {
+          card.style.display = '';
+          totalVisible++;
+        } else {
+          card.style.display = 'none';
+        }
       });
 
+      // 2. Sort visible cards within each category section
+      sections.forEach(function (section) {
+        var grid = section.querySelector('.grid');
+        if (!grid || !activeSort) return;
+        var visibleCards = Array.from(grid.querySelectorAll('.product-card')).filter(function (c) {
+          return c.style.display !== 'none';
+        });
+        visibleCards.sort(function (a, b) {
+          if (activeSort === 'price-asc')  return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+          if (activeSort === 'price-desc') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+          if (activeSort === 'name-asc')   return (a.dataset.productName || '').localeCompare(b.dataset.productName || '');
+          if (activeSort === 'name-desc')  return (b.dataset.productName || '').localeCompare(a.dataset.productName || '');
+          return 0;
+        });
+        visibleCards.forEach(function (card) { grid.appendChild(card); });
+      });
+
+      // 3. Hide empty sections
       sections.forEach(function (section) {
         var anyVisible = Array.from(section.querySelectorAll('.product-card'))
           .some(function (c) { return c.style.display !== 'none'; });
@@ -323,9 +390,11 @@
       document.getElementById('no-results').classList.toggle('hidden', totalVisible > 0);
       document.getElementById('search-clear').classList.toggle('hidden', !query);
     }
+
+    // ── Category filter ───────────────────────────────────────────
     function filterByCategory(btn, slug) {
       activeCategory = slug;
-      document.querySelectorAll('.filter-pill').forEach(function (b) {
+      document.querySelectorAll('.category-pill').forEach(function (b) {
         b.classList.remove('bg-slate-800', 'text-white', 'border-slate-800', 'active');
         b.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300', 'border-slate-200', 'dark:border-slate-700');
       });
@@ -333,12 +402,48 @@
       btn.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300', 'border-slate-200', 'dark:border-slate-700');
       runFilter();
     }
+
+    // ── Special toggle filter (sale / featured) ───────────────────
+    function toggleSpecialFilter(btn, tag) {
+      if (activeSpecials.has(tag)) {
+        activeSpecials.delete(tag);
+        btn.classList.remove('ring-2');
+        if (tag === 'sale') {
+          btn.classList.remove('bg-rose-50', 'dark:bg-rose-900/20', 'border-rose-500', 'text-rose-600', 'dark:text-rose-400');
+          btn.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300', 'border-slate-200', 'dark:border-slate-700');
+        } else {
+          btn.classList.remove('bg-amber-50', 'dark:bg-amber-900/20', 'border-amber-500', 'text-amber-600', 'dark:text-amber-400');
+          btn.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300', 'border-slate-200', 'dark:border-slate-700');
+        }
+      } else {
+        activeSpecials.add(tag);
+        btn.classList.add('ring-2');
+        if (tag === 'sale') {
+          btn.classList.add('bg-rose-50', 'dark:bg-rose-900/20', 'border-rose-500', 'text-rose-600', 'dark:text-rose-400');
+          btn.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300', 'border-slate-200', 'dark:border-slate-700');
+        } else {
+          btn.classList.add('bg-amber-50', 'dark:bg-amber-900/20', 'border-amber-500', 'text-amber-600', 'dark:text-amber-400');
+          btn.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300', 'border-slate-200', 'dark:border-slate-700');
+        }
+      }
+      runFilter();
+    }
+
+    // ── DOMContentLoaded wires ────────────────────────────────────
     document.addEventListener('DOMContentLoaded', function () {
       var searchInput = document.getElementById('product-search');
-      var clearBtn = document.getElementById('search-clear');
+      var clearBtn    = document.getElementById('search-clear');
+      var sortSelect  = document.getElementById('product-sort');
+
       searchInput.addEventListener('input', runFilter);
       clearBtn.addEventListener('click', function () {
-        searchInput.value = ''; runFilter(); searchInput.focus();
+        searchInput.value = '';
+        runFilter();
+        searchInput.focus();
+      });
+      sortSelect.addEventListener('change', function () {
+        activeSort = this.value;
+        runFilter();
       });
     });
   </script>
