@@ -63,8 +63,7 @@ switch ($width) {
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
             class="absolute z-50 mt-2 <?php echo e($width); ?> rounded-md shadow-lg <?php echo e($alignmentClasses); ?>"
-            style="display: none;"
-            @click="open = false">
+            style="display: none;">
         <div class="rounded-md ring-1 ring-black ring-opacity-5 <?php echo e($contentClasses); ?>">
             <?php echo e($content); ?>
 
