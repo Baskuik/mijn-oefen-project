@@ -34,9 +34,17 @@
         {{-- Cart Items --}}
         <div class="lg:col-span-2 space-y-4">
           @foreach($cart as $id => $item)
-            {{-- x-data: removing = slide-out, pressing = button-press key --}}
+            {{--
+              FIX 1: wire:key tells Livewire which DOM node belongs to which cart item.
+              Without this, after deletion Livewire reuses the deleted node (with removing=true)
+              for the next item — making it vanish.
+
+              FIX 2: qty is stored locally in Alpine so +/- updates are instant.
+              Consolidated removing + bumping into one x-data to avoid nested scopes.
+            --}}
             <div
-              x-data="{ removing: false }"
+              wire:key="{{ $id }}"
+              x-data="{ removing: false, bumping: false, qty: {{ $item['quantity'] }} }"
               x-show="!removing"
               x-transition:leave="transition ease-in duration-300"
               x-transition:leave-start="opacity-100 translate-x-0"
@@ -63,43 +71,46 @@
                   <h3 class="text-lg font-semibold text-slate-900 mb-2">{{ $item['name'] }}</h3>
                   <p class="text-xl font-bold text-slate-900 mb-4">€{{ number_format($item['price'], 2, ',', '.') }}</p>
 
-                  {{-- Quantity Controls — bumping drives the bounce animation --}}
-                  <div
-                    x-data="{ bumping: false }"
-                    class="flex items-center gap-3">
+                  {{-- Quantity Controls --}}
+                  <div class="flex items-center gap-3">
 
+                    {{-- Decrease: update qty instantly in Alpine, sync to server in background --}}
                     <button
-                      wire:click="decreaseQuantity({{ $id }})"
-                      @click="bumping = false;
+                      @click="if (qty > 1) { qty--; }
                               void $el.classList.remove('btn-press');
                               void $el.offsetWidth;
                               $el.classList.add('btn-press');
+                              bumping = false;
                               $nextTick(() => {
                                 bumping = true;
                                 setTimeout(() => bumping = false, 350);
-                              })"
+                              });
+                              $wire.decreaseQuantity({{ $id }})"
                       class="w-10 h-10 rounded-lg border-2 border-slate-300 flex items-center justify-center hover:bg-slate-100 hover:border-slate-400 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                       </svg>
                     </button>
 
+                    {{-- FIX 2: x-text="qty" makes this instant; no Livewire round-trip needed --}}
                     <span
                       :class="{ 'qty-bump': bumping }"
+                      x-text="qty"
                       class="text-lg font-semibold text-slate-900 min-w-[3rem] text-center select-none">
-                      {{ $item['quantity'] }}
                     </span>
 
+                    {{-- Increase: update qty instantly in Alpine, sync to server in background --}}
                     <button
-                      wire:click="increaseQuantity({{ $id }})"
-                      @click="bumping = false;
+                      @click="qty++;
                               void $el.classList.remove('btn-press');
                               void $el.offsetWidth;
                               $el.classList.add('btn-press');
+                              bumping = false;
                               $nextTick(() => {
                                 bumping = true;
                                 setTimeout(() => bumping = false, 350);
-                              })"
+                              });
+                              $wire.increaseQuantity({{ $id }})"
                       class="w-10 h-10 rounded-lg border-2 border-slate-300 flex items-center justify-center hover:bg-slate-100 hover:border-slate-400 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -117,7 +128,7 @@
                     </p>
                   </div>
 
-                  {{-- Remove: confirm → animate → call Livewire --}}
+                  {{-- Remove: confirm → slide-out animation → call Livewire --}}
                   <button
                     @click="if (!confirm('Weet je zeker dat je dit product wilt verwijderen?')) return;
                             removing = true;

@@ -36,7 +36,8 @@
           <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
             
             <div
-              x-data="{ removing: false }"
+              <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = ''.e($id).''; ?>wire:key="<?php echo e($id); ?>"
+              x-data="{ removing: false, bumping: false, qty: <?php echo e($item['quantity']); ?> }"
               x-show="!removing"
               x-transition:leave="transition ease-in duration-300"
               x-transition:leave-start="opacity-100 translate-x-0"
@@ -64,43 +65,45 @@
                   <p class="text-xl font-bold text-slate-900 mb-4">€<?php echo e(number_format($item['price'], 2, ',', '.')); ?></p>
 
                   
-                  <div
-                    x-data="{ bumping: false }"
-                    class="flex items-center gap-3">
+                  <div class="flex items-center gap-3">
 
+                    
                     <button
-                      wire:click="decreaseQuantity(<?php echo e($id); ?>)"
-                      @click="bumping = false;
+                      @click="if (qty > 1) { qty--; }
                               void $el.classList.remove('btn-press');
                               void $el.offsetWidth;
                               $el.classList.add('btn-press');
+                              bumping = false;
                               $nextTick(() => {
                                 bumping = true;
                                 setTimeout(() => bumping = false, 350);
-                              })"
+                              });
+                              $wire.decreaseQuantity(<?php echo e($id); ?>)"
                       class="w-10 h-10 rounded-lg border-2 border-slate-300 flex items-center justify-center hover:bg-slate-100 hover:border-slate-400 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                       </svg>
                     </button>
 
+                    
                     <span
                       :class="{ 'qty-bump': bumping }"
+                      x-text="qty"
                       class="text-lg font-semibold text-slate-900 min-w-[3rem] text-center select-none">
-                      <?php echo e($item['quantity']); ?>
-
                     </span>
 
+                    
                     <button
-                      wire:click="increaseQuantity(<?php echo e($id); ?>)"
-                      @click="bumping = false;
+                      @click="qty++;
                               void $el.classList.remove('btn-press');
                               void $el.offsetWidth;
                               $el.classList.add('btn-press');
+                              bumping = false;
                               $nextTick(() => {
                                 bumping = true;
                                 setTimeout(() => bumping = false, 350);
-                              })"
+                              });
+                              $wire.increaseQuantity(<?php echo e($id); ?>)"
                       class="w-10 h-10 rounded-lg border-2 border-slate-300 flex items-center justify-center hover:bg-slate-100 hover:border-slate-400 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
