@@ -1,19 +1,37 @@
-<div class="bg-white shadow-sm border-b border-slate-200">
+<div class="bg-white dark:bg-slate-900 shadow-sm border-b border-slate-200 dark:border-slate-700">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
 
       <!-- Logo -->
       <div class="flex-shrink-0">
-        <a href="<?php echo e(route('home')); ?>" class="text-2xl font-bold text-slate-900">MijnShop</a>
+        <a href="<?php echo e(route('home')); ?>" class="text-2xl font-bold text-slate-900 dark:text-white">MijnShop</a>
       </div>
 
       <!-- Nav -->
       <nav class="flex space-x-8">
-        <a href="<?php echo e(route('home')); ?>" class="text-slate-700 hover:text-slate-900 font-medium">Producten</a>
+        <a href="<?php echo e(route('home')); ?>" class="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium">Producten</a>
       </nav>
 
-      <!-- Right: Cart + User -->
+      <!-- Right: Dark mode toggle + Cart + User -->
       <div class="flex items-center gap-5">
+
+        <!-- Dark / Light mode toggle -->
+        <button
+          onclick="toggleTheme()"
+          class="p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          title="Wissel thema"
+        >
+          <!-- Sun icon — shown in dark mode -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="hidden dark:block h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 3v1m0 16v1m8.66-9h-1M4.34 12h-1m15.07-6.07-.71.71M6.34 17.66l-.71.71m12.73 0-.71-.71M6.34 6.34l-.71-.71M12 5a7 7 0 100 14A7 7 0 0012 5z"/>
+          </svg>
+          <!-- Moon icon — shown in light mode -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="block dark:hidden h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
 
         <!-- Cart (Livewire component — updates in real time) -->
         <?php
@@ -58,7 +76,7 @@ unset($__split);
 <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
              <?php $__env->slot('trigger', null, []); ?> 
-              <button class="flex items-center gap-1.5 text-slate-700 hover:text-slate-900 focus:outline-none transition-colors">
+              <button class="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                         d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -144,8 +162,8 @@ Bestellingen inzien <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
         <?php else: ?>
           <div class="flex items-center gap-3">
-            <a href="<?php echo e(route('login')); ?>" class="text-slate-700 hover:text-slate-900 text-sm font-medium transition-colors">Inloggen</a>
-            <a href="<?php echo e(route('register')); ?>" class="px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded-lg hover:bg-slate-700 transition-colors">
+            <a href="<?php echo e(route('login')); ?>" class="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-sm font-medium transition-colors">Inloggen</a>
+            <a href="<?php echo e(route('register')); ?>" class="px-4 py-2 bg-slate-800 dark:bg-slate-600 text-white text-sm font-medium rounded-lg hover:bg-slate-700 dark:hover:bg-slate-500 transition-colors">
               Registreren
             </a>
           </div>
@@ -154,4 +172,17 @@ Bestellingen inzien <?php echo $__env->renderComponent(); ?>
       </div>
     </div>
   </div>
-</div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/site-navbar.blade.php ENDPATH**/ ?>
+</div>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    if (html.classList.contains('dark')) {
+      html.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      html.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  }
+</script><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/site-navbar.blade.php ENDPATH**/ ?>

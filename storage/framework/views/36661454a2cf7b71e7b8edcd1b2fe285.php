@@ -186,6 +186,6 @@
           Naar de winkel
         </a>
       </div>
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?> 
   </div>
 </div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/livewire/cart.blade.php ENDPATH**/ ?>
