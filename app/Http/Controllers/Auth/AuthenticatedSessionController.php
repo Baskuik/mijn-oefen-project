@@ -24,12 +24,11 @@ class AuthenticatedSessionController extends Controller
 
         // Admins (en actief) → Filament panel
         if ($user->is_admin === true && $user->user_active === true) {
-            // Filament panel id = 'admin' → route naam:
             return redirect()->intended(route('filament.admin.pages.dashboard'));
         }
 
-        // Overige gebruikers → eigen dashboard
-        return redirect()->intended(route('dashboard'));
+        // Overige gebruikers → home pagina (geen ->intended() om /filament redirect te voorkomen)
+        return redirect(route('home'));
     }
 
     public function destroy(Request $request): RedirectResponse
