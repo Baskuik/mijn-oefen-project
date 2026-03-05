@@ -40,7 +40,7 @@
           </div>
           @if($orders->count() > 0)
             <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl px-5 py-4 text-center">
-              <p class="text-3xl font-extrabold text-white">€{{ number_format($orders->sum('total_price'), 0, ',', '.') }}</p>
+              <p class="text-3xl font-extrabold text-white">€{{ number_format($orders->sum('total_price'), 2, ',', '.') }}</p>
               <p class="text-xs text-slate-300 font-medium mt-0.5">Totaal besteed</p>
             </div>
           @endif
