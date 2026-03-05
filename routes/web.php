@@ -19,11 +19,16 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserOrderController;
 use App\Http\Controllers\AccountController;
 use App\Livewire\Cart;
+use App\Models\Order;
 
 Route::get('/', [ProductController::class, 'index'])->name('home');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $orders = Order::where('user_id', auth()->id())
+        ->with('items.product')
+        ->latest()
+        ->get();
+    return view('dashboard', compact('orders'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'admin'])->group(function () {
