@@ -154,4 +154,4 @@ Bestellingen inzien <?php echo $__env->renderComponent(); ?>
       </div>
     </div>
   </div>
-</div> <?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/site-navbar.blade.php ENDPATH**/ ?>
+</div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/site-navbar.blade.php ENDPATH**/ ?>
