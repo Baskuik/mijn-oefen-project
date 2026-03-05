@@ -192,6 +192,6 @@
           Naar de winkel
         </a>
       </div>
-    @endif
+    @endif 
   </div>
 </div>
