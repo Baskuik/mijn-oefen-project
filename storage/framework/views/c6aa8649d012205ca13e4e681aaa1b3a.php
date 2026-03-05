@@ -1,7 +1,4 @@
-<div
-    x-data="{ open: $wire.entangle('showVerificationModal') }"
-    x-init="$watch('open', v => document.body.classList.toggle('overflow-hidden', v))"
->
+<div x-data="{ open: $wire.entangle('showVerificationModal') }">
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session()->has('success')): ?>
         <div class="text-green-600 dark:text-green-400 text-xs font-bold mb-2 animate-pulse">
             <?php echo e(session('success')); ?>!
@@ -27,8 +24,11 @@
         </span>
     </button>
 
+    <template x-teleport="<?php echo e('body'); ?>">
     
     <div
+        x-data="{ open: $wire.entangle('showVerificationModal') }"
+        x-init="$watch('open', v => document.body.classList.toggle('overflow-hidden', v))"
         x-show="open"
         x-on:keydown.escape.window="open = false; $wire.closeModal()"
         x-transition:enter="transition ease-out duration-300"
@@ -37,7 +37,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-[100] flex items-center justify-center px-6 md:px-10"
+        class="fixed inset-0 z-[9999] flex items-center justify-center px-6 md:px-10"
         style="display:none;"
     >
         
@@ -55,7 +55,7 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
             x-transition:leave-end="opacity-0 scale-95 translate-y-2"
-            class="relative z-[101] bg-white rounded-3xl shadow-2xl w-full max-w-3xl md:max-w-4xl xl:max-w-5xl p-8 md:p-12"
+            class="relative z-[10000] bg-white rounded-3xl shadow-2xl w-full max-w-3xl md:max-w-4xl xl:max-w-5xl p-8 md:p-12"
             role="dialog"
             aria-modal="true"
         >
@@ -102,4 +102,5 @@
         </div>
     </div>
     
+    </template>
 </div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/livewire/add-to-cart.blade.php ENDPATH**/ ?>
