@@ -16,7 +16,7 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-slate-50">
             @include('components.site-navbar')
 
             <!-- Page Content -->

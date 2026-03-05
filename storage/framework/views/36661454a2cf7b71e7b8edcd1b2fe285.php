@@ -1,5 +1,21 @@
 <div>
-  <?php echo $__env->make('components.site-navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+  
+  <style>
+    @keyframes qty-bump {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.45); }
+      65%  { transform: scale(0.88); }
+      100% { transform: scale(1); }
+    }
+    .qty-bump { animation: qty-bump 0.32s cubic-bezier(.36,.07,.19,.97); }
+
+    @keyframes btn-press {
+      0%   { transform: scale(1); }
+      45%  { transform: scale(0.78); }
+      100% { transform: scale(1); }
+    }
+    .btn-press { animation: btn-press 0.18s ease; }
+  </style>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="mb-8">
@@ -18,12 +34,22 @@
         
         <div class="lg:col-span-2 space-y-4">
           <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
+            
+            <div
+              <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = ''.e($id).''; ?>wire:key="<?php echo e($id); ?>"
+              x-data="{ removing: false, bumping: false, qty: <?php echo e($item['quantity']); ?> }"
+              x-show="!removing"
+              x-transition:leave="transition ease-in duration-300"
+              x-transition:leave-start="opacity-100 translate-x-0"
+              x-transition:leave-end="opacity-0 -translate-x-12"
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
+              style="transform-origin: left center;">
+
               <div class="flex gap-6">
                 
                 <div class="flex-shrink-0">
                   <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($item['image']): ?>
-                    <img src="<?php echo e(asset('storage/' . $item['image'])); ?>" 
+                    <img src="<?php echo e(asset('storage/' . $item['image'])); ?>"
                          alt="<?php echo e($item['name']); ?>"
                          class="w-24 h-24 object-cover rounded-lg">
                   <?php else: ?>
@@ -40,18 +66,44 @@
 
                   
                   <div class="flex items-center gap-3">
-                    <button 
-                      wire:click="decreaseQuantity(<?php echo e($id); ?>)"
+
+                    
+                    <button
+                      @click="if (qty > 1) { qty--; }
+                              void $el.classList.remove('btn-press');
+                              void $el.offsetWidth;
+                              $el.classList.add('btn-press');
+                              bumping = false;
+                              $nextTick(() => {
+                                bumping = true;
+                                setTimeout(() => bumping = false, 350);
+                              });
+                              $wire.decreaseQuantity(<?php echo e($id); ?>)"
                       class="w-10 h-10 rounded-lg border-2 border-slate-300 flex items-center justify-center hover:bg-slate-100 hover:border-slate-400 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                       </svg>
                     </button>
 
-                    <span class="text-lg font-semibold text-slate-900 min-w-[3rem] text-center"><?php echo e($item['quantity']); ?></span>
+                    
+                    <span
+                      :class="{ 'qty-bump': bumping }"
+                      x-text="qty"
+                      class="text-lg font-semibold text-slate-900 min-w-[3rem] text-center select-none">
+                    </span>
 
-                    <button 
-                      wire:click="increaseQuantity(<?php echo e($id); ?>)"
+                    
+                    <button
+                      @click="qty++;
+                              void $el.classList.remove('btn-press');
+                              void $el.offsetWidth;
+                              $el.classList.add('btn-press');
+                              bumping = false;
+                              $nextTick(() => {
+                                bumping = true;
+                                setTimeout(() => bumping = false, 350);
+                              });
+                              $wire.increaseQuantity(<?php echo e($id); ?>)"
                       class="w-10 h-10 rounded-lg border-2 border-slate-300 flex items-center justify-center hover:bg-slate-100 hover:border-slate-400 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -70,9 +122,11 @@
                     </p>
                   </div>
 
-                  <button 
-                    wire:click="removeItem(<?php echo e($id); ?>)"
-                    wire:confirm="Weet je zeker dat je dit product wilt verwijderen?"
+                  
+                  <button
+                    @click="if (!confirm('Weet je zeker dat je dit product wilt verwijderen?')) return;
+                            removing = true;
+                            setTimeout(() => $wire.removeItem(<?php echo e($id); ?>), 320)"
                     class="inline-flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -89,7 +143,7 @@
         <div class="lg:col-span-1">
           <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-8 sticky top-8">
             <h2 class="text-2xl font-bold text-slate-900 mb-6">Overzicht</h2>
-            
+
             <div class="space-y-4 mb-6">
               <div class="flex justify-between text-slate-600">
                 <span>Subtotaal</span>
@@ -107,7 +161,7 @@
               </div>
             </div>
 
-            <a href="<?php echo e(route('checkout')); ?>" 
+            <a href="<?php echo e(route('checkout')); ?>"
                class="block w-full text-center px-6 py-4 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
               Afrekenen
             </a>
@@ -127,7 +181,7 @@
         </div>
         <h3 class="text-2xl font-bold text-slate-900 mb-2">Je winkelwagen is leeg</h3>
         <p class="text-slate-600 mb-8">Voeg producten toe om te beginnen met winkelen!</p>
-        <a href="<?php echo e(route('home')); ?>" 
+        <a href="<?php echo e(route('home')); ?>"
            class="inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold hover:from-amber-600 hover:to-amber-700 transition-all shadow-md hover:shadow-lg">
           Naar de winkel
         </a>
