@@ -278,41 +278,102 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
       x-transition:leave="transition ease-in duration-200"
       x-transition:leave-start="opacity-100"
       x-transition:leave-end="opacity-0"
-      class="fixed inset-0 z-[100] flex items-center justify-center px-6 md:px-10"
+      class="fixed inset-0 z-[100] flex items-center justify-center px-4 sm:px-6"
       style="display:none;">
+
+      <!-- Backdrop -->
       <div class="absolute inset-0 bg-black/70 backdrop-blur-lg" @click="showConfirm = false"></div>
+
+      <!-- Dialog panel -->
       <div
         x-show="showConfirm"
         x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+        x-transition:enter-start="opacity-0 scale-95 translate-y-4"
         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-        x-transition:leave-end="opacity-0 scale-95 translate-y-2"
-        class="relative z-[101] bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-3xl md:max-w-4xl xl:max-w-5xl p-8 md:p-12"
-        role="dialog" aria-modal="true">
-        <div class="flex items-start gap-5 md:gap-8">
-          <div class="w-16 h-16 md:w-20 md:h-20 bg-amber-100 dark:bg-amber-900/30 rounded-2xl flex items-center justify-center flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
-          </div>
-          <div class="min-w-0">
-            <h3 class="text-2xl md:text-3xl xl:text-4xl font-extrabold text-slate-900 dark:text-white mb-3">E-mailadres wijzigen?</h3>
-            <p class="text-slate-600 dark:text-slate-300 text-base md:text-lg leading-relaxed">
-              Weet je het zeker? Je e‑mail is momenteel geverifieerd.
-              Na het wijzigen moet je je nieuwe e‑mailadres opnieuw verifiëren.
-            </p>
-            <div class="mt-8 flex flex-col sm:flex-row gap-3">
-              <button @click="showConfirm = false" class="sm:flex-1 px-5 py-3 md:py-4 text-base md:text-lg font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl transition-colors">
-                Annuleren
-              </button>
-              <button @click="showConfirm = false; showEmailForm = true" class="sm:flex-1 px-5 py-3 md:py-4 text-base md:text-lg font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors">
-                Ja, wijzigen
-              </button>
+        x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+        class="relative z-[101] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+        role="dialog" aria-modal="true" aria-labelledby="email-modal-title">
+
+        <!-- Amber accent bar -->
+        <div class="h-1.5 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500"></div>
+
+        <!-- Modal header -->
+        <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100 dark:border-slate-700">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
             </div>
+            <h3 id="email-modal-title" class="text-base font-bold text-slate-900 dark:text-white">E-mailadres wijzigen</h3>
+          </div>
+          <!-- X close button -->
+          <button @click="showConfirm = false"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                  aria-label="Sluiten">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="px-6 py-5 space-y-4">
+          <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            Je staat op het punt je geverifieerde e‑mailadres te wijzigen. Let op het volgende:
+          </p>
+
+          <!-- Consequence list -->
+          <ul class="space-y-2">
+            <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/>
+              </svg>
+              Je nieuwe e‑mailadres moet opnieuw worden geverifieerd.
+            </li>
+            <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/>
+              </svg>
+              Bepaalde functies zijn pas beschikbaar na verificatie.
+            </li>
+          </ul>
+
+          <!-- Current email display -->
+          <div class="flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-slate-700/60 rounded-xl border border-slate-200 dark:border-slate-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 dark:text-slate-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <div class="min-w-0">
+              <p class="text-xs text-slate-400 dark:text-slate-500 font-medium">Huidig e‑mailadres</p>
+              <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate"><?php echo e($user->email); ?></p>
+            </div>
+            <span class="ml-auto flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-xs font-bold rounded-full border border-emerald-200 dark:border-emerald-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              </svg>
+              Geverifieerd
+            </span>
           </div>
         </div>
+
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-700">
+          <button @click="showConfirm = false"
+                  class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl transition-colors shadow-sm">
+            Annuleren
+          </button>
+          <button @click="showConfirm = false; showEmailForm = true"
+                  class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl transition-all shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+            Ja, wijzigen
+          </button>
+        </div>
+
       </div>
     </div>
     <!-- /modal -->
