@@ -1,39 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bestelling Geslaagd! - Pokémon Store</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Betaling Geslaagd - MijnShop</title>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 font-sans h-screen flex items-center justify-center">
 
-    <div class="max-w-md w-full bg-white p-10 rounded-3xl shadow-2xl text-center border border-gray-100">
-        {{-- Een vrolijke icoon --}}
-        <div class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">
-            ✓
-        </div>
+<body class="antialiased bg-slate-50 text-slate-800 min-h-screen">
+    @include('components.site-navbar')
 
-        <h1 class="text-3xl font-black text-gray-900 mb-4">Gevangen!</h1>
-        <p class="text-gray-600 mb-8 leading-relaxed">
-            Bedankt voor je bestelling. De betaling is gelukt en we maken je items direct klaar voor verzending naar je Pokédex.
-        </p>
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+    <div class="bg-white rounded-2xl shadow-xl p-12">
+      <div class="flex items-center justify-center w-24 h-24 mx-auto mb-6 rounded-full bg-green-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
 
-        <div class="space-y-3">
-            <a href="/" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition shadow-lg shadow-blue-200">
-                Terug naar de Store
-            </a>
-            <p class="text-xs text-gray-400">Een bevestiging is onderweg naar je e-mail.</p>
-        </div>
+      <h1 class="text-4xl font-bold text-slate-900 mb-4">Betaling Geslaagd! 🎉</h1>
+      <p class="text-xl text-slate-600 mb-8">
+        Bedankt voor je bestelling! Je ontvangt binnenkort een bevestiging per e-mail.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="{{ route('home') }}" 
+           class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold hover:from-amber-600 hover:to-amber-700 transition-all shadow-md hover:shadow-lg">
+          Terug naar winkel
+        </a>
+        <a href="{{ route('orders.index') }}" 
+           class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-lg border-2 border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-all">
+          Mijn bestellingen
+        </a>
+      </div>
     </div>
-
-    {{-- Optioneel: wat confetti effect met CSS --}}
-    <style>
-        body {
-            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-    </style>
-
+  </div>
 </body>
 </html>
