@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <title>MijnShop - Welkom</title>
 
   <!-- DNS prefetch for external resources -->
@@ -21,8 +21,9 @@
     })();
   </script>
 
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
-  @livewireStyles
+  <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+  <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
+
 
   <style>
     .reveal { opacity: 0; transform: translateY(40px); transition: opacity .7s ease, transform .7s ease; }
@@ -62,7 +63,7 @@
   </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-  @include('components.site-navbar')
+  <?php echo $__env->make('components.site-navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
   <!-- Hero -->
   <section class="relative overflow-hidden flex items-center" style="min-height:85vh;">
@@ -97,7 +98,7 @@
 
   <!-- Products -->
   <section id="producten" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    @if($categories->count() > 0)
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($categories->count() > 0): ?>
 
       <!-- Search + Sort + Filters -->
       <div class="mb-12 reveal">
@@ -133,14 +134,15 @@
           <button class="filter-pill category-pill active px-5 py-2 rounded-full text-sm font-medium border bg-slate-800 text-white border-slate-800" data-filter="all" onclick="filterByCategory(this, 'all')">
             Alle categorieën
           </button>
-          @foreach($categories as $cat)
-            @if($cat->products->count() > 0)
+          <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($cat->products->count() > 0): ?>
               <button class="filter-pill category-pill px-5 py-2 rounded-full text-sm font-medium border bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700"
-                      data-filter="{{ $cat->slug }}" onclick="filterByCategory(this, '{{ $cat->slug }}')">
-                {{ $cat->name }}
+                      data-filter="<?php echo e($cat->slug); ?>" onclick="filterByCategory(this, '<?php echo e($cat->slug); ?>')">
+                <?php echo e($cat->name); ?>
+
               </button>
-            @endif
-          @endforeach
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+          <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
         </div>
 
         <!-- Special filter toggle pills -->
@@ -164,72 +166,75 @@
         <p class="text-slate-500 dark:text-slate-400">Probeer een andere zoekterm of categorie.</p>
       </div>
 
-      @foreach($categories as $category)
-        @if($category->products->count() > 0)
-          <div class="category-section mb-20" data-category="{{ $category->slug }}">
+      <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($category->products->count() > 0): ?>
+          <div class="category-section mb-20" data-category="<?php echo e($category->slug); ?>">
             <div class="flex items-center mb-10 reveal">
               <div class="flex-grow h-0.5 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent"></div>
               <h2 class="text-4xl font-bold text-slate-900 dark:text-white mx-8 relative">
-                {{ $category->name }}
+                <?php echo e($category->name); ?>
+
                 <span class="absolute -bottom-2 left-0 right-0 h-1 bg-slate-800 dark:bg-slate-400 rounded-full"></span>
               </h2>
               <div class="flex-grow h-0.5 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent"></div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              @foreach($category->products as $product)
-                <div class="product-card reveal reveal-delay-{{ ($loop->index % 4) + 1 }} group relative bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transform hover:-translate-y-2"
-                     data-product-name="{{ strtolower($product->name) }}"
-                     data-product-description="{{ strtolower($product->description ?? '') }}"
-                     data-product-category="{{ $category->slug }}"
-                     data-on-sale="{{ $product->bonus_percentage ? 'true' : 'false' }}"
-                     data-is-featured="{{ $product->is_featured ? 'true' : 'false' }}"
-                     data-price="{{ $product->price }}">
+              <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $category->products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
+                <div class="product-card reveal reveal-delay-<?php echo e(($loop->index % 4) + 1); ?> group relative bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transform hover:-translate-y-2"
+                     data-product-name="<?php echo e(strtolower($product->name)); ?>"
+                     data-product-description="<?php echo e(strtolower($product->description ?? '')); ?>"
+                     data-product-category="<?php echo e($category->slug); ?>"
+                     data-on-sale="<?php echo e($product->bonus_percentage ? 'true' : 'false'); ?>"
+                     data-is-featured="<?php echo e($product->is_featured ? 'true' : 'false'); ?>"
+                     data-price="<?php echo e($product->price); ?>">
 
-                  @if($product->bonus_percentage)
+                  <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->bonus_percentage): ?>
                     <div class="absolute top-4 right-4 z-10">
                       <div class="sale-badge bg-rose-600 text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg">
-                        -{{ $product->bonus_percentage }}% SALE
+                        -<?php echo e($product->bonus_percentage); ?>% SALE
                       </div>
                     </div>
-                  @endif
+                  <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                  @if($product->image)
+                  <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->image): ?>
                     <div class="relative aspect-square bg-slate-50 dark:bg-slate-700 overflow-hidden">
-                      <img src="{{ asset('storage/' . $product->image) }}"
-                           alt="{{ $product->name }}"
+                      <img src="<?php echo e(asset('storage/' . $product->image)); ?>"
+                           alt="<?php echo e($product->name); ?>"
                            loading="lazy"
                            width="400" height="400"
                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                       <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
-                  @else
+                  <?php else: ?>
                     <div class="aspect-square bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </div>
-                  @endif
+                  <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                   <div class="p-6">
                     <h3 class="font-semibold text-slate-900 dark:text-white text-lg mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
-                      {{ $product->name }}
+                      <?php echo e($product->name); ?>
+
                     </h3>
 
-                    @if($product->description)
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->description): ?>
                       <p class="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 leading-relaxed min-h-[2.5rem]">
-                        {{ $product->description }}
+                        <?php echo e($product->description); ?>
+
                       </p>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                     <div class="mb-5">
                       <div class="flex items-baseline gap-2">
-                        <span class="text-3xl font-bold text-slate-900 dark:text-white">€{{ number_format($product->price, 2, ',', '.') }}</span>
+                        <span class="text-3xl font-bold text-slate-900 dark:text-white">€<?php echo e(number_format($product->price, 2, ',', '.')); ?></span>
                         <span class="text-slate-500 dark:text-slate-400 text-sm">incl. BTW</span>
                       </div>
                     </div>
 
                     <!-- Add-to-cart -->
                     <div x-data="{ busy: false, done: false }">
-                      @auth
+                      <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
                         <!-- Logged-in: AJAX add-to-cart; show verify modal on 403 -->
                         <button
                           type="button"
@@ -237,7 +242,7 @@
                             if (busy) return;
                             busy = true;
 
-                            fetch('{{ route('cart.store') }}', {
+                            fetch('<?php echo e(route('cart.store')); ?>', {
                               method: 'POST',
                               headers: {
                                 'Content-Type': 'application/json',
@@ -245,7 +250,7 @@
                                 'X-CSRF-TOKEN': document.head.querySelector('meta[name=csrf-token]').content,
                                 'X-Requested-With': 'XMLHttpRequest'
                               },
-                              body: JSON.stringify({ product_id: {{ $product->id }} })
+                              body: JSON.stringify({ product_id: <?php echo e($product->id); ?> })
                             })
                             .then(function (r) {
                               if (r.status === 403) {
@@ -288,7 +293,7 @@
                             </span>
                           </template>
                         </button>
-                      @else
+                      <?php else: ?>
                         <!-- Guests: show auth-required modal -->
                         <button
                           type="button"
@@ -297,19 +302,19 @@
                         >
                           Toevoegen aan winkelwagen
                         </button>
-                      @endauth
+                      <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                     <!-- End add-to-cart -->
 
                   </div>
                 </div>
-              @endforeach
+              <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </div>
           </div>
-        @endif
-      @endforeach
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+      <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
 
-    @else
+    <?php else: ?>
       <div class="text-center py-32 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
         <div class="flex items-center justify-center w-24 h-24 mx-auto mb-8 rounded-full bg-slate-200 dark:bg-slate-700">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
@@ -317,7 +322,7 @@
         <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-3">Geen producten beschikbaar</h3>
         <p class="text-slate-600 dark:text-slate-400">Kom binnenkort terug voor geweldige nieuwe producten!</p>
       </div>
-    @endif
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
   </section>
 
   <!-- Features -->
@@ -367,7 +372,7 @@
       </div>
       <div>
         <p class="font-semibold" x-text="message"></p>
-        <p class="text-white/90 text-sm">Bekijk je <a href="{{ route('cart') }}" class="underline">winkelwagen</a></p>
+        <p class="text-white/90 text-sm">Bekijk je <a href="<?php echo e(route('cart')); ?>" class="underline">winkelwagen</a></p>
       </div>
     </div>
   </div>
@@ -443,8 +448,8 @@
                 class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl transition-colors shadow-sm">
           Sluiten
         </button>
-        <form method="POST" action="{{ route('verification.send') }}">
-          @csrf
+        <form method="POST" action="<?php echo e(route('verification.send')); ?>">
+          <?php echo csrf_field(); ?>
           <button type="submit"
                   class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl transition-all shadow-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -522,11 +527,11 @@
                 class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl transition-colors shadow-sm">
           Sluiten
         </button>
-        <a href="{{ route('register') }}"
+        <a href="<?php echo e(route('register')); ?>"
            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 dark:text-white dark:bg-indigo-700 dark:hover:bg-indigo-600 rounded-xl transition-all shadow-sm">
           Registreren
         </a>
-        <a href="{{ route('login') }}"
+        <a href="<?php echo e(route('login')); ?>"
            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl transition-all shadow-sm">
           Inloggen
         </a>
@@ -688,6 +693,7 @@
     });
   </script>
 
-  @livewireScripts
+  <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
+
 </body>
-</html>
+</html><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/welcome.blade.php ENDPATH**/ ?>
