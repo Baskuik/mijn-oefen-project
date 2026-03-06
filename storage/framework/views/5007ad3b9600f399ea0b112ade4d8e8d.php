@@ -69,4 +69,4 @@ switch ($width) {
 
         </div>
     </div>
-</div> <?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/dropdown.blade.php ENDPATH**/ ?>
+</div><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/components/dropdown.blade.php ENDPATH**/ ?>
