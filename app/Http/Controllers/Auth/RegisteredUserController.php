@@ -34,11 +34,10 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
-        
-        // Don't log the user in - they must verify email first
-        // Auth::login($user); <- REMOVED
-        
-        // Redirect to email verification notice page
-        return redirect()->route('verification.notice');
+
+        // Log the user in and send them to the homepage
+        Auth::login($user);
+
+        return redirect()->route('home');
     }
 }

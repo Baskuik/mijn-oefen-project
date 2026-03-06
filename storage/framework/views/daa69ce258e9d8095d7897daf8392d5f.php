@@ -274,14 +274,13 @@
                               return r.json().catch(function () { return null; });
                             })
                             .then(function(d) {
-                              if (!d) return;
+                              // FIX: always reset busy first, then check payload
                               busy = false;
-                              if (d.ok) {
-                                done = true;
-                                setTimeout(function() { done = false; }, 2500);
-                                window.dispatchEvent(new CustomEvent('product-added-to-cart', { detail: { name: d.product_name } }));
-                                if (typeof Livewire !== 'undefined') Livewire.dispatch('cart-updated');
-                              }
+                              if (!d || !d.ok) return;
+                              done = true;
+                              setTimeout(function() { done = false; }, 2500);
+                              window.dispatchEvent(new CustomEvent('product-added-to-cart', { detail: { name: d.product_name } }));
+                              if (typeof Livewire !== 'undefined') Livewire.dispatch('cart-updated');
                             })
                             .catch(function() { busy = false; })
                           "
