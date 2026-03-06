@@ -2,10 +2,7 @@
     x-data="{ loading: false }"
     @product-added-to-cart.window="loading = false"
     @cart-updated.window="loading = false"
-    @livewire:request-error.window="loading = false"
-    x-init="
-        $wire.on('showVerificationModal', () => { loading = false; })
-    "
+    x-init="$wire.$watch('showVerificationModal', value => { if (value) loading = false; })"
 >
     @if (session()->has('success'))
         <div class="text-green-600 dark:text-green-400 text-xs font-bold mb-2 animate-pulse">
