@@ -690,4 +690,4 @@
 
   @livewireScripts
 </body>
-</html>
+</html> 
