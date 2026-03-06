@@ -16,4 +16,4 @@ class EmailVerificationPromptController extends Controller
     {
         return redirect()->route('home');
     }
-}
+} 
