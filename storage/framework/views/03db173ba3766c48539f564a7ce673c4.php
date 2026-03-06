@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title><?php echo e(config('app.name', 'Laravel')); ?></title>
 
         <!-- Dark mode: apply before CSS renders to avoid flash -->
         <script>
@@ -22,15 +22,16 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @livewireStyles
+        <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+        <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
+
     </head>
     <body class="font-sans antialiased bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
 
         <!-- Minimal top bar -->
         <div class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                <a href="{{ route('home') }}" wire:navigate class="text-2xl font-bold text-slate-900 dark:text-white hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+                <a href="<?php echo e(route('home')); ?>" wire:navigate class="text-2xl font-bold text-slate-900 dark:text-white hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
                     MijnShop
                 </a>
                 <button onclick="toggleTheme()"
@@ -54,7 +55,8 @@
         <div class="min-h-[calc(100vh-4rem)] flex flex-col sm:justify-center items-center py-12 px-4">
             <div class="w-full sm:max-w-md bg-white dark:bg-slate-800 shadow-xl rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
                 <div class="px-8 py-8">
-                    {{ $slot }}
+                    <?php echo e($slot); ?>
+
                 </div>
             </div>
         </div>
@@ -71,6 +73,7 @@
                 }
             }
         </script>
-        @livewireScripts
+        <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
+
     </body>
-</html>
+</html><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/layouts/guest.blade.php ENDPATH**/ ?>

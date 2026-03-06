@@ -24,11 +24,11 @@
       </p>
 
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="{{ route('home') }}" 
+        <a href="{{ route('home') }}"
            class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold hover:from-amber-600 hover:to-amber-700 transition-all shadow-md hover:shadow-lg">
           Terug naar winkel
         </a>
-        <a href="{{ route('orders.index') }}" 
+        <a href="{{ route('orders.index') }}"
            class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-lg border-2 border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-all">
           Mijn bestellingen
         </a>

@@ -9,49 +9,54 @@ class CartController extends Controller
 {
     public function store(Request $request)
     {
+        // Block unverified users
+        if (auth()->check() && ! auth()->user()->hasVerifiedEmail()) {
+            if ($request->wantsJson()) {
+                return response()->json(['needs_verification' => true], 403);
+            }
+            return back()->with('error', 'Verifieer eerst je e-mailadres.');
+        }
+
         $validated = $request->validate([
-            'product_id' => ['required','integer','exists:products,id'],
-            'qty' => ['nullable','integer','min:1'],
+            'product_id' => ['required', 'integer', 'exists:products,id'],
+            'qty'        => ['nullable', 'integer', 'min:1'],
         ]);
 
-        $qty = $validated['qty'] ?? 1;
+        $qty       = $validated['qty'] ?? 1;
         $productId = $validated['product_id'];
+        $cart      = session()->get('cart', []);
+        $product   = Product::find($productId);
 
-        $cart = session()->get('cart', []);
-        
-        // Haal product op
-        $product = Product::find($productId);
-        
         if ($product) {
             if (isset($cart[$productId])) {
-                // Check of het nieuwe formaat is (array) of oude formaat (int)
                 if (is_array($cart[$productId])) {
                     $cart[$productId]['quantity'] += $qty;
                 } else {
-                    // Converteer oude formaat naar nieuwe formaat
-                    $oldQuantity = (int) $cart[$productId];
+                    $oldQuantity           = (int) $cart[$productId];
                     $cart[$productId] = [
-                        'name' => $product->name,
+                        'name'     => $product->name,
                         'quantity' => $oldQuantity + $qty,
-                        'price' => $product->price,
-                        'image' => $product->image,
+                        'price'    => $product->price,
+                        'image'    => $product->image,
                     ];
                 }
             } else {
-                // Nieuw product - voeg toe in nieuwe formaat
                 $cart[$productId] = [
-                    'name' => $product->name,
+                    'name'     => $product->name,
                     'quantity' => $qty,
-                    'price' => $product->price,
-                    'image' => $product->image,
+                    'price'    => $product->price,
+                    'image'    => $product->image,
                 ];
             }
         }
-        
+
         session()->put('cart', $cart);
 
         if ($request->wantsJson()) {
-            return response()->json(['ok' => true, 'cart' => $cart]);
+            return response()->json([
+                'ok'           => true,
+                'product_name' => $product?->name,
+            ]);
         }
 
         return back()->with('status', 'Toegevoegd aan je winkelwagen!');

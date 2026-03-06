@@ -19,7 +19,7 @@
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="mb-8">
-      <a href="{{ route('home') }}" class="inline-flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+      <a href="{{ route('home') }}" wire:navigate class="inline-flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -156,6 +156,7 @@
             </div>
 
             <a href="{{ route('checkout') }}"
+               wire:navigate
                class="block w-full text-center px-6 py-4 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
               Afrekenen
             </a>
@@ -176,6 +177,7 @@
         <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Je winkelwagen is leeg</h3>
         <p class="text-slate-600 dark:text-slate-400 mb-8">Voeg producten toe om te beginnen met winkelen!</p>
         <a href="{{ route('home') }}"
+           wire:navigate
            class="inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold hover:from-amber-600 hover:to-amber-700 transition-all shadow-md hover:shadow-lg">
           Naar de winkel
         </a>

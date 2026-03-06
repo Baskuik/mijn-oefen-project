@@ -1,4 +1,4 @@
-<div x-data="{ open: $wire.entangle('showVerificationModal') }">
+<div>
     @if (session()->has('success'))
         <div class="text-green-600 dark:text-green-400 text-xs font-bold mb-2 animate-pulse">
             {{ session('success') }}!
@@ -9,6 +9,7 @@
         type="button"
         wire:click="addToCart"
         wire:loading.attr="disabled"
+        wire:target="addToCart"
         class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 disabled:bg-gray-400 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
     >
         <span wire:loading.remove wire:target="addToCart">
@@ -147,4 +148,4 @@
     </div>
     {{-- /Email verification modal --}}
     @endteleport
-</div> 
+</div>

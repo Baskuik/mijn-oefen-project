@@ -4,12 +4,12 @@
 
       <!-- Logo -->
       <div class="flex-shrink-0">
-        <a href="{{ route('home') }}" class="text-2xl font-bold text-slate-900 dark:text-white">Pokémon go Webstore</a>
+        <a href="{{ route('home') }}" wire:navigate class="text-2xl font-bold text-slate-900 dark:text-white">Pokémon go Webstore</a>
       </div>
 
       <!-- Nav -->
       <nav class="flex space-x-8">
-        <a href="{{ route('home') }}" class="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium">Producten</a>
+        <a href="{{ route('home') }}" wire:navigate class="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium">Producten</a>
       </nav>
 
       <!-- Right: Dark mode toggle + Cart + User -->
@@ -56,8 +56,8 @@
                 {{ Auth::user()->name }}
               </div>
 
-              <x-dropdown-link :href="route('account.index')">Account</x-dropdown-link>
-              <x-dropdown-link :href="route('orders.index')">Bestellingen inzien</x-dropdown-link>
+              <x-dropdown-link :href="route('account.index')" wire:navigate>Account</x-dropdown-link>
+              <x-dropdown-link :href="route('orders.index')" wire:navigate>Bestellingen inzien</x-dropdown-link>
 
               <div class="border-t border-gray-100 my-1"></div>
 
@@ -76,8 +76,8 @@
           </x-dropdown>
         @else
           <div class="flex items-center gap-3">
-            <a href="{{ route('login') }}" class="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-sm font-medium transition-colors">Inloggen</a>
-            <a href="{{ route('register') }}" class="px-4 py-2 bg-slate-800 dark:bg-slate-600 text-white text-sm font-medium rounded-lg hover:bg-slate-700 dark:hover:bg-slate-500 transition-colors">
+            <a href="{{ route('login') }}" wire:navigate class="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-sm font-medium transition-colors">Inloggen</a>
+            <a href="{{ route('register') }}" wire:navigate class="px-4 py-2 bg-slate-800 dark:bg-slate-600 text-white text-sm font-medium rounded-lg hover:bg-slate-700 dark:hover:bg-slate-500 transition-colors">
               Registreren
             </a>
           </div>

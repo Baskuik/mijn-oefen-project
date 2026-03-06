@@ -3,29 +3,29 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use Livewire\Attributes\On;
 
 class CartCounter extends Component
 {
-    #[On('cart-updated')]
-    public function updateCount()
+    public int $count = 0;
+
+    protected $listeners = ['cart-updated' => 'refresh'];
+
+    public function mount(): void
     {
-        // Re-render to update count
+        $this->count = array_sum(
+            array_column(session()->get('cart', []), 'quantity')
+        );
+    }
+
+    public function refresh(): void
+    {
+        $this->count = array_sum(
+            array_column(session()->get('cart', []), 'quantity')
+        );
     }
 
     public function render()
     {
-        $cart = session()->get('cart', []);
-        $count = 0;
-
-        foreach ($cart as $item) {
-            if (is_array($item) && isset($item['quantity'])) {
-                $count += (int) $item['quantity'];
-            } elseif (is_numeric($item)) {
-                $count += (int) $item;
-            }
-        }
-
-        return view('livewire.cart-counter', ['count' => $count]);
+        return view('livewire.cart-counter');
     }
 }

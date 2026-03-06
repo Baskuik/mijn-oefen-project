@@ -21,24 +21,24 @@ class RegisteredUserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name'        => $validated['name'],
             'email'       => $validated['email'],
+            // Keep as-is to match your model's password casting (likely 'hashed' cast).
             'password'    => $validated['password'],
             'is_admin'    => false,
             'user_active' => true,
         ]);
 
         event(new Registered($user));
-        
-        // Don't log the user in - they must verify email first
-        // Auth::login($user); <- REMOVED
-        
-        // Redirect to email verification notice page
-        return redirect()->route('verification.notice');
+
+        // Log in immediately and go home (no verify page at registration)
+        Auth::login($user);
+
+        return redirect()->route('home');
     }
 }

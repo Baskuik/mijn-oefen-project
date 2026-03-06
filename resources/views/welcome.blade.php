@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pokémon go Webstore - Welkom</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>MijnShop - Welkom</title>
+
+  <!-- DNS prefetch for external resources -->
+  <link rel="dns-prefetch" href="https://fonts.bunny.net">
+  <link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
+  <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
 
   <!-- Dark mode: apply before CSS renders to prevent flash -->
   <script>
@@ -17,8 +23,8 @@
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @livewireStyles
+
   <style>
-    /* Reveal base */
     .reveal { opacity: 0; transform: translateY(40px); transition: opacity .7s ease, transform .7s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-delay-1 { transition-delay: .05s; }
@@ -27,7 +33,6 @@
     .reveal-delay-4 { transition-delay: .35s; }
     .reveal:not(.visible) { transition-delay: 0s !important; }
 
-    /* YouTube hero background */
     .hero-video-wrapper { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
     .hero-video-wrapper iframe {
       position: absolute; top: 50%; left: 50%;
@@ -35,21 +40,17 @@
       transform: translate(-50%, -50%); pointer-events: none; border: 0;
     }
 
-    /* Hero text entrance */
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px);} to { opacity: 1; transform: translateY(0);} }
     .hero-title { animation: fadeInUp .9s ease forwards; }
     .hero-subtitle { opacity: 0; animation: fadeInUp .9s ease .3s forwards; }
     .hero-buttons { opacity: 0; animation: fadeInUp .9s ease .6s forwards; }
 
-    /* Sale badge */
     @keyframes pulseBadge { 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.06);} }
     .sale-badge { animation: pulseBadge 2s ease-in-out infinite; }
 
-    /* Feature hover */
     .feature-card { transition: transform .3s ease, box-shadow .3s ease; }
     .feature-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -12px rgba(0,0,0,.35); }
 
-    /* Scroll-to-top */
     #scroll-top-btn {
       position: fixed; bottom: 2rem; left: 2rem; z-index: 40;
       opacity: 0; transform: translateY(12px);
@@ -57,20 +58,15 @@
     }
     #scroll-top-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
-    /* Filter pills */
     .filter-pill { transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s; }
   </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
   @include('components.site-navbar')
 
-  <!-- Hero with YouTube video -->
+  <!-- Hero -->
   <section class="relative overflow-hidden flex items-center" style="min-height:85vh;">
-    <div class="hero-video-wrapper">
-      <iframe
-        src="https://www.youtube-nocookie.com/embed/gsuG1HiS-gA?autoplay=1&mute=1&loop=1&playlist=gsuG1HiS-gA&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
-        title="Hero background video" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
+    <div id="hero-video-wrapper" class="hero-video-wrapper bg-slate-900"></div>
     <div class="absolute inset-0 bg-black/55 z-10"></div>
     <div class="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-indigo-900/20 to-purple-900/30 z-10"></div>
 
@@ -106,7 +102,6 @@
       <!-- Search + Sort + Filters -->
       <div class="mb-12 reveal">
 
-        {{-- Search bar + sort dropdown --}}
         <div class="flex flex-col sm:flex-row gap-3 max-w-3xl mx-auto mb-6">
           <div class="relative flex-1">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -133,7 +128,7 @@
           </div>
         </div>
 
-        {{-- Category pills --}}
+        <!-- Category pills -->
         <div class="flex flex-wrap justify-center gap-2 mb-3">
           <button class="filter-pill category-pill active px-5 py-2 rounded-full text-sm font-medium border bg-slate-800 text-white border-slate-800" data-filter="all" onclick="filterByCategory(this, 'all')">
             Alle categorieën
@@ -148,7 +143,7 @@
           @endforeach
         </div>
 
-        {{-- Special filter toggle pills --}}
+        <!-- Special filter toggle pills -->
         <div class="flex flex-wrap justify-center gap-2">
           <button class="filter-pill special-pill px-5 py-2 rounded-full text-sm font-medium border bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-rose-400 hover:text-rose-600 dark:hover:border-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-slate-700 transition-all"
                   data-special="sale" onclick="toggleSpecialFilter(this, 'sale')">
@@ -159,7 +154,6 @@
             ⭐ Uitgelicht
           </button>
         </div>
-
       </div>
 
       <div id="no-results" class="hidden text-center py-24">
@@ -202,7 +196,11 @@
 
                   @if($product->image)
                     <div class="relative aspect-square bg-slate-50 dark:bg-slate-700 overflow-hidden">
-                      <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                      <img src="{{ asset('storage/' . $product->image) }}"
+                           alt="{{ $product->name }}"
+                           loading="lazy"
+                           width="400" height="400"
+                           class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                       <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                   @else
@@ -229,7 +227,80 @@
                       </div>
                     </div>
 
-                    <livewire:add-to-cart :product-id="$product->id" :key="'cart-' . $product->id" />
+                    <!-- Add-to-cart -->
+                    <div x-data="{ busy: false, done: false }">
+                      @auth
+                        <!-- Logged-in: AJAX add-to-cart; show verify modal on 403 -->
+                        <button
+                          type="button"
+                          x-on:click.prevent="
+                            if (busy) return;
+                            busy = true;
+
+                            fetch('{{ route('cart.store') }}', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.head.querySelector('meta[name=csrf-token]').content,
+                                'X-Requested-With': 'XMLHttpRequest'
+                              },
+                              body: JSON.stringify({ product_id: {{ $product->id }} })
+                            })
+                            .then(function (r) {
+                              if (r.status === 403) {
+                                busy = false;
+                                window.dispatchEvent(new CustomEvent('show-verify-modal'));
+                                return null;
+                              }
+                              return r.json().catch(function () { return null; });
+                            })
+                            .then(function (d) {
+                              busy = false;
+                              if (!d || !d.ok) return;
+
+                              done = true;
+                              setTimeout(function () { done = false; }, 2500);
+                              window.dispatchEvent(new CustomEvent('product-added-to-cart', { detail: { name: d.product_name } }));
+                              if (typeof Livewire !== 'undefined') Livewire.dispatch('cart-updated');
+                            })
+                            .catch(function () { busy = false; });
+                          "
+                          :disabled="busy"
+                          class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 disabled:bg-gray-400 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
+                        >
+                          <template x-if="!busy && !done">
+                            <span>Toevoegen aan winkelwagen</span>
+                          </template>
+                          <template x-if="busy">
+                            <span class="flex items-center">
+                              <svg class="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Bezig...
+                            </span>
+                          </template>
+                          <template x-if="done">
+                            <span class="flex items-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                              Toegevoegd!
+                            </span>
+                          </template>
+                        </button>
+                      @else
+                        <!-- Guests: show auth-required modal -->
+                        <button
+                          type="button"
+                          x-on:click.prevent="window.dispatchEvent(new CustomEvent('show-auth-modal'))"
+                          class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
+                        >
+                          Toevoegen aan winkelwagen
+                        </button>
+                      @endauth
+                    </div>
+                    <!-- End add-to-cart -->
+
                   </div>
                 </div>
               @endforeach
@@ -278,9 +349,9 @@
     </div>
   </section>
 
-  <!-- Toast (Alpine) -->
+  <!-- Toast -->
   <div x-data="{ show: false, message: '' }"
-       @product-added-to-cart.window="show = true; message = $event.detail.name + ' toegevoegd!'; setTimeout(() => show = false, 3000)"
+       x-on:product-added-to-cart.window="show = true; message = $event.detail.name + ' toegevoegd!'; setTimeout(() => show = false, 3000)"
        x-show="show"
        x-transition:enter="transition ease-out duration-300"
        x-transition:enter-start="opacity-0 translate-y-8"
@@ -301,6 +372,168 @@
     </div>
   </div>
 
+  <!-- Verify-email modal (logged-in but unverified) -->
+  <div x-data="{ open: false }"
+       x-on:show-verify-modal.window="open = true"
+       x-init="$watch('open', v => document.body.classList.toggle('overflow-hidden', v))"
+       x-show="open"
+       x-on:keydown.escape.window="open = false"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"
+       class="fixed inset-0 z-[9999] flex items-center justify-center px-4 sm:px-6"
+       style="display:none;">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-lg" x-on:click="open = false"></div>
+    <div x-show="open"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+         x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+         class="relative z-[10000] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+         role="dialog" aria-modal="true">
+      <div class="h-1.5 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500"></div>
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100 dark:border-slate-700">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">E-mailadres niet geverifieerd</h3>
+        </div>
+        <button type="button" x-on:click="open = false"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          Je e‑mailadres is nog niet geverifieerd. Verifieer je adres om artikelen toe te voegen aan je winkelwagen.
+        </p>
+        <ul class="space-y-2">
+          <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/>
+            </svg>
+            Controleer je inbox voor de verificatie‑e‑mail.
+          </li>
+          <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/>
+            </svg>
+            Stuur de e‑mail opnieuw als je hem niet hebt ontvangen.
+          </li>
+          <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/>
+            </svg>
+            Na verificatie kun je direct artikelen toevoegen.
+          </li>
+        </ul>
+      </div>
+      <div class="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-700">
+        <button type="button" x-on:click="open = false"
+                class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl transition-colors shadow-sm">
+          Sluiten
+        </button>
+        <form method="POST" action="{{ route('verification.send') }}">
+          @csrf
+          <button type="submit"
+                  class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl transition-all shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            Verificatie-e-mail versturen
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth-required modal (guests) -->
+  <div x-data="{ open: false }"
+       x-on:show-auth-modal.window="open = true"
+       x-init="$watch('open', v => document.body.classList.toggle('overflow-hidden', v))"
+       x-show="open"
+       x-on:keydown.escape.window="open = false"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"
+       class="fixed inset-0 z-[9999] flex items-center justify-center px-4 sm:px-6"
+       style="display:none;">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-lg" x-on:click="open = false"></div>
+
+    <div x-show="open"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+         x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+         class="relative z-[10000] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+         role="dialog" aria-modal="true">
+      <div class="h-1.5 w-full bg-gradient-to-r from-indigo-400 via-blue-400 to-indigo-500"></div>
+
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100 dark:border-slate-700">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">Inloggen en e‑mail verifiëren vereist</h3>
+        </div>
+        <button type="button" x-on:click="open = false"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="px-6 py-5 space-y-4">
+        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          Je bent niet ingelogd. Log in (of maak een account aan) en verifieer je e‑mailadres om artikelen aan je winkelwagen toe te voegen.
+        </p>
+        <ul class="space-y-2">
+          <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/></svg>
+            Na inloggen sturen we (indien nodig) een verificatie‑e‑mail.
+          </li>
+          <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/></svg>
+            Zodra je e‑mail is geverifieerd kun je direct producten toevoegen.
+          </li>
+        </ul>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-700">
+        <button type="button" x-on:click="open = false"
+                class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl transition-colors shadow-sm">
+          Sluiten
+        </button>
+        <a href="{{ route('register') }}"
+           class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 dark:text-white dark:bg-indigo-700 dark:hover:bg-indigo-600 rounded-xl transition-all shadow-sm">
+          Registreren
+        </a>
+        <a href="{{ route('login') }}"
+           class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl transition-all shadow-sm">
+          Inloggen
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- Scroll-to-top -->
   <button id="scroll-top-btn" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
           class="w-12 h-12 bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors duration-200"
@@ -310,6 +543,19 @@
 
   <!-- JS -->
   <script>
+    // Inject YouTube hero video AFTER page has loaded (keeps initial render fast)
+    window.addEventListener('load', function () {
+      var wrapper = document.getElementById('hero-video-wrapper');
+      if (wrapper) {
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube-nocookie.com/embed/gsuG1HiS-gA?autoplay=1&mute=1&loop=1&playlist=gsuG1HiS-gA&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1';
+        iframe.title = 'Hero background video';
+        iframe.allow = 'autoplay; encrypted-media';
+        iframe.allowFullscreen = true;
+        wrapper.appendChild(iframe);
+      }
+    });
+
     // Reveal that replays on re-enter
     (function () {
       var els = document.querySelectorAll('.reveal');
@@ -330,19 +576,17 @@
       }, { passive: true });
     })();
 
-    // ── Filter state ──────────────────────────────────────────────
+    // Filters + sort
     var activeCategory = 'all';
-    var activeSpecials = new Set(); // 'sale' | 'featured'
-    var activeSort     = '';        // 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc'
+    var activeSpecials = new Set();
+    var activeSort     = '';
 
-    // ── Main filter + sort runner ─────────────────────────────────
     function runFilter() {
       var query    = document.getElementById('product-search').value.toLowerCase().trim();
       var cards    = Array.from(document.querySelectorAll('.product-card'));
       var sections = document.querySelectorAll('.category-section');
       var totalVisible = 0;
 
-      // 1. Determine visibility of each card
       cards.forEach(function (card) {
         var name     = card.dataset.productName        || '';
         var desc     = card.dataset.productDescription || '';
@@ -363,7 +607,6 @@
         }
       });
 
-      // 2. Sort visible cards within each category section
       sections.forEach(function (section) {
         var grid = section.querySelector('.grid');
         if (!grid || !activeSort) return;
@@ -380,7 +623,6 @@
         visibleCards.forEach(function (card) { grid.appendChild(card); });
       });
 
-      // 3. Hide empty sections
       sections.forEach(function (section) {
         var anyVisible = Array.from(section.querySelectorAll('.product-card'))
           .some(function (c) { return c.style.display !== 'none'; });
@@ -391,7 +633,6 @@
       document.getElementById('search-clear').classList.toggle('hidden', !query);
     }
 
-    // ── Category filter ───────────────────────────────────────────
     function filterByCategory(btn, slug) {
       activeCategory = slug;
       document.querySelectorAll('.category-pill').forEach(function (b) {
@@ -403,7 +644,6 @@
       runFilter();
     }
 
-    // ── Special toggle filter (sale / featured) ───────────────────
     function toggleSpecialFilter(btn, tag) {
       if (activeSpecials.has(tag)) {
         activeSpecials.delete(tag);
@@ -429,7 +669,7 @@
       runFilter();
     }
 
-    // ── DOMContentLoaded wires ────────────────────────────────────
+    // Show scroll-to-top on scroll
     document.addEventListener('DOMContentLoaded', function () {
       var searchInput = document.getElementById('product-search');
       var clearBtn    = document.getElementById('search-clear');
