@@ -23,6 +23,7 @@
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @livewireStyles
+
   <style>
     /* Reveal base */
     .reveal { opacity: 0; transform: translateY(40px); transition: opacity .7s ease, transform .7s ease; }
@@ -72,9 +73,7 @@
 
   <!-- Hero with YouTube video (loaded after page is ready) -->
   <section class="relative overflow-hidden flex items-center" style="min-height:85vh;">
-    <!-- Placeholder shown while YouTube loads -->
     <div id="hero-video-wrapper" class="hero-video-wrapper bg-slate-900"></div>
-
     <div class="absolute inset-0 bg-black/55 z-10"></div>
     <div class="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-indigo-900/20 to-purple-900/30 z-10"></div>
 
@@ -110,7 +109,7 @@
       <!-- Search + Sort + Filters -->
       <div class="mb-12 reveal">
 
-        {{-- Search bar + sort dropdown --}}
+        <!-- Search bar + sort dropdown -->
         <div class="flex flex-col sm:flex-row gap-3 max-w-3xl mx-auto mb-6">
           <div class="relative flex-1">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -137,7 +136,7 @@
           </div>
         </div>
 
-        {{-- Category pills --}}
+        <!-- Category pills -->
         <div class="flex flex-wrap justify-center gap-2 mb-3">
           <button class="filter-pill category-pill active px-5 py-2 rounded-full text-sm font-medium border bg-slate-800 text-white border-slate-800" data-filter="all" onclick="filterByCategory(this, 'all')">
             Alle categorieën
@@ -152,7 +151,7 @@
           @endforeach
         </div>
 
-        {{-- Special filter toggle pills --}}
+        <!-- Special filter toggle pills -->
         <div class="flex flex-wrap justify-center gap-2">
           <button class="filter-pill special-pill px-5 py-2 rounded-full text-sm font-medium border bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-rose-400 hover:text-rose-600 dark:hover:border-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-slate-700 transition-all"
                   data-special="sale" onclick="toggleSpecialFilter(this, 'sale')">
@@ -206,7 +205,6 @@
 
                   @if($product->image)
                     <div class="relative aspect-square bg-slate-50 dark:bg-slate-700 overflow-hidden">
-                      {{-- loading="lazy" added: images below the fold are no longer loaded immediately --}}
                       <img src="{{ asset('storage/' . $product->image) }}"
                            alt="{{ $product->name }}"
                            loading="lazy"
@@ -238,15 +236,16 @@
                       </div>
                     </div>
 
-                    {{-- Add-to-cart --}}
+                    <!-- Add-to-cart -->
                     <div x-data="{ busy: false, done: false }">
                       @auth
-                        {{-- Logged-in users: AJAX add-to-cart with verification handling --}}
+                        <!-- Logged-in users: AJAX add-to-cart with verification handling -->
                         <button
                           type="button"
                           @click.prevent="
                             if (busy) return;
                             busy = true;
+
                             fetch('{{ route('cart.store') }}', {
                               method: 'POST',
                               headers: {
@@ -257,27 +256,24 @@
                               },
                               body: JSON.stringify({ product_id: {{ $product->id }} })
                             })
-                            .then(function(r) {
-                              // Unverified email -> always show verification modal
+                            .then(function (r) {
                               if (r.status === 403) {
                                 busy = false;
-                                $dispatch('show-verify-modal');
+                                window.dispatchEvent(new CustomEvent('show-verify-modal'));
                                 return null;
                               }
-
-                              // Try to parse JSON for normal success
                               return r.json().catch(function () { return null; });
                             })
-                            .then(function(d) {
-                              // FIX: always reset busy first, then check payload
+                            .then(function (d) {
                               busy = false;
                               if (!d || !d.ok) return;
+
                               done = true;
-                              setTimeout(function() { done = false; }, 2500);
+                              setTimeout(function () { done = false; }, 2500);
                               window.dispatchEvent(new CustomEvent('product-added-to-cart', { detail: { name: d.product_name } }));
                               if (typeof Livewire !== 'undefined') Livewire.dispatch('cart-updated');
                             })
-                            .catch(function() { busy = false; })
+                            .catch(function () { busy = false; });
                           "
                           :disabled="busy"
                           class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 disabled:bg-gray-400 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
@@ -302,17 +298,17 @@
                           </template>
                         </button>
                       @else
-                        {{-- Guests: send to login when they try to add --}}
+                        <!-- Guests: show auth-required modal instead of redirect -->
                         <button
                           type="button"
-                          @click.prevent="window.location.href = '{{ route('login') }}'"
+                          @click.prevent="window.dispatchEvent(new CustomEvent('show-auth-modal'))"
                           class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
                         >
                           Toevoegen aan winkelwagen
                         </button>
                       @endauth
                     </div>
-                    {{-- End add-to-cart --}}
+                    <!-- End add-to-cart -->
 
                   </div>
                 </div>
@@ -385,7 +381,7 @@
     </div>
   </div>
 
-  <!-- Global email verification modal (one instance for the whole page) -->
+  <!-- Global email verification modal (for logged-in but unverified users) -->
   <div x-data="{ open: false }"
        @show-verify-modal.window="open = true"
        x-init="$watch('open', v => document.body.classList.toggle('overflow-hidden', v))"
@@ -421,7 +417,9 @@
         </div>
         <button type="button" @click="open = false"
                 class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
         </button>
       </div>
       <div class="px-6 py-5 space-y-4">
@@ -430,15 +428,21 @@
         </p>
         <ul class="space-y-2">
           <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/></svg>
-            Controleer je inbox voor de verificatie-e‑mail.
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/>
+            </svg>
+            Controleer je inbox voor de verificatie‑e‑mail.
           </li>
           <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/>
+            </svg>
             Stuur de e‑mail opnieuw als je hem niet hebt ontvangen.
           </li>
           <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/>
+            </svg>
             Na verificatie kun je direct artikelen toevoegen.
           </li>
         </ul>
@@ -452,10 +456,89 @@
           @csrf
           <button type="submit"
                   class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl transition-all shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
             Verificatie-e-mail versturen
           </button>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global auth-required modal (for guests) -->
+  <div x-data="{ open: false }"
+       @show-auth-modal.window="open = true"
+       x-init="$watch('open', v => document.body.classList.toggle('overflow-hidden', v))"
+       x-show="open"
+       x-on:keydown.escape.window="open = false"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"
+       class="fixed inset-0 z-[9999] flex items-center justify-center px-4 sm:px-6"
+       style="display:none;">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-lg" @click="open = false"></div>
+
+    <div x-show="open"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+         x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+         class="relative z-[10000] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+         role="dialog" aria-modal="true">
+      <div class="h-1.5 w-full bg-gradient-to-r from-indigo-400 via-blue-400 to-indigo-500"></div>
+
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100 dark:border-slate-700">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">Inloggen en e‑mail verifiëren vereist</h3>
+        </div>
+        <button type="button" @click="open = false"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="px-6 py-5 space-y-4">
+        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+          Je bent niet ingelogd. Log in (of maak een account aan) en verifieer je e‑mailadres om artikelen aan je winkelwagen toe te voegen.
+        </p>
+        <ul class="space-y-2">
+          <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/></svg>
+            Na inloggen sturen we je (indien nodig) een verificatie‑e‑mail.
+          </li>
+          <li class="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01"/></svg>
+            Zodra je e‑mail is geverifieerd kun je direct producten toevoegen.
+          </li>
+        </ul>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-700">
+        <button type="button" @click="open = false"
+                class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl transition-colors shadow-sm">
+          Sluiten
+        </button>
+        <a href="{{ route('register') }}"
+           class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 dark:text-white dark:bg-indigo-700 dark:hover:bg-indigo-600 rounded-xl transition-all shadow-sm">
+          Registreren
+        </a>
+        <a href="{{ route('login') }}"
+           class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-xl transition-all shadow-sm">
+          Inloggen
+        </a>
       </div>
     </div>
   </div>

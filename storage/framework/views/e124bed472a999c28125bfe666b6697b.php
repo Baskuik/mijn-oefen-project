@@ -1,1 +1,0 @@
-<!DOCTYPE html><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views\health.blade.php ENDPATH**/ ?>
