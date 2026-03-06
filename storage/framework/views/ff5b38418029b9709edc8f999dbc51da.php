@@ -41,7 +41,7 @@
           </div>
           <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($orders->count() > 0): ?>
             <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl px-5 py-4 text-center">
-            <p class="text-3xl font-extrabold text-white">€<?php echo e(number_format($orders->sum('total_price'), 2, ',', '.')); ?></p>
+              <p class="text-3xl font-extrabold text-white">€<?php echo e(number_format($orders->sum('total_price'), 2, ',', '.')); ?></p>
               <p class="text-xs text-slate-300 font-medium mt-0.5">Totaal besteed</p>
             </div>
           <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
@@ -60,7 +60,7 @@
         </div>
         <h3 class="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">Nog geen bestellingen</h3>
         <p class="text-slate-400 dark:text-slate-500 text-sm mb-8">Je hebt hier nog niets besteld. Begin met shoppen!</p>
-        <a href="<?php echo e(route('home')); ?>" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-800 dark:bg-slate-600 text-white font-semibold rounded-xl hover:bg-slate-700 dark:hover:bg-slate-500 transition-colors">
+        <a href="<?php echo e(route('home')); ?>" wire:navigate class="inline-flex items-center gap-2 px-6 py-3 bg-slate-800 dark:bg-slate-600 text-white font-semibold rounded-xl hover:bg-slate-700 dark:hover:bg-slate-500 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
           Naar de shop
         </a>
@@ -184,7 +184,7 @@
       </div>
 
       <div class="mt-8 text-center">
-        <a href="<?php echo e(route('home')); ?>" class="text-sm text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">← Terug naar de shop</a>
+        <a href="<?php echo e(route('home')); ?>" wire:navigate class="text-sm text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">← Terug naar de shop</a>
       </div>
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
   </div>
