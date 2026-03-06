@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <title>MijnShop - Welkom</title>
 
   <!-- DNS prefetch for external resources -->
@@ -244,63 +245,78 @@
 
                     
                     <div x-data="{ busy: false, done: false }">
-                      <button
-                        type="button"
-                        @click.prevent="
-                          if (busy) return;
-                          busy = true;
-                          fetch('<?php echo e(route('cart.store')); ?>', {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                              'Accept': 'application/json',
-                              'X-CSRF-TOKEN': document.head.querySelector('meta[name=csrf-token]').content,
-                              'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            body: JSON.stringify({ product_id: <?php echo e($product->id); ?> })
-                          })
-                          .then(function(r) {
-                            if (r.status === 401) { window.location.href = '<?php echo e(route('login')); ?>'; return null; }
-                            return r.json();
-                          })
-                          .then(function(d) {
-                            if (!d) return;
-                            busy = false;
-                            if (d.needs_verification) {
-                              $dispatch('show-verify-modal');
-                              return;
-                            }
-                            if (d.ok) {
-                              done = true;
-                              setTimeout(function() { done = false; }, 2500);
-                              window.dispatchEvent(new CustomEvent('product-added-to-cart', { detail: { name: d.product_name } }));
-                              if (typeof Livewire !== 'undefined') Livewire.dispatch('cart-updated');
-                            }
-                          })
-                          .catch(function() { busy = false; })
-                        "
-                        :disabled="busy"
-                        class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 disabled:bg-gray-400 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
-                      >
-                        <template x-if="!busy && !done">
-                          <span>Toevoegen aan winkelwagen</span>
-                        </template>
-                        <template x-if="busy">
-                          <span class="flex items-center">
-                            <svg class="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Bezig...
-                          </span>
-                        </template>
-                        <template x-if="done">
-                          <span class="flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            Toegevoegd!
-                          </span>
-                        </template>
-                      </button>
+                      <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
+                        
+                        <button
+                          type="button"
+                          @click.prevent="
+                            if (busy) return;
+                            busy = true;
+                            fetch('<?php echo e(route('cart.store')); ?>', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.head.querySelector('meta[name=csrf-token]').content,
+                                'X-Requested-With': 'XMLHttpRequest'
+                              },
+                              body: JSON.stringify({ product_id: <?php echo e($product->id); ?> })
+                            })
+                            .then(function(r) {
+                              // Unverified email -> always show verification modal
+                              if (r.status === 403) {
+                                busy = false;
+                                $dispatch('show-verify-modal');
+                                return null;
+                              }
+
+                              // Try to parse JSON for normal success
+                              return r.json().catch(function () { return null; });
+                            })
+                            .then(function(d) {
+                              if (!d) return;
+                              busy = false;
+                              if (d.ok) {
+                                done = true;
+                                setTimeout(function() { done = false; }, 2500);
+                                window.dispatchEvent(new CustomEvent('product-added-to-cart', { detail: { name: d.product_name } }));
+                                if (typeof Livewire !== 'undefined') Livewire.dispatch('cart-updated');
+                              }
+                            })
+                            .catch(function() { busy = false; })
+                          "
+                          :disabled="busy"
+                          class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 disabled:bg-gray-400 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
+                        >
+                          <template x-if="!busy && !done">
+                            <span>Toevoegen aan winkelwagen</span>
+                          </template>
+                          <template x-if="busy">
+                            <span class="flex items-center">
+                              <svg class="animate-spin h-4 w-4 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Bezig...
+                            </span>
+                          </template>
+                          <template x-if="done">
+                            <span class="flex items-center gap-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                              Toegevoegd!
+                            </span>
+                          </template>
+                        </button>
+                      <?php else: ?>
+                        
+                        <button
+                          type="button"
+                          @click.prevent="window.location.href = '<?php echo e(route('login')); ?>'"
+                          class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition flex justify-center items-center shadow-md hover:shadow-lg"
+                        >
+                          Toevoegen aan winkelwagen
+                        </button>
+                      <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                     
 

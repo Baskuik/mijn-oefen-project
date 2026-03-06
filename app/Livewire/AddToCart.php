@@ -18,8 +18,14 @@ class AddToCart extends Component
 
     public function addToCart(): void
     {
+        // Guests: redirect to login when they try to add something
+        if (! auth()->check()) {
+            $this->redirectRoute('login');
+            return;
+        }
+
         // Block unverified users
-        if (auth()->check() && ! auth()->user()->hasVerifiedEmail()) {
+        if (! auth()->user()->hasVerifiedEmail()) {
             $this->showVerificationModal = true;
             return;
         }
