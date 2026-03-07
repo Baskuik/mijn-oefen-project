@@ -3,36 +3,34 @@
 namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
-use BackedEnum;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Tabs\Tab;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Textarea;
+use Filament\Schemas\Components\TextInput;
+use Filament\Schemas\Schema;
 
 class EditWebsite extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static ?string                $navigationLabel = 'Website Bewerken';
-    protected static BackedEnum|string|null $navigationIcon  = 'heroicon-o-pencil-square';
-    protected static ?string                $title           = 'Website Bewerken';
-    protected string                        $view            = 'filament.pages.edit-website';
-    protected static ?int                   $navigationSort  = 99;
+    protected static ?string $navigationLabel = 'Website Bewerken';
+    protected static ?string $navigationIcon  = 'heroicon-o-pencil-square';
+    protected static ?string $title           = 'Website Bewerken';
+    protected static string  $view            = 'filament.pages.edit-website';
+    protected static ?int    $navigationSort  = 99;
 
-    /** Alleen admins mogen deze pagina zien */
+    public ?array $data = [];
+
     public static function canAccess(): bool
     {
         return auth()->check() && (bool) auth()->user()->is_admin;
     }
-
-    public ?array $data = [];
 
     public function mount(): void
     {
@@ -57,16 +55,14 @@ class EditWebsite extends Page implements HasForms
         $this->form->fill($values);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Tabs::make('Pagina\'s')
                     ->tabs([
-
                         Tab::make('🏠 Homepagina')
                             ->schema([
-
                                 Section::make('Hero Sectie')
                                     ->description('De grote banner helemaal bovenaan de homepage.')
                                     ->icon('heroicon-o-film')
@@ -76,24 +72,19 @@ class EditWebsite extends Page implements HasForms
                                                 ->label('Titel – gewone tekst')
                                                 ->placeholder('Welkom bij de')
                                                 ->required(),
-
                                             TextInput::make('hero_title_highlight')
                                                 ->label('Titel – gekleurde tekst (paars)')
                                                 ->placeholder('Pokémon go Webstore')
                                                 ->required(),
                                         ]),
-
                                         Textarea::make('hero_subtitle')
                                             ->label('Ondertitel / Beschrijving')
                                             ->rows(3)
                                             ->placeholder('Jouw bestemming voor kwaliteitsproducten…'),
-
                                         TextInput::make('hero_video_id')
                                             ->label('YouTube Video ID')
                                             ->placeholder('gsuG1HiS-gA')
-                                            ->helperText(
-                                                'Vul alleen het video-ID in. Voorbeeld: voor "youtube.com/watch?v=gsuG1HiS-gA" vul je "gsuG1HiS-gA" in.'
-                                            ),
+                                            ->helperText('Vul alleen het video-ID in. Voorbeeld: voor "youtube.com/watch?v=gsuG1HiS-gA" vul je "gsuG1HiS-gA" in.'),
                                     ]),
 
                                 Section::make('Kenmerken Sectie')
@@ -113,10 +104,8 @@ class EditWebsite extends Page implements HasForms
                                             TextInput::make('feature_3_text')->label('Kenmerk 3 – Tekst'),
                                         ]),
                                     ]),
-
                             ]),
 
-                        // Hier kun je later extra tabs toevoegen: 🛒 Winkelwagen, 📦 Bestellingen, etc.
                         Tab::make('🛒 Winkelwagen')
                             ->schema([
                                 Section::make('Binnenkort beschikbaar')
@@ -130,7 +119,6 @@ class EditWebsite extends Page implements HasForms
                                     ->description('Hier komen bewerkopties voor de bestellingen-pagina.')
                                     ->schema([]),
                             ]),
-
                     ])
                     ->persistTabInQueryString(),
             ])
