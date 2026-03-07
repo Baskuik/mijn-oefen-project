@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
+use BackedEnum;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
@@ -20,10 +21,10 @@ class EditWebsite extends Page implements HasForms
     use InteractsWithForms;
 
     protected static ?string $navigationLabel = 'Website Bewerken';
-    protected static ?string $navigationIcon  = 'heroicon-o-pencil-square';
-    protected static ?string $title           = 'Website Bewerken';
-    protected static string  $view            = 'filament.pages.edit-website';
-    protected static ?int    $navigationSort  = 99;
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
+    protected static ?string $title = 'Website Bewerken';
+    protected static string $view = 'filament.pages.edit-website';
+    protected static ?int $navigationSort = 99;
 
     public ?array $data = [];
 
@@ -61,8 +62,10 @@ class EditWebsite extends Page implements HasForms
             ->schema([
                 Tabs::make('Pagina\'s')
                     ->tabs([
+
                         Tab::make('🏠 Homepagina')
                             ->schema([
+
                                 Section::make('Hero Sectie')
                                     ->description('De grote banner helemaal bovenaan de homepage.')
                                     ->icon('heroicon-o-film')
@@ -72,19 +75,24 @@ class EditWebsite extends Page implements HasForms
                                                 ->label('Titel – gewone tekst')
                                                 ->placeholder('Welkom bij de')
                                                 ->required(),
+
                                             TextInput::make('hero_title_highlight')
                                                 ->label('Titel – gekleurde tekst (paars)')
                                                 ->placeholder('Pokémon go Webstore')
                                                 ->required(),
                                         ]),
+
                                         Textarea::make('hero_subtitle')
                                             ->label('Ondertitel / Beschrijving')
                                             ->rows(3)
                                             ->placeholder('Jouw bestemming voor kwaliteitsproducten…'),
+
                                         TextInput::make('hero_video_id')
                                             ->label('YouTube Video ID')
                                             ->placeholder('gsuG1HiS-gA')
-                                            ->helperText('Vul alleen het video-ID in. Voorbeeld: voor "youtube.com/watch?v=gsuG1HiS-gA" vul je "gsuG1HiS-gA" in.'),
+                                            ->helperText(
+                                                'Vul alleen het video-ID in. Voorbeeld: voor "youtube.com/watch?v=gsuG1HiS-gA" vul je "gsuG1HiS-gA" in.'
+                                            ),
                                     ]),
 
                                 Section::make('Kenmerken Sectie')
@@ -104,6 +112,7 @@ class EditWebsite extends Page implements HasForms
                                             TextInput::make('feature_3_text')->label('Kenmerk 3 – Tekst'),
                                         ]),
                                     ]),
+
                             ]),
 
                         Tab::make('🛒 Winkelwagen')
@@ -119,6 +128,7 @@ class EditWebsite extends Page implements HasForms
                                     ->description('Hier komen bewerkopties voor de bestellingen-pagina.')
                                     ->schema([]),
                             ]),
+
                     ])
                     ->persistTabInQueryString(),
             ])
