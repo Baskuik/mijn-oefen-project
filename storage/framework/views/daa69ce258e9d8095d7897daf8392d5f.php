@@ -73,10 +73,13 @@
 
     <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 w-full text-center">
       <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
-        Welkom bij de <span class="text-indigo-300">Pokémon go Webstore</span>
+        <?php echo e(\App\Models\SiteSetting::get('hero_title', 'Welkom bij de')); ?>
+
+        <span class="text-indigo-300"><?php echo e(\App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore')); ?></span>
       </h1>
       <p class="hero-subtitle text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-10 drop-shadow-lg">
-        Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!
+        <?php echo e(\App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!')); ?>
+
       </p>
       <div class="hero-buttons flex flex-col sm:flex-row gap-4 justify-center">
         <a href="#producten" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-800 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl hover:bg-slate-50 hover:scale-105 transition-all duration-300">
@@ -332,24 +335,42 @@
         <div class="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
         </div>
-        <h3 class="text-lg font-semibold text-white mb-2">Gratis Verzending</h3>
-        <p class="text-slate-300">Vanaf €50 bezorgen we gratis bij je thuis</p>
+        <h3 class="text-lg font-semibold text-white mb-2">
+          <?php echo e(\App\Models\SiteSetting::get('feature_1_title', 'Gratis Verzending')); ?>
+
+        </h3>
+        <p class="text-slate-300">
+          <?php echo e(\App\Models\SiteSetting::get('feature_1_text', 'Vanaf €50 bezorgen we gratis bij je thuis')); ?>
+
+        </p>
       </div>
 
       <div class="feature-card reveal reveal-delay-2 text-center p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
         <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
         </div>
-        <h3 class="text-lg font-semibold text-white mb-2">Veilig Betalen</h3>
-        <p class="text-slate-300">Beveiligd met Stripe & SSL encryptie</p>
+        <h3 class="text-lg font-semibold text-white mb-2">
+          <?php echo e(\App\Models\SiteSetting::get('feature_2_title', 'Veilig Betalen')); ?>
+
+        </h3>
+        <p class="text-slate-300">
+          <?php echo e(\App\Models\SiteSetting::get('feature_2_text', 'Beveiligd met Stripe & SSL encryptie')); ?>
+
+        </p>
       </div>
 
       <div class="feature-card reveal reveal-delay-3 text-center p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
         <div class="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
-        <h3 class="text-lg font-semibold text-white mb-2">24/7 Support</h3>
-        <p class="text-slate-300">Wij staan altijd voor je klaar</p>
+        <h3 class="text-lg font-semibold text-white mb-2">
+          <?php echo e(\App\Models\SiteSetting::get('feature_3_title', '24/7 Support')); ?>
+
+        </h3>
+        <p class="text-slate-300">
+          <?php echo e(\App\Models\SiteSetting::get('feature_3_text', 'Wij staan altijd voor je klaar')); ?>
+
+        </p>
       </div>
     </div>
   </section>
@@ -552,8 +573,9 @@
     window.addEventListener('load', function () {
       var wrapper = document.getElementById('hero-video-wrapper');
       if (wrapper) {
+        var videoId = '<?php echo e(\App\Models\SiteSetting::get('hero_video_id', 'gsuG1HiS-gA')); ?>';
         var iframe = document.createElement('iframe');
-        iframe.src = 'https://www.youtube-nocookie.com/embed/gsuG1HiS-gA?autoplay=1&mute=1&loop=1&playlist=gsuG1HiS-gA&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1';
+        iframe.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&mute=1&loop=1&playlist=' + videoId + '&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1';
         iframe.title = 'Hero background video';
         iframe.allow = 'autoplay; encrypted-media';
         iframe.allowFullscreen = true;
@@ -696,4 +718,4 @@
   <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
 
 </body>
-</html> <?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/welcome.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\Users\bas15\mijn-oefen-project\resources\views/welcome.blade.php ENDPATH**/ ?>
