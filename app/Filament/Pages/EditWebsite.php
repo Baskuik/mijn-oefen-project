@@ -6,14 +6,14 @@ use App\Models\SiteSetting;
 use BackedEnum;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Textarea;
-use Filament\Schemas\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class EditWebsite extends Page implements HasForms
@@ -53,6 +53,7 @@ class EditWebsite extends Page implements HasForms
             $values[$key] = SiteSetting::get($key, $default);
         }
 
+        // InteractsWithForms provides $this->form
         $this->form->fill($values);
     }
 
@@ -87,7 +88,6 @@ class EditWebsite extends Page implements HasForms
                                             ->placeholder('gsuG1HiS-gA')
                                             ->helperText('Vul alleen het video-ID in. Voorbeeld: voor "youtube.com/watch?v=gsuG1HiS-gA" vul je "gsuG1HiS-gA" in.'),
                                     ]),
-
                                 Section::make('Kenmerken Sectie')
                                     ->description('De drie kaarten onderaan de homepage.')
                                     ->icon('heroicon-o-star')
