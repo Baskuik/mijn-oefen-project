@@ -53,7 +53,6 @@ class EditWebsite extends Page implements HasForms
             $values[$key] = SiteSetting::get($key, $default);
         }
 
-        // InteractsWithForms provides $this->form
         $this->form->fill($values);
     }
 
@@ -106,14 +105,12 @@ class EditWebsite extends Page implements HasForms
                                         ]),
                                     ]),
                             ]),
-
                         Tab::make('🛒 Winkelwagen')
                             ->schema([
                                 Section::make('Binnenkort beschikbaar')
                                     ->description('Hier komen bewerkopties voor de winkelwagen-pagina.')
                                     ->schema([]),
                             ]),
-
                         Tab::make('📦 Mijn Bestellingen')
                             ->schema([
                                 Section::make('Binnenkort beschikbaar')
