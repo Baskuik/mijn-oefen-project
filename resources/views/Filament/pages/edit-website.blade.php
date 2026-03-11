@@ -1,20 +1,14 @@
 <x-filament-panels::page>
     <div class="space-y-8">
         <form wire:submit="save" class="space-y-4">
-            {{ $this->form }}
+            {{ \->form }}
 
             <div class="flex items-center gap-3">
                 <x-filament::button type="submit" size="lg" icon="heroicon-o-check">
                     Wijzigingen Opslaan
                 </x-filament::button>
 
-                <x-filament::button
-                    tag="a"
-                    href="{{ route('home') }}"
-                    target="_blank"
-                    color="gray"
-                    icon="heroicon-o-arrow-top-right-on-square"
-                >
+                <x-filament::button tag="a" href="{{ route('home') }}" target="_blank" color="gray" icon="heroicon-o-arrow-top-right-on-square">
                     Open homepage
                 </x-filament::button>
             </div>

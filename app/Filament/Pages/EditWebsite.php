@@ -15,6 +15,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Illuminate\Contracts\View\View;
 
 class EditWebsite extends Page implements HasForms
 {
@@ -23,7 +24,7 @@ class EditWebsite extends Page implements HasForms
     protected static ?string $navigationLabel = 'Website Bewerken';
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
     protected static ?string $title = 'Website Bewerken';
-    // Must be NON-static and must match the Blade path below:
+    // Filament v5 requires NON-static $view
     protected string $view = 'filament.pages.edit-website';
     protected static ?int $navigationSort = 99;
 
@@ -122,6 +123,21 @@ class EditWebsite extends Page implements HasForms
                     ->persistTabInQueryString(),
             ])
             ->statePath('data');
+    }
+
+    // Defensive: if the Blade isn't where Laravel expects it, fail with a clear message
+    public function render(): View
+    {
+        $view = 'filament.pages.edit-website';
+
+        if (! view()->exists($view)) {
+            $expected = base_path('resources/views/filament/pages/edit-website.blade.php');
+            abort(500, "Blade view '$view' not found. Expected file at: $expected");
+        }
+
+        return view($view, [
+            'this' => $this,
+        ]);
     }
 
     public function save(): void
