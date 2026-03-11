@@ -23,7 +23,8 @@ class EditWebsite extends Page implements HasForms
     protected static ?string $navigationLabel = 'Website Bewerken';
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
     protected static ?string $title = 'Website Bewerken';
-    protected string $view = 'filament.pages.edit-website'; // must be NON-static on Filament v5
+    // Must be NON-static and must match the Blade path below:
+    protected string $view = 'filament.pages.edit-website';
     protected static ?int $navigationSort = 99;
 
     public ?array $data = [];
@@ -31,12 +32,6 @@ class EditWebsite extends Page implements HasForms
     public static function canAccess(): bool
     {
         return auth()->check() && (bool) auth()->user()->is_admin;
-    }
-
-    // (Optional) Guarantees the correct view name is used even if $view is overridden somewhere.
-    public function getView(): string
-    {
-        return 'filament.pages.edit-website';
     }
 
     public function mount(): void
