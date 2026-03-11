@@ -21,11 +21,13 @@ class EditWebsite extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static ?string $navigationLabel = 'Website Bewerken';
+    protected static ?string $navigationLabel = 'Website bewerken';
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
-    protected static ?string $title = 'Website Bewerken';
-    // Filament v5 requires NON-static $view
+    protected static ?string $title = 'Website bewerken';
+
+    // Filament v5: non-static $view
     protected string $view = 'filament.pages.edit-website';
+
     protected static ?int $navigationSort = 99;
 
     public ?array $data = [];
@@ -37,6 +39,7 @@ class EditWebsite extends Page implements HasForms
 
     public function mount(): void
     {
+        // Defaults voor Home
         $defaults = [
             'hero_title'           => 'Welkom bij de',
             'hero_title_highlight' => 'Pokémon go Webstore',
@@ -48,6 +51,16 @@ class EditWebsite extends Page implements HasForms
             'feature_2_text'       => 'Beveiligd met Stripe & SSL encryptie',
             'feature_3_title'      => '24/7 Support',
             'feature_3_text'       => 'Wij staan altijd voor je klaar',
+
+            // Cart
+            'cart_title'           => 'Jouw winkelwagen',
+            'cart_empty_text'      => 'Je winkelwagen is nog leeg.',
+            'cart_cta_text'        => 'Afrekenen',
+            'cart_help_text'       => 'Heb je vragen? Neem contact met ons op.',
+
+            // Algemeen
+            'site_name'            => 'MijnShop',
+            'footer_text'          => '© ' . date('Y') . ' MijnShop. Alle rechten voorbehouden.',
         ];
 
         $values = [];
@@ -62,12 +75,13 @@ class EditWebsite extends Page implements HasForms
     {
         return $schema
             ->schema([
-                Tabs::make('Pagina\'s')
+                Tabs::make('Pagina’s')
                     ->tabs([
-                        Tab::make('🏠 Homepagina')
+                        // HOME
+                        Tab::make('🏠 Home')
                             ->schema([
-                                Section::make('Hero Sectie')
-                                    ->description('De grote banner helemaal bovenaan de homepage.')
+                                Section::make('Hero sectie')
+                                    ->description('Banner bovenaan de homepage.')
                                     ->icon('heroicon-o-film')
                                     ->schema([
                                         Grid::make(2)->schema([
@@ -76,20 +90,21 @@ class EditWebsite extends Page implements HasForms
                                                 ->placeholder('Welkom bij de')
                                                 ->required(),
                                             TextInput::make('hero_title_highlight')
-                                                ->label('Titel – gekleurde tekst (paars)')
+                                                ->label('Titel – gekleurde tekst (highlight)')
                                                 ->placeholder('Pokémon go Webstore')
                                                 ->required(),
                                         ]),
                                         Textarea::make('hero_subtitle')
-                                            ->label('Ondertitel / Beschrijving')
+                                            ->label('Ondertitel / beschrijving')
                                             ->rows(3)
                                             ->placeholder('Jouw bestemming voor kwaliteitsproducten…'),
                                         TextInput::make('hero_video_id')
-                                            ->label('YouTube Video ID')
+                                            ->label('YouTube Video ID (optioneel)')
                                             ->placeholder('gsuG1HiS-gA')
-                                            ->helperText('Vul alleen het video-ID in. Voorbeeld: voor "youtube.com/watch?v=gsuG1HiS-gA" vul je "gsuG1HiS-gA" in.'),
+                                            ->helperText('Alleen het video-ID. Voorbeeld: voor "youtube.com/watch?v=gsuG1HiS-gA" vul je "gsuG1HiS-gA" in.'),
                                     ]),
-                                Section::make('Kenmerken Sectie')
+
+                                Section::make('Kenmerken')
                                     ->description('De drie kaarten onderaan de homepage.')
                                     ->icon('heroicon-o-star')
                                     ->schema([
@@ -107,17 +122,30 @@ class EditWebsite extends Page implements HasForms
                                         ]),
                                     ]),
                             ]),
+
+                        // CART
                         Tab::make('🛒 Winkelwagen')
                             ->schema([
-                                Section::make('Binnenkort beschikbaar')
-                                    ->description('Hier komen bewerkopties voor de winkelwagen-pagina.')
-                                    ->schema([]),
+                                Section::make('Cart pagina')
+                                    ->description('Teksten voor de /cart pagina.')
+                                    ->icon('heroicon-o-shopping-cart')
+                                    ->schema([
+                                        TextInput::make('cart_title')->label('Titel')->placeholder('Jouw winkelwagen'),
+                                        Textarea::make('cart_empty_text')->label('Lege winkelwagen tekst')->rows(2),
+                                        TextInput::make('cart_cta_text')->label('CTA knop tekst')->placeholder('Afrekenen'),
+                                        TextInput::make('cart_help_text')->label('Hulptekst onderaan')->placeholder('Heb je vragen? Neem contact met ons op.'),
+                                    ]),
                             ]),
-                        Tab::make('📦 Mijn Bestellingen')
+
+                        // ALGEMEEN
+                        Tab::make('⚙️ Algemeen')
                             ->schema([
-                                Section::make('Binnenkort beschikbaar')
-                                    ->description('Hier komen bewerkopties voor de bestellingen-pagina.')
-                                    ->schema([]),
+                                Section::make('Globale instellingen')
+                                    ->icon('heroicon-o-cog-6-tooth')
+                                    ->schema([
+                                        TextInput::make('site_name')->label('Sitenaam'),
+                                        Textarea::make('footer_text')->label('Footer tekst')->rows(2),
+                                    ]),
                             ]),
                     ])
                     ->persistTabInQueryString(),
@@ -125,14 +153,14 @@ class EditWebsite extends Page implements HasForms
             ->statePath('data');
     }
 
-    // Defensive: if the Blade isn't where Laravel expects it, fail with a clear message
+    // Defensieve render: duidelijke fout als Blade niet gevonden wordt
     public function render(): View
     {
         $view = 'filament.pages.edit-website';
 
         if (! view()->exists($view)) {
             $expected = base_path('resources/views/filament/pages/edit-website.blade.php');
-            abort(500, "Blade view '$view' not found. Expected file at: $expected");
+            abort(500, "Blade view '$view' niet gevonden. Verwacht bestand: $expected");
         }
 
         return view($view, [
@@ -148,8 +176,11 @@ class EditWebsite extends Page implements HasForms
             SiteSetting::set($key, $value);
         }
 
+        // Auto‑refresh preview in Blade
+        $this->dispatch('site-settings-saved');
+
         Notification::make()
-            ->title('Wijzigingen opgeslagen!')
+            ->title('Wijzigingen opgeslagen')
             ->body('De website is bijgewerkt.')
             ->success()
             ->send();
