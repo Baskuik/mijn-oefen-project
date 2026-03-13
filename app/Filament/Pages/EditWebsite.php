@@ -153,21 +153,6 @@ class EditWebsite extends Page implements HasForms
             ->statePath('data');
     }
 
-    // Defensieve render: duidelijke fout als Blade niet gevonden wordt
-    public function render(): View
-    {
-        $view = 'filament.pages.edit-website';
-
-        if (! view()->exists($view)) {
-            $expected = base_path('resources/views/filament/pages/edit-website.blade.php');
-            abort(500, "Blade view '$view' niet gevonden. Verwacht bestand: $expected");
-        }
-
-        return view($view, [
-            'this' => $this,
-        ]);
-    }
-
     public function save(): void
     {
         $data = $this->form->getState();
