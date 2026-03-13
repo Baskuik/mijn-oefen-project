@@ -3,8 +3,9 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\UserResource;
-use App\Filament\Resources\Products\ProductResource;  // Add this
-use App\Filament\Resources\Categories\CategoryResource;  // Add this
+use App\Filament\Resources\Products\ProductResource;
+use App\Filament\Resources\Categories\CategoryResource;
+use App\Filament\Resources\Orders\OrderResource; // <-- ADD THIS LINE
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,17 +30,17 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('filament')  // ✅ Changed from 'admin' to 'filament'
+            ->path('filament')
             ->login()
             ->homeUrl('/')
             ->colors([
                 'primary' => Color::Amber,
             ])
-            // ✅ Manual registration of all resources
             ->resources([
                 UserResource::class,
                 ProductResource::class,
                 CategoryResource::class,
+                OrderResource::class, // <-- ADD THIS LINE
             ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
