@@ -21,7 +21,7 @@
                     this.reloadPreview();
                 });
             },
-        }"
+        }" 
         x-init="init()"
         class="grid grid-cols-12 gap-6"
     >
