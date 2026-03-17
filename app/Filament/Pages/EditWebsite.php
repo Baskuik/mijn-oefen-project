@@ -3,7 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
-use BackedEnum; // needed for the union type below
+use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
@@ -15,54 +15,106 @@ use Illuminate\Support\Str;
 
 class EditWebsite extends Page
 {
-    // Must match Filament\Pages\Page exactly
+    // Filament v5: hetzelfde union type als de parent
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
 
-    // In Filament v5 this is NON-static
+    // In v5 is $view non-static
     protected string $view = 'filament.pages.edit-website';
 
-    // Form state
-    public ?array $data = [];
-
-    // Pages for the live preview (label => url)
+    // Preview-pagina’s (label => url) gebruikt door de Blade view
     public array $previewPages = [];
 
-    public static function canAccess(): bool
-    {
-        // Adjust to your needs (optional)
-        return auth()->check() && (auth()->user()->is_admin ?? false);
-    }
+    // Geselecteerde pagina (label uit $previewPages)
+    public string $page = '';
+
+    // Huidige formulierstate (alleen voor de geselecteerde pagina)
+    public array $data = [];
+
+    // Onopgeslagen concepten per pagina (label => state)
+    public array $pageStates = [];
 
     public function mount(): void
     {
-        // Prefill from key/value SiteSetting table (pluck value by key)
-        $this->data = SiteSetting::query()->pluck('value', 'key')->toArray();
-
-        // Build initial preview pages from routes
         $this->previewPages = $this->getPreviewPages();
+
+        $labels = array_keys($this->previewPages);
+        $this->page = in_array('Home', $labels, true) ? 'Home' : ($labels[0] ?? 'Home');
+
+        // Laad state voor de startpagina uit de database
+        $this->data = $this->loadStateFor($this->page);
     }
 
-    // Filament v5 style: use Schemas (container components) + Forms inputs
+    // Dynamische form op basis van de geselecteerde pagina
     public function form(Schema $schema): Schema
     {
         return $schema
             ->statePath('data')
-            ->schema([
+            ->schema($this->schemaFor($this->page));
+    }
+
+    // Wanneer de gebruiker een andere pagina kiest in de dropdown
+    public function updatedPage(string $value): void
+    {
+        // 1) Sla het huidige (onopgeslagen) concept op in het geheugen
+        $this->pageStates[$this->page] = $this->data;
+
+        // 2) Schakel naar de nieuwe pagina
+        $this->page = $value;
+
+        // 3) Herstel de state (eerst concept, anders uit DB)
+        $this->data = $this->pageStates[$value] ?? $this->loadStateFor($value);
+
+        // 4) Vul het formulier met de nieuwe state
+        $this->form->fill($this->data);
+    }
+
+    // Opslaan: alleen de huidige pagina wordt naar de DB geschreven
+    public function save(): void
+    {
+        foreach ($this->data as $key => $value) {
+            SiteSetting::set($key, is_null($value) ? null : (string) $value);
+        }
+
+        // Werk het concept voor deze pagina bij
+        $this->pageStates[$this->page] = $this->data;
+
+        // Laat de preview iframe herladen
+        $this->dispatch('site-settings-saved');
+
+        $this->notify('success', 'Instellingen voor ' . $this->page . ' opgeslagen');
+    }
+
+    // Handmatige heropbouw van de paginalijst (knop in de toolbar)
+    public function refreshPages(): void
+    {
+        $this->previewPages = $this->getPreviewPages();
+        $this->dispatch('preview-pages-refreshed', pages: $this->previewPages);
+    }
+
+    // ------- Helpers: state/schemas/keys per pagina -------
+
+    protected function loadStateFor(string $label): array
+    {
+        $state = [];
+        foreach ($this->keysFor($label) as $key) {
+            $state[$key] = SiteSetting::get($key, '');
+        }
+        return $state;
+    }
+
+    protected function schemaFor(string $label): array
+    {
+        $slug = Str::slug($label ?: '');
+
+        if ($slug === 'home' || $slug === '') {
+            return [
                 Section::make('Homepage Hero')
                     ->icon('heroicon-o-bolt')
                     ->schema([
-                        TextInput::make('hero_title')
-                            ->label('Hero titel')
-                            ->maxLength(120),
-                        TextInput::make('hero_title_highlight')
-                            ->label('Hero highlight')
-                            ->maxLength(120),
-                        Textarea::make('hero_subtitle')
-                            ->label('Subtitel')
-                            ->rows(3),
-                        TextInput::make('hero_video_id')
-                            ->label('YouTube video ID')
-                            ->maxLength(32),
+                        TextInput::make('hero_title')->label('Hero titel')->maxLength(120),
+                        TextInput::make('hero_title_highlight')->label('Hero highlight')->maxLength(120),
+                        Textarea::make('hero_subtitle')->label('Subtitel')->rows(3),
+                        TextInput::make('hero_video_id')->label('YouTube video ID')->maxLength(32),
                     ])
                     ->columns(2),
 
@@ -79,34 +131,78 @@ class EditWebsite extends Page
                             Textarea::make('feature_3_text')->label('Feature 3 tekst')->rows(2),
                         ]),
                     ]),
-            ]);
-    }
-
-    public function save(): void
-    {
-        if (! is_array($this->data)) {
-            $this->data = [];
+            ];
         }
 
-        foreach ($this->data as $key => $value) {
-            SiteSetting::set($key, is_null($value) ? null : (string) $value);
+        if ($slug === 'profile' || $slug === 'profiel') {
+            return [
+                Section::make('Profielpagina')
+                    ->icon('heroicon-o-user-circle')
+                    ->schema([
+                        TextInput::make('profile_title')->label('Titel')->maxLength(120),
+                        Textarea::make('profile_bio')->label('Bio')->rows(4),
+                    ])
+                    ->columns(1),
+            ];
         }
 
-        // Let the client reload the preview iframe
-        $this->dispatch('site-settings-saved');
+        if ($slug === 'cart' || $slug === 'winkelwagen') {
+            return [
+                Section::make('Winkelwagen')
+                    ->icon('heroicon-o-shopping-cart')
+                    ->schema([
+                        TextInput::make('cart_title')->label('Titel')->maxLength(120),
+                        Textarea::make('cart_subtitle')->label('Subtitel')->rows(3),
+                    ])
+                    ->columns(1),
+            ];
+        }
+
+        // Fallback voor onbekende pagina’s
+        return [
+            Section::make(Str::title($label) ?: 'Pagina')
+                ->icon('heroicon-o-document-text')
+                ->schema([
+                    TextInput::make('page_title')->label('Titel')->maxLength(120),
+                    Textarea::make('page_subtitle')->label('Subtitel / Intro')->rows(3),
+                    Textarea::make('page_body')->label('Inhoud')->rows(6),
+                ])
+                ->columns(1),
+        ];
     }
 
-    public function refreshPages(): void
+    protected function keysFor(string $label): array
     {
-        $this->previewPages = $this->getPreviewPages();
-        // Send to browser; Blade listens and updates the selector + reloads preview
-        $this->dispatch('preview-pages-refreshed', pages: $this->previewPages);
+        $slug = Str::slug($label ?: '');
+
+        if ($slug === 'home' || $slug === '') {
+            return [
+                'hero_title',
+                'hero_title_highlight',
+                'hero_subtitle',
+                'hero_video_id',
+                'feature_1_title',
+                'feature_1_text',
+                'feature_2_title',
+                'feature_2_text',
+                'feature_3_title',
+                'feature_3_text',
+            ];
+        }
+
+        if ($slug === 'profile' || $slug === 'profiel') {
+            return ['profile_title', 'profile_bio'];
+        }
+
+        if ($slug === 'cart' || $slug === 'winkelwagen') {
+            return ['cart_title', 'cart_subtitle'];
+        }
+
+        // Fallback keys
+        return ['page_title', 'page_subtitle', 'page_body'];
     }
 
-    /**
-     * Find all public GET "web" routes without parameters (no {id} etc.).
-     * Returns ['Home' => 'https://…', 'Cart' => 'https://…', ...].
-     */
+    // Routes scannen voor publieke web GET-routes zonder parameters
     protected function getPreviewPages(): array
     {
         $pages = [];
@@ -115,29 +211,21 @@ class EditWebsite extends Page
             $methods = $route->methods();
             $middleware = method_exists($route, 'middleware') ? (array) $route->middleware() : [];
 
-            if (! in_array('GET', $methods, true)) {
-                continue;
-            }
-            if (! in_array('web', $middleware, true)) {
-                continue;
-            }
+            if (! in_array('GET', $methods, true)) continue;
+            if (! in_array('web', $middleware, true)) continue;
 
             $name = (string) $route->getName();
             $uri  = trim($route->uri(), '/');
 
-            // Skip admin/dev/auth routes
+            // Sla admin/dev/auth routes over
             if (
                 ($name && Str::startsWith($name, ['filament.', 'livewire.', 'ignition.']))
                 || Str::startsWith($uri, ['filament', 'telescope', 'vendor', 'sanctum'])
                 || Str::contains($uri, ['login', 'logout', 'register', 'password', 'verification', 'email'])
-            ) {
-                continue;
-            }
+            ) continue;
 
-            // Skip dynamic routes (with params)
-            if (Str::contains($uri, '{')) {
-                continue;
-            }
+            // Geen dynamische parameters
+            if (Str::contains($uri, '{')) continue;
 
             $url = url($uri === '' ? '/' : '/' . $uri);
             $label = $name ?: ($uri === '' ? 'Home' : Str::title(str_replace(['-', '/'], ' ', $uri)));
@@ -146,7 +234,7 @@ class EditWebsite extends Page
 
         ksort($pages, SORT_NATURAL | SORT_FLAG_CASE);
 
-        // Keep Home first
+        // Home bovenaan houden
         if (isset($pages['Home'])) {
             $pages = ['Home' => $pages['Home']] + array_diff_key($pages, ['Home' => true]);
         }
