@@ -3,11 +3,12 @@
 namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
-use BackedEnum; // nodig voor het union type
+use BackedEnum;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Illuminate\Support\Facades\Route;
@@ -15,20 +16,22 @@ use Illuminate\Support\Str;
 
 class EditWebsite extends Page
 {
-    // Filament v5: exact dezelfde type-union als de parent
+    // Moet exact matchen met Filament\Pages\Page
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
 
-    // Filament v5: $view is niet-static
+    // In Filament v5 is $view niet static
     protected string $view = 'filament.pages.edit-website';
 
-    // Dropdown + preview
+    // Preview keuzelijst (label => url)
     public array $previewPages = [];
+
+    // Geselecteerde pagina (label)
     public string $page = '';
 
-    // Form state voor de actieve pagina
+    // Huidige formulierstate (enkel voor geselecteerde pagina)
     public array $data = [];
 
-    // Concepten (onopgeslagen) per pagina
+    // Onopgeslagen concepten per pagina (label => state)
     public array $pageStates = [];
 
     public function mount(): void
@@ -38,11 +41,10 @@ class EditWebsite extends Page
         $labels = array_keys($this->previewPages);
         $this->page = in_array('Home', $labels, true) ? 'Home' : ($labels[0] ?? 'Home');
 
-        // Laad de state voor de startpagina
         $this->data = $this->loadStateFor($this->page);
     }
 
-    // Dynamische form o.b.v. geselecteerde pagina
+    // Filament v5: Schema i.p.v. Forms\Form, containers uit Schemas\Components, inputs uit Forms\Components
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -50,52 +52,47 @@ class EditWebsite extends Page
             ->schema($this->schemaFor($this->page));
     }
 
-    // Wisselen van pagina via dropdown
+    // Bij wisselen van dropdown: concept bewaren en nieuwe state laden
     public function updatedPage(string $value): void
     {
-        // 1) Bewaar huidig concept
         $this->pageStates[$this->page] = $this->data;
-
-        // 2) Schakel naar nieuwe pagina
         $this->page = $value;
-
-        // 3) Herstel concept of laad uit DB
         $this->data = $this->pageStates[$value] ?? $this->loadStateFor($value);
-
-        // 4) Vul het formulier met de nieuwe state
         $this->form->fill($this->data);
+        // Client-iframe herlaadt zichzelf al op page-wissel via Alpine watcher
     }
 
-    // Opslaan: alleen de huidige pagina persistent maken
+    // Alleen de huidige pagina opslaan
     public function save(): void
     {
         foreach ($this->data as $key => $value) {
-            // Alles blijft flat key/value → strings of null
             SiteSetting::set($key, is_null($value) ? null : (string) $value);
         }
 
-        // Concept up-to-date houden voor de huidige pagina
         $this->pageStates[$this->page] = $this->data;
 
-        // Preview iframe herladen
         $this->dispatch('site-settings-saved');
 
-        $this->notify('success', 'Instellingen voor ' . $this->page . ' opgeslagen');
+        Notification::make()
+            ->title("Instellingen voor {$this->page} opgeslagen")
+            ->success()
+            ->send();
     }
 
+    // Lijst van pagina’s opnieuw opbouwen (knop in toolbar)
     public function refreshPages(): void
     {
         $this->previewPages = $this->getPreviewPages();
         $this->dispatch('preview-pages-refreshed', pages: $this->previewPages);
     }
 
-    // ----------------- Schema & keys per pagina -----------------
+    // ---------- Per-pagina schema en keys ----------
 
     protected function schemaFor(string $label): array
     {
         $slug = Str::slug($label ?: '');
 
-        // HOME (bestaand)
+        // HOME
         if ($slug === 'home' || $slug === '') {
             return [
                 Section::make('Homepage Hero')
@@ -108,23 +105,28 @@ class EditWebsite extends Page
                     ])
                     ->columns(2),
 
-                Section::make('Kernfeatures')
+                Section::make('Kernfeatures (3 kolommen)')
                     ->icon('heroicon-o-star')
                     ->schema([
                         Grid::make(3)->schema([
-                            TextInput::make('feature_1_title')->label('Kolom 1 titel'),
-                            TextInput::make('feature_2_title')->label('Kolom 2 titel'),
-                            TextInput::make('feature_3_title')->label('Kolom 3 titel'),
-
-                            Textarea::make('feature_1_text')->label('Kolom 1 tekst')->rows(2),
-                            Textarea::make('feature_2_text')->label('Kolom 2 tekst')->rows(2),
-                            Textarea::make('feature_3_text')->label('Kolom 3 tekst')->rows(2),
+                            Section::make('Kolom 1')->schema([
+                                TextInput::make('feature_1_title')->label('Titel')->maxLength(120),
+                                Textarea::make('feature_1_text')->label('Tekst')->rows(4),
+                            ]),
+                            Section::make('Kolom 2')->schema([
+                                TextInput::make('feature_2_title')->label('Titel')->maxLength(120),
+                                Textarea::make('feature_2_text')->label('Tekst')->rows(4),
+                            ]),
+                            Section::make('Kolom 3')->schema([
+                                TextInput::make('feature_3_title')->label('Titel')->maxLength(120),
+                                Textarea::make('feature_3_text')->label('Tekst')->rows(4),
+                            ]),
                         ]),
                     ]),
             ];
         }
 
-        // PROFILE → hero + 3 tekstkolommen (volledig bewerkbaar)
+        // PROFILE
         if ($slug === 'profile' || $slug === 'profiel') {
             return [
                 Section::make('Profiel Hero')
@@ -139,17 +141,14 @@ class EditWebsite extends Page
                     ->icon('heroicon-o-squares-2x2')
                     ->schema([
                         Grid::make(3)->schema([
-                            // Kolom 1
                             Section::make('Kolom 1')->schema([
                                 TextInput::make('profile_col1_title')->label('Titel')->maxLength(120),
                                 Textarea::make('profile_col1_text')->label('Tekst')->rows(4),
                             ]),
-                            // Kolom 2
                             Section::make('Kolom 2')->schema([
                                 TextInput::make('profile_col2_title')->label('Titel')->maxLength(120),
                                 Textarea::make('profile_col2_text')->label('Tekst')->rows(4),
                             ]),
-                            // Kolom 3
                             Section::make('Kolom 3')->schema([
                                 TextInput::make('profile_col3_title')->label('Titel')->maxLength(120),
                                 Textarea::make('profile_col3_text')->label('Tekst')->rows(4),
@@ -167,13 +166,11 @@ class EditWebsite extends Page
                     ->schema([
                         TextInput::make('cart_title')->label('Titel')->maxLength(120),
                         Textarea::make('cart_subtitle')->label('Subtitel')->rows(3),
-                    ])
-                    ->columns(1),
+                    ]),
             ];
         }
 
-        // GENERIEKE VANGNET-SCHEMA → werkt voor ELKE andere pagina
-        // keys: page_{slug}_title, page_{slug}_subtitle, page_{slug}_col{1..3}_{title|text}
+        // GENERIEKE fallback voor ELKE andere pagina (About, Contact, etc.)
         $prefix = 'page_' . ($slug ?: 'page') . '_';
 
         return [
@@ -201,8 +198,7 @@ class EditWebsite extends Page
                                 ]),
                             ]),
                         ]),
-                ])
-                ->columns(1),
+                ]),
         ];
     }
 
@@ -210,47 +206,38 @@ class EditWebsite extends Page
     {
         $slug = Str::slug($label ?: '');
 
-        // HOME
         if ($slug === 'home' || $slug === '') {
             return [
-                'hero_title',
-                'hero_title_highlight',
-                'hero_subtitle',
-                'hero_video_id',
+                'hero_title', 'hero_title_highlight', 'hero_subtitle', 'hero_video_id',
                 'feature_1_title', 'feature_1_text',
                 'feature_2_title', 'feature_2_text',
                 'feature_3_title', 'feature_3_text',
             ];
         }
 
-        // PROFILE
         if ($slug === 'profile' || $slug === 'profiel') {
             return [
-                'profile_title',
-                'profile_subtitle',
+                'profile_title', 'profile_subtitle',
                 'profile_col1_title', 'profile_col1_text',
                 'profile_col2_title', 'profile_col2_text',
                 'profile_col3_title', 'profile_col3_text',
             ];
         }
 
-        // CART
         if ($slug === 'cart' || $slug === 'winkelwagen') {
             return ['cart_title', 'cart_subtitle'];
         }
 
-        // Fallback: dynamische keys voor elke andere pagina
         $prefix = 'page_' . ($slug ?: 'page') . '_';
         return [
-            $prefix . 'title',
-            $prefix . 'subtitle',
+            $prefix . 'title', $prefix . 'subtitle',
             $prefix . 'col1_title', $prefix . 'col1_text',
             $prefix . 'col2_title', $prefix . 'col2_text',
             $prefix . 'col3_title', $prefix . 'col3_text',
         ];
     }
 
-    // ----------------- Routes scannen voor preview -----------------
+    // ---------- Preview: publieke GET web-routes zonder parameters ----------
 
     protected function getPreviewPages(): array
     {
@@ -266,14 +253,12 @@ class EditWebsite extends Page
             $name = (string) $route->getName();
             $uri  = trim($route->uri(), '/');
 
-            // Sla admin/dev/auth routes over
             if (
                 ($name && Str::startsWith($name, ['filament.', 'livewire.', 'ignition.']))
                 || Str::startsWith($uri, ['filament', 'telescope', 'vendor', 'sanctum'])
                 || Str::contains($uri, ['login', 'logout', 'register', 'password', 'verification', 'email'])
             ) continue;
 
-            // Geen dynamische parameters
             if (Str::contains($uri, '{')) continue;
 
             $url = url($uri === '' ? '/' : '/' . $uri);
@@ -283,15 +268,12 @@ class EditWebsite extends Page
 
         ksort($pages, SORT_NATURAL | SORT_FLAG_CASE);
 
-        // Home bovenaan houden
         if (isset($pages['Home'])) {
             $pages = ['Home' => $pages['Home']] + array_diff_key($pages, ['Home' => true]);
         }
 
         return $pages;
     }
-
-    // ----------------- State laden voor pagina -----------------
 
     protected function loadStateFor(string $label): array
     {
