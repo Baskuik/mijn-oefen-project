@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\EditWebsite;
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Categories\CategoryResource;
@@ -25,6 +26,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
+
+    
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -65,5 +68,16 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+            
     }
+    public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ...
+        ->pages([
+            EditWebsite::class,
+            // ...
+        ]);
+}
+
 }

@@ -1,6 +1,6 @@
 <div
-    data-pages=@json($this->previewPages)
-    x-data={
+    data-pages='@json($this->previewPages)'
+    x-data='{
         page: $wire.entangle("page").live,
         device: "desktop",
         allowClicks: false,
@@ -36,6 +36,7 @@
                 }
             })
 
+            // Bij wijziging van pagina: iframe updaten
             this.$watch("page", () => this.reloadPreview())
 
             window.addEventListener("site-settings-saved", () => this.reloadPreview())
@@ -48,10 +49,11 @@
                 this.reloadPreview()
             })
         },
-    }
+    }'
     x-init="init()"
     class="block"
 >
+    <!-- Sticky header -->
     <div class="sticky top-0 z-20 border-b border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-sm fi-header">
         <div class="flex items-center justify-between gap-3 px-4 py-3">
             <div class="flex items-center gap-2 text-sm font-semibold text-gray-950 dark:text-white">
@@ -64,7 +66,7 @@
                     Vernieuwen
                 </x-filament::button>
 
-                <x-filament::button color="gray" tag="a" target="_blank" icon="heroicon-o-arrow-top-right-on-square" x-bind:href="pages[page] || #">
+                <x-filament::button color="gray" tag="a" target="_blank" icon="heroicon-o-arrow-top-right-on-square" x-bind:href="pages[page] || '#'">
                     Openen
                 </x-filament::button>
 
@@ -77,6 +79,7 @@
     </div>
 
     <div class="grid grid-cols-12 gap-6 px-4 py-4">
+        <!-- LINKS: Filament form -->
         <div class="col-span-12 xl:col-span-5">
             <x-filament::section>
                 <form id="edit-website-form" wire:submit="save">
@@ -94,6 +97,7 @@
             </x-filament::section>
         </div>
 
+        <!-- RECHTS: Live preview -->
         <div class="col-span-12 xl:col-span-7">
             <x-filament::section>
                 <div class="fi-section-header flex flex-wrap items-center gap-3">
@@ -117,24 +121,24 @@
                             label="Desktop"
                             size="sm"
                             color="gray"
-                            x-on:click="device = desktop"
-                            x-bind:class="device === desktop ? text-primary-600 bg-primary-50 ring-1 ring-primary-600/20 dark:bg-primary-500/10 : "
+                            x-on:click="device = 'desktop'"
+                            x-bind:class="device === 'desktop' ? 'text-primary-600 bg-primary-50 ring-1 ring-primary-600/20 dark:bg-primary-500/10' : ''"
                         />
                         <x-filament::icon-button
                             icon="heroicon-o-device-tablet"
                             label="Tablet"
                             size="sm"
                             color="gray"
-                            x-on:click="device = tablet"
-                            x-bind:class="device === tablet ? text-primary-600 bg-primary-50 ring-1 ring-primary-600/20 dark:bg-primary-500/10 : "
+                            x-on:click="device = 'tablet'"
+                            x-bind:class="device === 'tablet' ? 'text-primary-600 bg-primary-50 ring-1 ring-primary-600/20 dark:bg-primary-500/10' : ''"
                         />
                         <x-filament::icon-button
                             icon="heroicon-o-device-phone-mobile"
                             label="Mobiel"
                             size="sm"
                             color="gray"
-                            x-on:click="device = mobile"
-                            x-bind:class="device === mobile ? text-primary-600 bg-primary-50 ring-1 ring-primary-600/20 dark:bg-primary-500/10 : "
+                            x-on:click="device = 'mobile'"
+                            x-bind:class="device === 'mobile' ? 'text-primary-600 bg-primary-50 ring-1 ring-primary-600/20 dark:bg-primary-500/10' : ''"
                         />
 
                         <x-filament::icon-button icon="heroicon-o-arrow-path" label="Vernieuwen" size="sm" color="gray" x-on:click="reloadPreview()" />
@@ -149,16 +153,16 @@
                             <span class="h-3 w-3 rounded-full bg-emerald-400"></span>
                         </div>
 
-                        <div class="flex-1 truncate text-[11px] text-gray-600 dark:text-gray-400" x-text="pages[page] || "></div>
+                        <div class="flex-1 truncate text-[11px] text-gray-600 dark:text-gray-400" x-text="pages[page] || ''"></div>
                     </div>
 
                     <div id="preview-stage" class="bg-gray-100 p-4 dark:bg-gray-900">
-                        <div x-bind:style="height:  + (iframeHeight * scale) + px;">
+                        <div x-bind:style="'height: ' + (iframeHeight * scale) + 'px;'">
                             <iframe
                                 id="site-preview-iframe"
-                                x-bind:src="pages[page] || "
-                                x-bind:style="width:  + nativeWidth() + px; height:  + iframeHeight + px; transform: scale( + scale + ); transform-origin: top left; border: 0;"
-                                x-bind:class="allowClicks ?  : pointer-events-none"
+                                x-bind:src="pages[page] || ''"
+                                x-bind:style="'width: ' + nativeWidth() + 'px; height: ' + iframeHeight + 'px; transform: scale(' + scale + '); transform-origin: top left; border: 0;'"
+                                x-bind:class="allowClicks ? '' : 'pointer-events-none'"
                                 title="Webshop live preview"
                             ></iframe>
                         </div>
@@ -166,9 +170,9 @@
 
                     <div class="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-3 py-1.5 text-[11px] text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-400">
                         <span class="flex items-center gap-2">
-                            <span x-show="device === desktop">🖥 Desktop — 1280 px</span>
-                            <span x-show="device === tablet">📱 Tablet — 768 px</span>
-                            <span x-show="device === mobile">📲 Mobiel — 390 px</span>
+                            <span x-show="device === 'desktop'">🖥 Desktop — 1280 px</span>
+                            <span x-show="device === 'tablet'">📱 Tablet — 768 px</span>
+                            <span x-show="device === 'mobile'">📲 Mobiel — 390 px</span>
                             <span class="text-gray-300 dark:text-gray-600">·</span>
                             <span>schaal <span x-text="Math.round(scale * 100)"></span>%</span>
                         </span>

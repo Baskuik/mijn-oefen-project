@@ -4,11 +4,10 @@ namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
 use BackedEnum;
-use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Illuminate\Support\Facades\Route;
@@ -16,19 +15,19 @@ use Illuminate\Support\Str;
 
 class EditWebsite extends Page
 {
-    // Moet exact matchen met Filament\Pages\Page
+    // Moet exact matchen met Filament v5
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
 
-    // In Filament v5 is $view niet static
+    // In v5 is $view niet static
     protected string $view = 'filament.pages.edit-website';
 
-    // Preview keuzelijst (label => url)
+    // Preview-keuzelijst (label => url)
     public array $previewPages = [];
 
     // Geselecteerde pagina (label)
     public string $page = '';
 
-    // Huidige formulierstate (enkel voor geselecteerde pagina)
+    // Huidige formulierstate voor de actieve pagina
     public array $data = [];
 
     // Onopgeslagen concepten per pagina (label => state)
@@ -44,7 +43,7 @@ class EditWebsite extends Page
         $this->data = $this->loadStateFor($this->page);
     }
 
-    // Filament v5: Schema i.p.v. Forms\Form, containers uit Schemas\Components, inputs uit Forms\Components
+    // Filament v5: Schema + containers uit Schemas\Components, inputs uit Forms\Components
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -52,17 +51,16 @@ class EditWebsite extends Page
             ->schema($this->schemaFor($this->page));
     }
 
-    // Bij wisselen van dropdown: concept bewaren en nieuwe state laden
+    // Dropdown wijziging: concept bewaren, nieuwe state laden
     public function updatedPage(string $value): void
     {
         $this->pageStates[$this->page] = $this->data;
         $this->page = $value;
         $this->data = $this->pageStates[$value] ?? $this->loadStateFor($value);
-        $this->form->fill($this->data);
-        // Client-iframe herlaadt zichzelf al op page-wissel via Alpine watcher
+        // In Filament v5 volstaat het om $data te wijzigen; velden volgen automatisch.
     }
 
-    // Alleen de huidige pagina opslaan
+    // Alleen de actieve pagina opslaan
     public function save(): void
     {
         foreach ($this->data as $key => $value) {
@@ -71,15 +69,11 @@ class EditWebsite extends Page
 
         $this->pageStates[$this->page] = $this->data;
 
+        // Laat de iframe preview herladen
         $this->dispatch('site-settings-saved');
-
-        Notification::make()
-            ->title("Instellingen voor {$this->page} opgeslagen")
-            ->success()
-            ->send();
     }
 
-    // Lijst van pagina’s opnieuw opbouwen (knop in toolbar)
+    // Handmatige heropbouw van de paginalijst
     public function refreshPages(): void
     {
         $this->previewPages = $this->getPreviewPages();
@@ -170,7 +164,7 @@ class EditWebsite extends Page
             ];
         }
 
-        // GENERIEKE fallback voor ELKE andere pagina (About, Contact, etc.)
+        // GENERIEKE fallback voor ELKE andere pagina (About, Contact, …)
         $prefix = 'page_' . ($slug ?: 'page') . '_';
 
         return [
