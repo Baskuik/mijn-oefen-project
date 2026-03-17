@@ -7,7 +7,7 @@
         iframeHeight: 900,
 
         // NOTE: no backticks, just the Blade directive:
-        pages: `@js`($this->previewPages),
+        pages: @js($this->previewPages),
 
         setInitialPage() {
             if (!this.page) {
