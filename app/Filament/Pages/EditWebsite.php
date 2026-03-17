@@ -5,11 +5,12 @@ namespace App\Filament\Pages;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use BackedEnum;
 
 class EditWebsite extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
-    protected static string $view = 'filament.pages.edit-website';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
+    protected string $view = 'filament.pages.edit-website';
 
     // NIEUW: lijst met label => url die de Blade-view gebruikt
     public array $previewPages = [];

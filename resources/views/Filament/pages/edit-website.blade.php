@@ -7,7 +7,7 @@
         iframeHeight: 900,
 
         // Wordt gevuld vanuit PHP (public $previewPages)
-        pages: `@js`($this->previewPages),
+        pages: @js($this->previewPages),
 
         setInitialPage() {
             if (!this.page) this.page = Object.keys(this.pages)[0] || '';
