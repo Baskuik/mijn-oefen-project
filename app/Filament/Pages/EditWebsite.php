@@ -3,7 +3,9 @@
 namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
+use App\Models\SiteSettingHistory;
 use BackedEnum;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Grid;
@@ -12,45 +14,65 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 class EditWebsite extends Page
 {
-    // Filament v5: zelfde union type als parent
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
 
-    // Filament v5: $view is non-static
     protected string $view = 'filament.pages.edit-website';
 
-    // Preview dropdown + iframe (label => url)
+    /** Preview dropdown (label => url) */
     public array $previewPages = [];
 
-    // Actieve pagina (label uit $previewPages)
+    /** Actieve pagina-label */
     public string $page = '';
 
-    // Huidige form-state (enkel voor actieve pagina)
+    /** Huidige form-state voor actieve pagina */
     public array $data = [];
 
-    // Concepten per pagina (onopgeslagen; label => state)
+    /** Concepten per pagina (niet opgeslagen) */
     public array $pageStates = [];
+
+    /** Laatste versiegeschiedenissen */
+    public array $histories = [];
+
+    // ─────────────────────────────────────────────
+    // Lifecycle
+    // ─────────────────────────────────────────────
 
     public function mount(): void
     {
         $this->previewPages = $this->getPreviewPages();
 
-        $labels = array_keys($this->previewPages);
+        $labels     = array_keys($this->previewPages);
         $this->page = in_array('Home', $labels, true) ? 'Home' : ($labels[0] ?? 'Home');
-
         $this->data = $this->loadStateFor($this->page);
+
+        $this->histories = $this->getHistories();
     }
 
-    // Filament v5: containers uit Schemas\Components; inputs uit Forms\Components
+    /**
+     * Livewire 4: vuurt na elke property-update.
+     * Stuur een browser-event zodat Alpine de "unsaved" vlag kan tonen.
+     */
+    public function updated(string $property): void
+    {
+        if (str_starts_with($property, 'data.')) {
+            $this->dispatch('site-settings-changed');
+        }
+    }
+
+    // ─────────────────────────────────────────────
+    // Formulier
+    // ─────────────────────────────────────────────
+
     public function form(Schema $schema): Schema
     {
         $slug = Str::slug($this->page ?: '');
 
-        // Home-pagina met Tabs: Hero, Features, Video
         if ($slug === 'home' || $slug === '') {
             return $schema
                 ->statePath('data')
@@ -82,28 +104,16 @@ class EditWebsite extends Page
                                         ->schema([
                                             Grid::make(3)->schema([
                                                 Section::make('Feature 1')->schema([
-                                                    TextInput::make('feature_1_title')
-                                                        ->label('Titel')
-                                                        ->maxLength(120),
-                                                    Textarea::make('feature_1_text')
-                                                        ->label('Beschrijving')
-                                                        ->rows(4),
+                                                    TextInput::make('feature_1_title')->label('Titel')->maxLength(120),
+                                                    Textarea::make('feature_1_text')->label('Beschrijving')->rows(4),
                                                 ]),
                                                 Section::make('Feature 2')->schema([
-                                                    TextInput::make('feature_2_title')
-                                                        ->label('Titel')
-                                                        ->maxLength(120),
-                                                    Textarea::make('feature_2_text')
-                                                        ->label('Beschrijving')
-                                                        ->rows(4),
+                                                    TextInput::make('feature_2_title')->label('Titel')->maxLength(120),
+                                                    Textarea::make('feature_2_text')->label('Beschrijving')->rows(4),
                                                 ]),
                                                 Section::make('Feature 3')->schema([
-                                                    TextInput::make('feature_3_title')
-                                                        ->label('Titel')
-                                                        ->maxLength(120),
-                                                    Textarea::make('feature_3_text')
-                                                        ->label('Beschrijving')
-                                                        ->rows(4),
+                                                    TextInput::make('feature_3_title')->label('Titel')->maxLength(120),
+                                                    Textarea::make('feature_3_text')->label('Beschrijving')->rows(4),
                                                 ]),
                                             ]),
                                         ]),
@@ -124,7 +134,6 @@ class EditWebsite extends Page
                 ]);
         }
 
-        // Voor overige pagina’s: behoud dynamisch schema maar toon in één Tab
         return $schema
             ->statePath('data')
             ->schema([
@@ -137,50 +146,117 @@ class EditWebsite extends Page
             ]);
     }
 
-    // Dropdown wijziging: concept bewaren, nieuwe state laden
-    public function updatedPage(string $value): void
-    {
-        $this->pageStates[$this->page] = $this->data;
-        $this->page = $value;
-        $this->data = $this->pageStates[$value] ?? $this->loadStateFor($value);
+    // ─────────────────────────────────────────────
+    // Acties
+    // ─────────────────────────────────────────────
 
-        // In deze setup volstaat het wijzigen van $data; mocht je eager willen vullen:
-        if (method_exists($this, 'form') && property_exists($this, 'form')) {
-            try {
-                $this->form->fill($this->data);
-            } catch (\Throwable $e) {
-                // stil doorgaan
-            }
-        }
-    }
-
-    // Alleen de actieve pagina opslaan
+    /** Sla pagina op + snapshot huidige staat als geschiedenis */
     public function save(): void
     {
+        // 1. Snapshot ALLE huidige instellingen vóór de wijziging
+        $snapshot = SiteSetting::all()->pluck('value', 'key')->toArray();
+
+        SiteSettingHistory::create([
+            'snapshot'   => $snapshot,
+            'page_label' => $this->page,
+            'saved_by'   => auth()->id(),
+        ]);
+
+        // Bewaar maximaal 10 versies
+        $toDelete = SiteSettingHistory::orderByDesc('id')->skip(10)->pluck('id');
+        if ($toDelete->isNotEmpty()) {
+            SiteSettingHistory::whereIn('id', $toDelete)->delete();
+        }
+
+        // 2. Sla de nieuwe waarden op
         foreach ($this->data as $key => $value) {
             SiteSetting::set($key, is_null($value) ? null : (string) $value);
         }
 
         $this->pageStates[$this->page] = $this->data;
+        $this->histories = $this->getHistories();
 
-        // Client-iframe herladen
         $this->dispatch('site-settings-saved');
+
+        Notification::make()
+            ->title('Wijzigingen opgeslagen')
+            ->body('De aanpassingen zijn live op de website.')
+            ->success()
+            ->send();
     }
 
-    // Preview-paginalijst verversen
+    /** Herstel een eerdere versie */
+    public function rollback(int $historyId): void
+    {
+        $history = SiteSettingHistory::find($historyId);
+
+        if (! $history) {
+            Notification::make()
+                ->title('Versie niet gevonden')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        // Snapshot van de HUIDIGE staat vóór we terugzetten
+        $snapshot = SiteSetting::all()->pluck('value', 'key')->toArray();
+        SiteSettingHistory::create([
+            'snapshot'   => $snapshot,
+            'page_label' => '(voor rollback)',
+            'saved_by'   => auth()->id(),
+        ]);
+
+        // Herstel alle waarden uit de snapshot
+        foreach ($history->snapshot as $key => $value) {
+            SiteSetting::set($key, $value);
+        }
+
+        // Herlaad de form-state voor de actieve pagina
+        $this->data = $this->loadStateFor($this->page);
+        $this->pageStates = [];
+        $this->histories = $this->getHistories();
+
+        $this->dispatch('site-settings-saved');
+
+        Notification::make()
+            ->title('Versie hersteld')
+            ->body('De website is teruggezet naar de versie van ' . $history->created_at->format('d-m-Y H:i') . '.')
+            ->success()
+            ->send();
+    }
+
+    /** Dropdown wijziging: concept bewaren, nieuwe pagina laden */
+    public function updatedPage(string $value): void
+    {
+        $this->pageStates[$this->page] = $this->data;
+        $this->page = $value;
+        $this->data = $this->pageStates[$value] ?? $this->loadStateFor($value);
+    }
+
+    /** Preview-paginalijst verversen */
     public function refreshPages(): void
     {
         $this->previewPages = $this->getPreviewPages();
         $this->dispatch('preview-pages-refreshed', pages: $this->previewPages);
     }
 
-    // ================== Schemas & keys per pagina ==================
+    // ─────────────────────────────────────────────
+    // Helpers
+    // ─────────────────────────────────────────────
+
+    protected function getHistories(): array
+    {
+        return SiteSettingHistory::with('editor')
+            ->orderByDesc('id')
+            ->limit(5)
+            ->get()
+            ->toArray();
+    }
 
     protected function schemaFor(string $label): array
     {
         $slug = Str::slug($label ?: '');
 
-        // PROFILE (+ alias ‘account’/‘profiel’) — titel + 3 tekstkolommen
         if (in_array($slug, ['profile', 'profiel', 'account'], true)) {
             return [
                 Section::make('Profiel Hero')
@@ -191,9 +267,7 @@ class EditWebsite extends Page
                         TextInput::make('profile_subtitle')->label('Subtitel')->maxLength(200),
                     ])
                     ->columns(2),
-
                 Section::make('Profielteksten (3 kolommen)')
-                    ->description('Beheer de drie tekstkolommen voor de profielpagina.')
                     ->icon('heroicon-o-squares-2x2')
                     ->schema([
                         Grid::make(3)->schema([
@@ -214,11 +288,9 @@ class EditWebsite extends Page
             ];
         }
 
-        // CART (voorbeeld)
         if (in_array($slug, ['cart', 'winkelwagen'], true)) {
             return [
                 Section::make('Winkelwagen Teksten')
-                    ->description('Titel en subtitel van de winkelwagenpagina.')
                     ->icon('heroicon-o-shopping-cart')
                     ->schema([
                         TextInput::make('cart_title')->label('Titel')->maxLength(120),
@@ -227,35 +299,30 @@ class EditWebsite extends Page
             ];
         }
 
-        // GENERIEKE fallback voor elke andere pagina
         $prefix = 'page_' . ($slug ?: 'page') . '_';
 
         return [
             Section::make(Str::title($label) ?: 'Pagina')
-                ->description('Algemene titel, subtitel en drie tekstkolommen.')
                 ->icon('heroicon-o-document-text')
                 ->schema([
                     TextInput::make($prefix . 'title')->label('Titel')->maxLength(120),
                     TextInput::make($prefix . 'subtitle')->label('Subtitel')->maxLength(200),
-
-                    Section::make('Tekstkolommen (3)')
-                        ->icon('heroicon-o-squares-2x2')
-                        ->schema([
-                            Grid::make(3)->schema([
-                                Section::make('Kolom 1')->schema([
-                                    TextInput::make($prefix . 'col1_title')->label('Titel')->maxLength(120),
-                                    Textarea::make($prefix . 'col1_text')->label('Tekst')->rows(4),
-                                ]),
-                                Section::make('Kolom 2')->schema([
-                                    TextInput::make($prefix . 'col2_title')->label('Titel')->maxLength(120),
-                                    Textarea::make($prefix . 'col2_text')->label('Tekst')->rows(4),
-                                ]),
-                                Section::make('Kolom 3')->schema([
-                                    TextInput::make($prefix . 'col3_title')->label('Titel')->maxLength(120),
-                                    Textarea::make($prefix . 'col3_text')->label('Tekst')->rows(4),
-                                ]),
+                    Section::make('Tekstkolommen (3)')->icon('heroicon-o-squares-2x2')->schema([
+                        Grid::make(3)->schema([
+                            Section::make('Kolom 1')->schema([
+                                TextInput::make($prefix . 'col1_title')->label('Titel')->maxLength(120),
+                                Textarea::make($prefix . 'col1_text')->label('Tekst')->rows(4),
+                            ]),
+                            Section::make('Kolom 2')->schema([
+                                TextInput::make($prefix . 'col2_title')->label('Titel')->maxLength(120),
+                                Textarea::make($prefix . 'col2_text')->label('Tekst')->rows(4),
+                            ]),
+                            Section::make('Kolom 3')->schema([
+                                TextInput::make($prefix . 'col3_title')->label('Titel')->maxLength(120),
+                                Textarea::make($prefix . 'col3_text')->label('Tekst')->rows(4),
                             ]),
                         ]),
+                    ]),
                 ]),
         ];
     }
@@ -287,6 +354,7 @@ class EditWebsite extends Page
         }
 
         $prefix = 'page_' . ($slug ?: 'page') . '_';
+
         return [
             $prefix . 'title', $prefix . 'subtitle',
             $prefix . 'col1_title', $prefix . 'col1_text',
@@ -295,14 +363,12 @@ class EditWebsite extends Page
         ];
     }
 
-    // ================== Preview-paginalijst (publieke GET web-routes) ==================
-
     protected function getPreviewPages(): array
     {
         $pages = [];
 
         foreach (Route::getRoutes() as $route) {
-            $methods = $route->methods();
+            $methods    = $route->methods();
             $middleware = method_exists($route, 'middleware') ? (array) $route->middleware() : [];
 
             if (! in_array('GET', $methods, true)) continue;
@@ -311,24 +377,21 @@ class EditWebsite extends Page
             $name = (string) $route->getName();
             $uri  = trim($route->uri(), '/');
 
-            // Admin/dev/auth routes overslaan
             if (
                 ($name && Str::startsWith($name, ['filament.', 'livewire.', 'ignition.']))
                 || Str::startsWith($uri, ['filament', 'telescope', 'vendor', 'sanctum'])
                 || Str::contains($uri, ['login', 'logout', 'register', 'password', 'verification', 'email'])
             ) continue;
 
-            // Geen dynamische parameters
             if (Str::contains($uri, '{')) continue;
 
-            $url = url($uri === '' ? '/' : '/' . $uri);
+            $url   = url($uri === '' ? '/' : '/' . $uri);
             $label = $name ?: ($uri === '' ? 'Home' : Str::title(str_replace(['-', '/'], ' ', $uri)));
             $pages[$label] = $url;
         }
 
         ksort($pages, SORT_NATURAL | SORT_FLAG_CASE);
 
-        // Home bovenaan
         if (isset($pages['Home'])) {
             $pages = ['Home' => $pages['Home']] + array_diff_key($pages, ['Home' => true]);
         }
@@ -344,4 +407,4 @@ class EditWebsite extends Page
         }
         return $state;
     }
-}                                                                                           
+}
