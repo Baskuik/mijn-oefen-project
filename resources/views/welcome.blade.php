@@ -71,12 +71,40 @@
     <div class="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-indigo-900/20 to-purple-900/30 z-10"></div>
 
     <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 w-full text-center">
-      <h1 class="hero-title text-5xl ...">
-        <livewire:editable-setting key="hero_title" default="Welkom bij de" />
-        <span class="text-indigo-300">
-            <livewire:editable-setting key="hero_title_highlight" default="Pokémon go Webstore" />
-        </span>
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
+        @if(session('edit_mode') && auth()->check() && auth()->user()->is_admin)
+            <input
+                type="text"
+                data-setting-key="hero_title"
+                value="{{ \App\Models\SiteSetting::get('hero_title', 'Welkom bij de') }}"
+                class="block w-full bg-transparent border-b-2 border-white/50 text-white text-center focus:outline-none focus:border-white placeholder-white/40 mb-2"
+                placeholder="Hero titel…"
+            >
+            <input
+                type="text"
+                data-setting-key="hero_title_highlight"
+                value="{{ \App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore') }}"
+                class="block w-full bg-transparent border-b-2 border-indigo-300/60 text-indigo-300 text-center focus:outline-none focus:border-indigo-300 placeholder-indigo-300/40"
+                placeholder="Highlight tekst…"
+            >
+        @else
+            {{ \App\Models\SiteSetting::get('hero_title', 'Welkom bij de') }}
+            <span class="text-indigo-300">{{ \App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore') }}</span>
+        @endif
     </h1>
+    
+    @if(session('edit_mode') && auth()->check() && auth()->user()->is_admin)
+        <textarea
+            data-setting-key="hero_subtitle"
+            rows="2"
+            class="block w-full bg-transparent border-b-2 border-white/40 text-white/95 text-xl sm:text-2xl max-w-3xl mx-auto text-center focus:outline-none focus:border-white placeholder-white/40 resize-none mb-10"
+            placeholder="Subtitel…"
+        >{{ \App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!') }}</textarea>
+    @else
+        <p class="text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-10 drop-shadow-lg">
+            {{ \App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!') }}
+        </p>
+    @endif
     <p class="hero-subtitle ...">
         <livewire:editable-setting key="hero_subtitle" default="Jouw bestemming voor kwaliteitsproducten..." />
     </p>

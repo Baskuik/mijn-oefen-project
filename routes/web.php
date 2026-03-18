@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -11,7 +13,6 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
 use App\Http\Middleware\PreviewEditMode;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\UserController;
@@ -99,13 +100,14 @@ Route::middleware('auth')->group(function () {
     Route::get('orders', [UserOrderController::class, 'index'])->name('orders.index');
 
     // ...
-Route::get('/', [\App\Http\Controllers\ProductController::class, 'index'])
-->middleware([PreviewEditMode::class])   // <— NIEUW
-->name('home');
+// Home + preview toggling via ?preview=true/false
+Route::get('/', [ProductController::class, 'index'])
+    ->middleware(['preview'])
+    ->name('home');
 
+// Alleen admins mogen instellingen opslaan
 Route::middleware(['auth', 'admin'])->group(function () {
-    // ...
-    Route::post('/site-settings', [\App\Http\Controllers\SiteSettingController::class, 'update'])
+    Route::post('/site-settings', [SiteSettingController::class, 'update'])
         ->name('site-settings.update');
 });
 });

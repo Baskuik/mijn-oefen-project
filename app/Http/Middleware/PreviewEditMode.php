@@ -10,14 +10,20 @@ class PreviewEditMode
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // AAN: alleen admins en wanneer ?preview=true
-        if ($request->boolean('preview') && auth()->check() && auth()->user()->is_admin) {
-            $request->session()->put('edit_mode', true);
-        }
-
-        // UIT: wanneer ?preview=false
-        if ($request->has('preview') && $request->query('preview') === 'false') {
-            $request->session()->forget('edit_mode');
+        // Altijd: als gebruiker geen admin is, forceer edit_mode uit.
+        if (! auth()->check() || ! (auth()->user()->is_admin ?? false)) {
+            if ($request->session()->has('edit_mode')) {
+                $request->session()->forget('edit_mode');
+            }
+        } else {
+            // Admin: toggle via ?preview=true|false (of 1/0/yes/no)
+            if ($request->has('preview')) {
+                if ($request->boolean('preview')) {
+                    $request->session()->put('edit_mode', true);
+                } else {
+                    $request->session()->forget('edit_mode');
+                }
+            }
         }
 
         return $next($request);

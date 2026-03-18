@@ -1,25 +1,21 @@
 <x-filament-panels::page>
-    <div class="max-w-2xl mx-auto py-8">
+    <div class="max-w-xl mx-auto py-8">
         <x-filament::section>
             <x-slot name="heading">
-                <span class="flex items-center gap-2">
-                    <x-filament::icon icon="heroicon-o-pencil-square" class="h-5 w-5 text-primary-500" />
-                    Frontend bewerken
-                </span>
+                Frontend Editing
             </x-slot>
             <x-slot name="description">
-                Klik op de knop hieronder. Je komt op de echte website met de bewerkbalk bovenin.
+                Open de echte website in bewerkmodus. Je ziet bovenin een toolbar en je kunt teksten direct op de pagina aanpassen.
             </x-slot>
 
             <x-filament::button
                 tag="a"
                 href="{{ route('home', ['preview' => 'true']) }}"
-                icon="heroicon-o-arrow-top-right-on-square"
-                size="lg"
+                icon="heroicon-o-pencil-square"
                 color="primary"
                 class="w-full justify-center"
             >
-                Open website in bewerkmodus
+                Website openen in bewerkmodus
             </x-filament::button>
         </x-filament::section>
     </div>

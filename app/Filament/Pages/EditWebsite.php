@@ -2,20 +2,22 @@
 
 namespace App\Filament\Pages;
 
-use Filament\Pages\Page;
 use Filament\Actions\Action;
+use Filament\Pages\Page;
+use BackedEnum;
 
 class EditWebsite extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
-    protected static ?string $title = 'Website bewerken (Frontend Editing)';
-    protected static string $view = 'filament.pages.edit-website';
+    protected static ? string|BackedEnum|null $navigationIcon = 'heroicon-o-pencil-square';
+    protected static ?string $navigationLabel = 'Website bewerken';
+    protected static ?string $title = 'Website bewerken';
+    protected string $view = 'filament.pages.edit-website';
 
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('open_frontend_editor')
-                ->label('Open frontend editor')
+            Action::make('open_frontend')
+                ->label('Open frontend bewerker')
                 ->icon('heroicon-o-arrow-top-right-on-square')
                 ->url(route('home', ['preview' => 'true']))
                 ->color('primary'),
