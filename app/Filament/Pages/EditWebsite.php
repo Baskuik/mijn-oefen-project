@@ -6,8 +6,10 @@ use App\Models\SiteSetting;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Illuminate\Support\Facades\Route;
@@ -15,22 +17,22 @@ use Illuminate\Support\Str;
 
 class EditWebsite extends Page
 {
-    // Moet exact matchen met Filament v5
+    // Filament v5: zelfde union type als parent
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
 
-    // In v5 is $view niet static
+    // Filament v5: $view is non-static
     protected string $view = 'filament.pages.edit-website';
 
-    // Preview-keuzelijst (label => url)
+    // Preview dropdown + iframe (label => url)
     public array $previewPages = [];
 
-    // Geselecteerde pagina (label)
+    // Actieve pagina (label uit $previewPages)
     public string $page = '';
 
-    // Huidige formulierstate voor de actieve pagina
+    // Huidige form-state (enkel voor actieve pagina)
     public array $data = [];
 
-    // Onopgeslagen concepten per pagina (label => state)
+    // Concepten per pagina (onopgeslagen; label => state)
     public array $pageStates = [];
 
     public function mount(): void
@@ -43,12 +45,96 @@ class EditWebsite extends Page
         $this->data = $this->loadStateFor($this->page);
     }
 
-    // Filament v5: Schema + containers uit Schemas\Components, inputs uit Forms\Components
+    // Filament v5: containers uit Schemas\Components; inputs uit Forms\Components
     public function form(Schema $schema): Schema
     {
+        $slug = Str::slug($this->page ?: '');
+
+        // Home-pagina met Tabs: Hero, Features, Video
+        if ($slug === 'home' || $slug === '') {
+            return $schema
+                ->statePath('data')
+                ->schema([
+                    Tabs::make('Pagina‑editor')
+                        ->tabs([
+                            Tab::make('Hero')
+                                ->schema([
+                                    Section::make('Hero')
+                                        ->description('Hoofdtitel, highlight en subtitel van de hero-sectie.')
+                                        ->schema([
+                                            TextInput::make('hero_title')
+                                                ->label('Hero titel')
+                                                ->maxLength(120),
+                                            TextInput::make('hero_title_highlight')
+                                                ->label('Hero highlight')
+                                                ->maxLength(120),
+                                            Textarea::make('hero_subtitle')
+                                                ->label('Subtitel')
+                                                ->rows(3),
+                                        ])
+                                        ->columns(2),
+                                ]),
+
+                            Tab::make('Features')
+                                ->schema([
+                                    Section::make('Kernfeatures')
+                                        ->description('Drie belangrijkste voordelen/kenmerken naast elkaar.')
+                                        ->schema([
+                                            Grid::make(3)->schema([
+                                                Section::make('Feature 1')->schema([
+                                                    TextInput::make('feature_1_title')
+                                                        ->label('Titel')
+                                                        ->maxLength(120),
+                                                    Textarea::make('feature_1_text')
+                                                        ->label('Beschrijving')
+                                                        ->rows(4),
+                                                ]),
+                                                Section::make('Feature 2')->schema([
+                                                    TextInput::make('feature_2_title')
+                                                        ->label('Titel')
+                                                        ->maxLength(120),
+                                                    Textarea::make('feature_2_text')
+                                                        ->label('Beschrijving')
+                                                        ->rows(4),
+                                                ]),
+                                                Section::make('Feature 3')->schema([
+                                                    TextInput::make('feature_3_title')
+                                                        ->label('Titel')
+                                                        ->maxLength(120),
+                                                    Textarea::make('feature_3_text')
+                                                        ->label('Beschrijving')
+                                                        ->rows(4),
+                                                ]),
+                                            ]),
+                                        ]),
+                                ]),
+
+                            Tab::make('Video')
+                                ->schema([
+                                    Section::make('Hero video')
+                                        ->description('Optioneel: YouTube video-ID voor de hero-sectie.')
+                                        ->schema([
+                                            TextInput::make('hero_video_id')
+                                                ->label('YouTube video ID')
+                                                ->maxLength(32),
+                                        ]),
+                                ]),
+                        ])
+                        ->columnSpanFull(),
+                ]);
+        }
+
+        // Voor overige pagina’s: behoud dynamisch schema maar toon in één Tab
         return $schema
             ->statePath('data')
-            ->schema($this->schemaFor($this->page));
+            ->schema([
+                Tabs::make('Pagina‑editor')
+                    ->tabs([
+                        Tab::make(Str::title($this->page ?: 'Inhoud'))
+                            ->schema($this->schemaFor($this->page)),
+                    ])
+                    ->columnSpanFull(),
+            ]);
     }
 
     // Dropdown wijziging: concept bewaren, nieuwe state laden
@@ -57,7 +143,15 @@ class EditWebsite extends Page
         $this->pageStates[$this->page] = $this->data;
         $this->page = $value;
         $this->data = $this->pageStates[$value] ?? $this->loadStateFor($value);
-        // In Filament v5 volstaat het om $data te wijzigen; velden volgen automatisch.
+
+        // In deze setup volstaat het wijzigen van $data; mocht je eager willen vullen:
+        if (method_exists($this, 'form') && property_exists($this, 'form')) {
+            try {
+                $this->form->fill($this->data);
+            } catch (\Throwable $e) {
+                // stil doorgaan
+            }
+        }
     }
 
     // Alleen de actieve pagina opslaan
@@ -69,61 +163,28 @@ class EditWebsite extends Page
 
         $this->pageStates[$this->page] = $this->data;
 
-        // Laat de iframe preview herladen
+        // Client-iframe herladen
         $this->dispatch('site-settings-saved');
     }
 
-    // Handmatige heropbouw van de paginalijst
+    // Preview-paginalijst verversen
     public function refreshPages(): void
     {
         $this->previewPages = $this->getPreviewPages();
         $this->dispatch('preview-pages-refreshed', pages: $this->previewPages);
     }
 
-    // ---------- Per-pagina schema en keys ----------
+    // ================== Schemas & keys per pagina ==================
 
     protected function schemaFor(string $label): array
     {
         $slug = Str::slug($label ?: '');
 
-        // HOME
-        if ($slug === 'home' || $slug === '') {
-            return [
-                Section::make('Homepage Hero')
-                    ->icon('heroicon-o-bolt')
-                    ->schema([
-                        TextInput::make('hero_title')->label('Hero titel')->maxLength(120),
-                        TextInput::make('hero_title_highlight')->label('Hero highlight')->maxLength(120),
-                        Textarea::make('hero_subtitle')->label('Subtitel')->rows(3),
-                        TextInput::make('hero_video_id')->label('YouTube video ID')->maxLength(32),
-                    ])
-                    ->columns(2),
-
-                Section::make('Kernfeatures (3 kolommen)')
-                    ->icon('heroicon-o-star')
-                    ->schema([
-                        Grid::make(3)->schema([
-                            Section::make('Kolom 1')->schema([
-                                TextInput::make('feature_1_title')->label('Titel')->maxLength(120),
-                                Textarea::make('feature_1_text')->label('Tekst')->rows(4),
-                            ]),
-                            Section::make('Kolom 2')->schema([
-                                TextInput::make('feature_2_title')->label('Titel')->maxLength(120),
-                                Textarea::make('feature_2_text')->label('Tekst')->rows(4),
-                            ]),
-                            Section::make('Kolom 3')->schema([
-                                TextInput::make('feature_3_title')->label('Titel')->maxLength(120),
-                                Textarea::make('feature_3_text')->label('Tekst')->rows(4),
-                            ]),
-                        ]),
-                    ]),
-            ];
-        }
-
-        // PROFILE
-        if ($slug === 'profile' || $slug === 'profiel') {
+        // PROFILE (+ alias ‘account’/‘profiel’) — titel + 3 tekstkolommen
+        if (in_array($slug, ['profile', 'profiel', 'account'], true)) {
             return [
                 Section::make('Profiel Hero')
+                    ->description('Titel en subtitel van de profielpagina.')
                     ->icon('heroicon-o-user-circle')
                     ->schema([
                         TextInput::make('profile_title')->label('Titel')->maxLength(120),
@@ -132,6 +193,7 @@ class EditWebsite extends Page
                     ->columns(2),
 
                 Section::make('Profielteksten (3 kolommen)')
+                    ->description('Beheer de drie tekstkolommen voor de profielpagina.')
                     ->icon('heroicon-o-squares-2x2')
                     ->schema([
                         Grid::make(3)->schema([
@@ -153,9 +215,10 @@ class EditWebsite extends Page
         }
 
         // CART (voorbeeld)
-        if ($slug === 'cart' || $slug === 'winkelwagen') {
+        if (in_array($slug, ['cart', 'winkelwagen'], true)) {
             return [
                 Section::make('Winkelwagen Teksten')
+                    ->description('Titel en subtitel van de winkelwagenpagina.')
                     ->icon('heroicon-o-shopping-cart')
                     ->schema([
                         TextInput::make('cart_title')->label('Titel')->maxLength(120),
@@ -164,11 +227,12 @@ class EditWebsite extends Page
             ];
         }
 
-        // GENERIEKE fallback voor ELKE andere pagina (About, Contact, …)
+        // GENERIEKE fallback voor elke andere pagina
         $prefix = 'page_' . ($slug ?: 'page') . '_';
 
         return [
             Section::make(Str::title($label) ?: 'Pagina')
+                ->description('Algemene titel, subtitel en drie tekstkolommen.')
                 ->icon('heroicon-o-document-text')
                 ->schema([
                     TextInput::make($prefix . 'title')->label('Titel')->maxLength(120),
@@ -209,7 +273,7 @@ class EditWebsite extends Page
             ];
         }
 
-        if ($slug === 'profile' || $slug === 'profiel') {
+        if (in_array($slug, ['profile', 'profiel', 'account'], true)) {
             return [
                 'profile_title', 'profile_subtitle',
                 'profile_col1_title', 'profile_col1_text',
@@ -218,7 +282,7 @@ class EditWebsite extends Page
             ];
         }
 
-        if ($slug === 'cart' || $slug === 'winkelwagen') {
+        if (in_array($slug, ['cart', 'winkelwagen'], true)) {
             return ['cart_title', 'cart_subtitle'];
         }
 
@@ -231,7 +295,7 @@ class EditWebsite extends Page
         ];
     }
 
-    // ---------- Preview: publieke GET web-routes zonder parameters ----------
+    // ================== Preview-paginalijst (publieke GET web-routes) ==================
 
     protected function getPreviewPages(): array
     {
@@ -247,12 +311,14 @@ class EditWebsite extends Page
             $name = (string) $route->getName();
             $uri  = trim($route->uri(), '/');
 
+            // Admin/dev/auth routes overslaan
             if (
                 ($name && Str::startsWith($name, ['filament.', 'livewire.', 'ignition.']))
                 || Str::startsWith($uri, ['filament', 'telescope', 'vendor', 'sanctum'])
                 || Str::contains($uri, ['login', 'logout', 'register', 'password', 'verification', 'email'])
             ) continue;
 
+            // Geen dynamische parameters
             if (Str::contains($uri, '{')) continue;
 
             $url = url($uri === '' ? '/' : '/' . $uri);
@@ -262,6 +328,7 @@ class EditWebsite extends Page
 
         ksort($pages, SORT_NATURAL | SORT_FLAG_CASE);
 
+        // Home bovenaan
         if (isset($pages['Home'])) {
             $pages = ['Home' => $pages['Home']] + array_diff_key($pages, ['Home' => true]);
         }
