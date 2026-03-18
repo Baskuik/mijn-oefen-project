@@ -71,13 +71,15 @@
     <div class="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-indigo-900/20 to-purple-900/30 z-10"></div>
 
     <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 w-full text-center">
-      <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
-        {{ \App\Models\SiteSetting::get('hero_title', 'Welkom bij de') }}
-        <span class="text-indigo-300">{{ \App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore') }}</span>
-      </h1>
-      <p class="hero-subtitle text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-10 drop-shadow-lg">
-        {{ \App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!') }}
-      </p>
+      <h1 class="hero-title text-5xl ...">
+        <livewire:editable-setting key="hero_title" default="Welkom bij de" />
+        <span class="text-indigo-300">
+            <livewire:editable-setting key="hero_title_highlight" default="Pokémon go Webstore" />
+        </span>
+    </h1>
+    <p class="hero-subtitle ...">
+        <livewire:editable-setting key="hero_subtitle" default="Jouw bestemming voor kwaliteitsproducten..." />
+    </p>
       <div class="hero-buttons flex flex-col sm:flex-row gap-4 justify-center">
         <a href="#producten" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-800 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl hover:bg-slate-50 hover:scale-105 transition-all duration-300">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
@@ -701,7 +703,7 @@
       });
     });
   </script>
-
+@include('components.editor-toolbar')
   @livewireScripts
 </body>
 </html>

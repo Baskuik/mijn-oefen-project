@@ -1,9 +1,26 @@
 <x-filament-panels::page>
-    <div class="flex flex-col items-center justify-center py-12 text-center">
-        <x-filament::icon icon="heroicon-o-cursor-arrow-ripple" class="h-12 w-12 text-gray-400 mb-4" />
-        <h2 class="text-xl font-bold">Website Bewerken</h2>
-        <p class="text-gray-500 max-w-sm mx-auto mb-6">
-            Klik op de knop hierboven om de website te openen. Je kunt daar direct teksten en foto's aanpassen terwijl je de site bekijkt.
-        </p>
+    <div class="max-w-2xl mx-auto py-8">
+        <x-filament::section>
+            <x-slot name="heading">
+                <span class="flex items-center gap-2">
+                    <x-filament::icon icon="heroicon-o-pencil-square" class="h-5 w-5 text-primary-500" />
+                    Frontend bewerken
+                </span>
+            </x-slot>
+            <x-slot name="description">
+                Klik op de knop hieronder. Je komt op de echte website met de bewerkbalk bovenin.
+            </x-slot>
+
+            <x-filament::button
+                tag="a"
+                href="{{ route('home', ['preview' => 'true']) }}"
+                icon="heroicon-o-arrow-top-right-on-square"
+                size="lg"
+                color="primary"
+                class="w-full justify-center"
+            >
+                Open website in bewerkmodus
+            </x-filament::button>
+        </x-filament::section>
     </div>
 </x-filament-panels::page>

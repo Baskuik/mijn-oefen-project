@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Middleware\PreviewEditMode;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
@@ -96,4 +97,15 @@ Route::middleware('auth')->group(function () {
 
     // Orders
     Route::get('orders', [UserOrderController::class, 'index'])->name('orders.index');
+
+    // ...
+Route::get('/', [\App\Http\Controllers\ProductController::class, 'index'])
+->middleware([PreviewEditMode::class])   // <— NIEUW
+->name('home');
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    // ...
+    Route::post('/site-settings', [\App\Http\Controllers\SiteSettingController::class, 'update'])
+        ->name('site-settings.update');
+});
 });
