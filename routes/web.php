@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -11,23 +13,15 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
+use App\Http\Middleware\PreviewEditMode;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserOrderController;
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\EditModeController;
 use App\Livewire\Cart;
 use App\Models\Order;
-
-Route::get('/', [ProductController::class, 'index'])->name('home')->middleware('edit-mode');
-
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::post('/edit-mode/save', [EditModeController::class, 'save'])->name('edit-mode.save');
-    Route::get('/edit-mode/exit', [EditModeController::class, 'exit'])->name('edit-mode.exit');
-});
 
 // 'verified' removed — unverified users can access dashboard freely
 Route::get('/dashboard', function () {
@@ -102,4 +96,15 @@ Route::middleware('auth')->group(function () {
 
     // Orders
     Route::get('orders', [UserOrderController::class, 'index'])->name('orders.index');
+});
+
+// Home + preview toggling via ?preview=true/false
+Route::get('/', [ProductController::class, 'index'])
+    ->middleware(['preview'])
+    ->name('home');
+
+// Alleen admins mogen instellingen opslaan
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::post('/site-settings', [SiteSettingController::class, 'update'])
+        ->name('site-settings.update');
 });

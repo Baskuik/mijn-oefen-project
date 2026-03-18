@@ -11,10 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Hier registreren we de 'admin' uitsmijter
         $middleware->alias([
-            'admin'      => \App\Http\Middleware\AdminMiddleware::class,
-            'edit-mode'  => \App\Http\Middleware\SetEditMode::class,
+            'admin'   => \App\Http\Middleware\AdminMiddleware::class,
+            'preview' => \App\Http\Middleware\PreviewEditMode::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
