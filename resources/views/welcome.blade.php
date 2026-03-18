@@ -62,6 +62,7 @@
   </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+  @include('components.editor-toolbar')
   @include('components.site-navbar')
 
   <!-- Hero -->
@@ -72,11 +73,42 @@
 
     <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 w-full text-center">
       <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
-        {{ \App\Models\SiteSetting::get('hero_title', 'Welkom bij de') }}
-        <span class="text-indigo-300">{{ \App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore') }}</span>
+        @if(session('edit_mode'))
+          <input
+            type="text"
+            name="hero_title"
+            data-setting="hero_title"
+            value="{{ \App\Models\SiteSetting::get('hero_title', 'Welkom bij de') }}"
+            class="bg-white/10 border border-white/40 rounded px-2 py-1 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full max-w-lg"
+            placeholder="Hero titel"
+          >
+          <span class="text-indigo-300">
+            <input
+              type="text"
+              name="hero_title_highlight"
+              data-setting="hero_title_highlight"
+              value="{{ \App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore') }}"
+              class="bg-white/10 border border-indigo-400/60 rounded px-2 py-1 text-indigo-200 placeholder-indigo-300/60 focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full max-w-lg"
+              placeholder="Hero highlight"
+            >
+          </span>
+        @else
+          {{ \App\Models\SiteSetting::get('hero_title', 'Welkom bij de') }}
+          <span class="text-indigo-300">{{ \App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore') }}</span>
+        @endif
       </h1>
       <p class="hero-subtitle text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-10 drop-shadow-lg">
-        {{ \App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!') }}
+        @if(session('edit_mode'))
+          <textarea
+            name="hero_subtitle"
+            data-setting="hero_subtitle"
+            rows="3"
+            class="bg-white/10 border border-white/40 rounded px-3 py-2 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full max-w-2xl resize-none"
+            placeholder="Subtitel"
+          >{{ \App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!') }}</textarea>
+        @else
+          {{ \App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!') }}
+        @endif
       </p>
       <div class="hero-buttons flex flex-col sm:flex-row gap-4 justify-center">
         <a href="#producten" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-800 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl hover:bg-slate-50 hover:scale-105 transition-all duration-300">
