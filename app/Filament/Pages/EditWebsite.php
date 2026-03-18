@@ -8,7 +8,7 @@ use BackedEnum;
 
 class EditWebsite extends Page
 {
-    protected static ? string|BackedEnum|null $navigationIcon = 'heroicon-o-pencil-square';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-pencil-square';
     protected static ?string $navigationLabel = 'Website bewerken';
     protected static ?string $title = 'Website bewerken';
     protected string $view = 'filament.pages.edit-website';
