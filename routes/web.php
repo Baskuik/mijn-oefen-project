@@ -18,10 +18,16 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserOrderController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\EditModeController;
 use App\Livewire\Cart;
 use App\Models\Order;
 
-Route::get('/', [ProductController::class, 'index'])->name('home');
+Route::get('/', [ProductController::class, 'index'])->name('home')->middleware('edit-mode');
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::post('/edit-mode/save', [EditModeController::class, 'save'])->name('edit-mode.save');
+    Route::get('/edit-mode/exit', [EditModeController::class, 'exit'])->name('edit-mode.exit');
+});
 
 // 'verified' removed — unverified users can access dashboard freely
 Route::get('/dashboard', function () {
