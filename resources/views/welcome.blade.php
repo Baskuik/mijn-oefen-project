@@ -62,54 +62,104 @@
   </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-  @include('components.editor-toolbar')
   @include('components.site-navbar')
 
   <!-- Hero -->
   <section class="relative overflow-hidden flex items-center" style="min-height:85vh;">
-    <div id="hero-video-wrapper" class="hero-video-wrapper bg-slate-900"></div>
+    @php $heroImageUrl = \App\Models\SiteSetting::get('hero_image_url', ''); @endphp
+    <div id="hero-video-wrapper" class="hero-video-wrapper bg-slate-900"
+        data-image-preview="hero_image_url"
+        @if($heroImageUrl) style="background-image:url('{{ $heroImageUrl }}');background-size:cover;background-position:center;" @endif
+    ></div>
     <div class="absolute inset-0 bg-black/55 z-10"></div>
     <div class="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-indigo-900/20 to-purple-900/30 z-10"></div>
 
     <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 w-full text-center">
-      <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
-        @if(session('edit_mode'))
-          <input
-            type="text"
-            name="hero_title"
-            data-setting="hero_title"
-            value="{{ \App\Models\SiteSetting::get('hero_title', 'Welkom bij de') }}"
-            class="bg-white/10 border border-white/40 rounded px-2 py-1 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full max-w-lg"
-            placeholder="Hero titel"
-          >
-          <span class="text-indigo-300">
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl">
+        @if(session('edit_mode') && auth()->check() && auth()->user()->is_admin)
             <input
-              type="text"
-              name="hero_title_highlight"
-              data-setting="hero_title_highlight"
-              value="{{ \App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore') }}"
-              class="bg-white/10 border border-indigo-400/60 rounded px-2 py-1 text-indigo-200 placeholder-indigo-300/60 focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full max-w-lg"
-              placeholder="Hero highlight"
+                type="text"
+                data-setting-key="hero_title"
+                value="{{ \App\Models\SiteSetting::get('hero_title', 'Welkom bij de') }}"
+                class="block w-full bg-transparent border-b-2 border-white/50 text-white text-center focus:outline-none focus:border-white placeholder-white/40 mb-2"
+                placeholder="Hero titel…"
             >
-          </span>
+            <input
+                type="text"
+                data-setting-key="hero_title_highlight"
+                value="{{ \App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore') }}"
+                class="block w-full bg-transparent border-b-2 border-indigo-300/60 text-indigo-300 text-center focus:outline-none focus:border-indigo-300 placeholder-indigo-300/40"
+                placeholder="Highlight tekst…"
+            >
         @else
-          {{ \App\Models\SiteSetting::get('hero_title', 'Welkom bij de') }}
-          <span class="text-indigo-300">{{ \App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore') }}</span>
+            {{ \App\Models\SiteSetting::get('hero_title', 'Welkom bij de') }}
+            <span class="text-indigo-300">{{ \App\Models\SiteSetting::get('hero_title_highlight', 'Pokémon go Webstore') }}</span>
         @endif
-      </h1>
-      <p class="hero-subtitle text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-10 drop-shadow-lg">
-        @if(session('edit_mode'))
-          <textarea
-            name="hero_subtitle"
-            data-setting="hero_subtitle"
-            rows="3"
-            class="bg-white/10 border border-white/40 rounded px-3 py-2 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-indigo-400 w-full max-w-2xl resize-none"
-            placeholder="Subtitel"
-          >{{ \App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!') }}</textarea>
-        @else
-          {{ \App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!') }}
-        @endif
-      </p>
+    </h1>
+    
+    @if(session('edit_mode') && auth()->check() && auth()->user()->is_admin)
+        <textarea
+            data-setting-key="hero_subtitle"
+            rows="2"
+            class="block w-full bg-transparent border-b-2 border-white/40 text-white/95 text-xl sm:text-2xl max-w-3xl mx-auto text-center focus:outline-none focus:border-white placeholder-white/40 resize-none mb-6"
+            placeholder="Subtitel…"
+        >{{ \App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!') }}</textarea>
+
+        {{-- Hero media bewerken --}}
+        <div class="max-w-2xl mx-auto mb-10 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 text-left space-y-4">
+            <p class="text-xs font-semibold text-white/60 uppercase tracking-widest">Hero media</p>
+
+            {{-- YouTube video ID --}}
+            <div>
+                <label class="block text-xs text-white/70 mb-1">YouTube video-ID (achtergond)</label>
+                <input
+                    type="text"
+                    data-setting-key="hero_video_id"
+                    value="{{ \App\Models\SiteSetting::get('hero_video_id', 'gsuG1HiS-gA') }}"
+                    class="block w-full bg-white/10 border border-white/30 rounded-lg px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-white"
+                    placeholder="bijv. gsuG1HiS-gA"
+                >
+                <p class="mt-1 text-xs text-white/50">Alleen het ID uit de YouTube-URL (na v=). Herladen vereist om de video te zien.</p>
+            </div>
+
+            {{-- Hero achtergrond afbeelding --}}
+            <div>
+                <label class="block text-xs text-white/70 mb-1">Achtergrondafbeelding (overschrijft video)</label>
+                <div class="flex gap-2 items-center">
+                    <input
+                        type="text"
+                        data-setting-key="hero_image_url"
+                        value="{{ \App\Models\SiteSetting::get('hero_image_url', '') }}"
+                        class="flex-1 bg-white/10 border border-white/30 rounded-lg px-3 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-white"
+                        placeholder="https://... of leeg laten voor video"
+                    >
+                    <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-sm font-semibold text-white transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        Upload
+                        <input type="file" accept="image/*" data-image-key="hero_image_url" class="sr-only">
+                    </label>
+                </div>
+                @if(\App\Models\SiteSetting::get('hero_image_url'))
+                    <div class="mt-2">
+                        <img
+                            src="{{ \App\Models\SiteSetting::get('hero_image_url') }}"
+                            data-image-preview="hero_image_url"
+                            class="h-16 rounded-lg object-cover border border-white/20"
+                            alt="Hero achtergrond preview"
+                        >
+                    </div>
+                @else
+                    <div data-image-preview="hero_image_url" class="hidden mt-2">
+                        <img src="" class="h-16 rounded-lg object-cover border border-white/20" alt="Hero achtergrond preview">
+                    </div>
+                @endif
+            </div>
+        </div>
+    @else
+        <p class="text-xl sm:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed mb-10 drop-shadow-lg">
+            {{ \App\Models\SiteSetting::get('hero_subtitle', 'Jouw bestemming voor kwaliteitsproducten. Shop nu en profiteer van gratis verzending vanaf €50!') }}
+        </p>
+    @endif
       <div class="hero-buttons flex flex-col sm:flex-row gap-4 justify-center">
         <a href="#producten" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-800 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl hover:bg-slate-50 hover:scale-105 transition-all duration-300">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
@@ -360,36 +410,84 @@
         <div class="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
         </div>
-        <h3 class="text-lg font-semibold text-white mb-2">
-          {{ \App\Models\SiteSetting::get('feature_1_title', 'Gratis Verzending') }}
-        </h3>
-        <p class="text-slate-300">
-          {{ \App\Models\SiteSetting::get('feature_1_text', 'Vanaf €50 bezorgen we gratis bij je thuis') }}
-        </p>
+        @if(session('edit_mode') && auth()->check() && auth()->user()->is_admin)
+          <input
+            type="text"
+            data-setting-key="feature_1_title"
+            value="{{ \App\Models\SiteSetting::get('feature_1_title', 'Gratis Verzending') }}"
+            class="block w-full bg-transparent border-b border-white/30 text-lg font-semibold text-white text-center focus:outline-none focus:border-white mb-2 placeholder-white/40"
+            placeholder="Feature 1 titel"
+          >
+          <textarea
+            data-setting-key="feature_1_text"
+            rows="2"
+            class="block w-full bg-transparent border-b border-white/20 text-slate-300 text-center focus:outline-none focus:border-white/50 resize-none placeholder-white/30"
+            placeholder="Feature 1 tekst"
+          >{{ \App\Models\SiteSetting::get('feature_1_text', 'Vanaf €50 bezorgen we gratis bij je thuis') }}</textarea>
+        @else
+          <h3 class="text-lg font-semibold text-white mb-2">
+            {{ \App\Models\SiteSetting::get('feature_1_title', 'Gratis Verzending') }}
+          </h3>
+          <p class="text-slate-300">
+            {{ \App\Models\SiteSetting::get('feature_1_text', 'Vanaf €50 bezorgen we gratis bij je thuis') }}
+          </p>
+        @endif
       </div>
 
       <div class="feature-card reveal reveal-delay-2 text-center p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
         <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
         </div>
-        <h3 class="text-lg font-semibold text-white mb-2">
-          {{ \App\Models\SiteSetting::get('feature_2_title', 'Veilig Betalen') }}
-        </h3>
-        <p class="text-slate-300">
-          {{ \App\Models\SiteSetting::get('feature_2_text', 'Beveiligd met Stripe & SSL encryptie') }}
-        </p>
+        @if(session('edit_mode') && auth()->check() && auth()->user()->is_admin)
+          <input
+            type="text"
+            data-setting-key="feature_2_title"
+            value="{{ \App\Models\SiteSetting::get('feature_2_title', 'Veilig Betalen') }}"
+            class="block w-full bg-transparent border-b border-white/30 text-lg font-semibold text-white text-center focus:outline-none focus:border-white mb-2 placeholder-white/40"
+            placeholder="Feature 2 titel"
+          >
+          <textarea
+            data-setting-key="feature_2_text"
+            rows="2"
+            class="block w-full bg-transparent border-b border-white/20 text-slate-300 text-center focus:outline-none focus:border-white/50 resize-none placeholder-white/30"
+            placeholder="Feature 2 tekst"
+          >{{ \App\Models\SiteSetting::get('feature_2_text', 'Beveiligd met Stripe & SSL encryptie') }}</textarea>
+        @else
+          <h3 class="text-lg font-semibold text-white mb-2">
+            {{ \App\Models\SiteSetting::get('feature_2_title', 'Veilig Betalen') }}
+          </h3>
+          <p class="text-slate-300">
+            {{ \App\Models\SiteSetting::get('feature_2_text', 'Beveiligd met Stripe & SSL encryptie') }}
+          </p>
+        @endif
       </div>
 
       <div class="feature-card reveal reveal-delay-3 text-center p-8 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
         <div class="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
-        <h3 class="text-lg font-semibold text-white mb-2">
-          {{ \App\Models\SiteSetting::get('feature_3_title', '24/7 Support') }}
-        </h3>
-        <p class="text-slate-300">
-          {{ \App\Models\SiteSetting::get('feature_3_text', 'Wij staan altijd voor je klaar') }}
-        </p>
+        @if(session('edit_mode') && auth()->check() && auth()->user()->is_admin)
+          <input
+            type="text"
+            data-setting-key="feature_3_title"
+            value="{{ \App\Models\SiteSetting::get('feature_3_title', '24/7 Support') }}"
+            class="block w-full bg-transparent border-b border-white/30 text-lg font-semibold text-white text-center focus:outline-none focus:border-white mb-2 placeholder-white/40"
+            placeholder="Feature 3 titel"
+          >
+          <textarea
+            data-setting-key="feature_3_text"
+            rows="2"
+            class="block w-full bg-transparent border-b border-white/20 text-slate-300 text-center focus:outline-none focus:border-white/50 resize-none placeholder-white/30"
+            placeholder="Feature 3 tekst"
+          >{{ \App\Models\SiteSetting::get('feature_3_text', 'Wij staan altijd voor je klaar') }}</textarea>
+        @else
+          <h3 class="text-lg font-semibold text-white mb-2">
+            {{ \App\Models\SiteSetting::get('feature_3_title', '24/7 Support') }}
+          </h3>
+          <p class="text-slate-300">
+            {{ \App\Models\SiteSetting::get('feature_3_text', 'Wij staan altijd voor je klaar') }}
+          </p>
+        @endif
       </div>
     </div>
   </section>
@@ -733,7 +831,7 @@
       });
     });
   </script>
-
+@include('components.editor-toolbar')
   @livewireScripts
 </body>
 </html>
